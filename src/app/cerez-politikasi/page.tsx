@@ -1,7 +1,5 @@
 'use client';
 
-
-sadjhas
 export default function CookiePolicyPage() {
   return (
     <div className="min-h-screen bg-white">

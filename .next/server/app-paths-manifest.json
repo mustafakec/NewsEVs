@@ -1,0 +1,5 @@
+{
+  "/borsa/page": "app/borsa/page.js",
+  "/api/stocks/route": "app/api/stocks/route.js",
+  "/api/stocks/quote/route": "app/api/stocks/quote/route.js"
+}

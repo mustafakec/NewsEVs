@@ -65,7 +65,10 @@ export async function GET(request: Request) {
       change: change,
       changePercent: changePercent,
       previousClose: previousClose,
-      timestamp: result.timestamp[lastValidIndex]
+      timestamp: result.timestamp[lastValidIndex],
+      marketState: quote.marketState,
+      regularMarketTime: quote.regularMarketTime,
+      currency: quote.currency || 'USD'
     });
   } catch (error) {
     console.error('Hisse senedi fiyat bilgisi alınırken hata:', error);

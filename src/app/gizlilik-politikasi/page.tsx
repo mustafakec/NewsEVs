@@ -124,26 +124,9 @@ export default function PrivacyPolicyPage() {
               <div className="prose prose-gray max-w-none">
                 <p>
                   Bu gizlilik politikası periyodik olarak güncellenebilir. Önemli değişiklikler olması durumunda 
-                  kullanıcılarımızı bilgilendireceğiz. Politikanın son güncellenme tarihi: 1 Mart 2024
+                  kullanıcılarımızı bilgilendireceğiz. Politikanın son güncellenme tarihi: 11 Şubat 2025
                 </p>
               </div>
-            </div>
-          </section>
-
-          {/* İletişim */}
-          <section className="bg-gradient-to-r from-[#660566] to-[#330233] rounded-2xl p-8 text-white">
-            <div className="text-center">
-              <h2 className="text-2xl font-semibold mb-4">Sorularınız mı var?</h2>
-              <p className="mb-6">
-                Gizlilik politikamız hakkında sorularınız için bizimle iletişime geçebilirsiniz.
-              </p>
-              <a
-                href="/iletisim"
-                className="inline-block bg-white text-[#660566] px-6 py-2 rounded-lg font-medium
-                       hover:bg-gray-100 transition-colors duration-200"
-              >
-                İletişime Geç
-              </a>
             </div>
           </section>
         </div>

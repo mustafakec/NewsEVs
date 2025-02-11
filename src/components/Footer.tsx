@@ -55,11 +55,6 @@ const Footer = () => {
                   Çerez Politikası
                 </Link>
               </li>
-              <li>
-                <button className="text-gray-600 hover:text-[#660566] transition-colors">
-                  Çerez Ayarları
-                </button>
-              </li>
             </ul>
           </div>
 
@@ -104,19 +99,10 @@ const Footer = () => {
 
         {/* Alt Bilgi */}
         <div className="mt-12 pt-8 border-t border-gray-100">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-center">
             <p className="text-gray-500 text-sm">
               © {new Date().getFullYear()} Elektrikliyiz. Tüm hakları saklıdır.
             </p>
-            <div className="flex items-center gap-4">
-              <Link href="/kullanim-kosullari" className="text-gray-600 hover:text-[#660566] transition-colors text-sm">
-                Kullanım Koşulları
-              </Link>
-              <span className="text-gray-300">|</span>
-              <Link href="/kvkk" className="text-gray-600 hover:text-[#660566] transition-colors text-sm">
-                KVKK
-              </Link>
-            </div>
           </div>
         </div>
       </div>

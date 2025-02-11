@@ -11,6 +11,21 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
+    "/elektrikli-araclar/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/elektrikli-araclar/page.js"
+    ],
+    "/karsilastir/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/karsilastir/page.js"
+    ],
+    "/sarj-haritasi/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/sarj-haritasi/page.js"
+    ],
     "/borsa/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

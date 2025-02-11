@@ -28,8 +28,8 @@ const Header = () => {
 
             {/* Ana Menü */}
             <nav className="hidden md:flex items-center gap-6">
-              <Link href="/markalar" className="text-gray-600 hover:text-[#660566] transition-colors">
-                Markalar
+              <Link href="/elektrikli-araclar" className="text-gray-600 hover:text-[#660566] transition-colors">
+                Elektrikli Araçlar
               </Link>
               <Link href="/karsilastir" className="text-gray-600 hover:text-[#660566] transition-colors">
                 Karşılaştır
@@ -97,10 +97,10 @@ const Header = () => {
             <div className="md:hidden border-t border-gray-100 py-4 px-4">
               <nav className="flex flex-col gap-4">
                 <Link
-                  href="/markalar"
+                  href="/elektrikli-araclar"
                   className="text-gray-600 hover:text-[#660566] transition-colors"
                 >
-                  Markalar
+                  Elektrikli Araçlar
                 </Link>
                 <Link
                   href="/karsilastir"

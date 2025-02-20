@@ -17,6 +17,8 @@ import {
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { tr } from 'date-fns/locale';
+import { getStockChart, getStockQuote } from '@/lib/stocks';
+import type { StockData, ChartData } from '@/lib/stocks';
 
 ChartJS.register(
   CategoryScale,
@@ -29,59 +31,69 @@ ChartJS.register(
   TimeScale
 );
 
-const stocks = [
-  { symbol: 'TSLA', name: 'Tesla Inc.', logo: 'https://logo.clearbit.com/tesla.com' },
-  { symbol: 'NIO', name: 'NIO Inc.', logo: 'https://logo.clearbit.com/nio.com' },
-  { symbol: 'XPEV', name: 'XPeng Inc.', logo: 'https://logo.clearbit.com/xiaopeng.com' },
-  { symbol: 'RIVN', name: 'Rivian', logo: 'https://logo.clearbit.com/rivian.com' },
-  { symbol: 'LCID', name: 'Lucid Group', logo: 'https://logo.clearbit.com/lucidmotors.com' },
+interface Stock {
+  symbol: string;
+  name: string;
+  logo?: string;
+}
+
+const stocks: Stock[] = [
+  { symbol: 'TSLA', name: 'Tesla Inc.' },
+  { symbol: 'NIO', name: 'NIO Inc.' },
+  { symbol: 'XPEV', name: 'XPeng Inc.' },
+  { symbol: 'RIVN', name: 'Rivian' },
+  { symbol: 'LCID', name: 'Lucid Group' }
 ];
 
-const timeRanges = [
-  { label: '1G', value: '1d', interval: '5m' },
-  { label: '7G', value: '7d', interval: '1h' },
-  { label: '30G', value: '1mo', interval: '1d' },
-  { label: '1Y', value: '1y', interval: '1d' },
-  { label: '5Y', value: '5y', interval: '1wk' },
-  { label: 'Tüm Zamanlar', value: 'max', interval: '1mo' },
+interface TimeRange {
+  label: string;
+  value: string;
+  resolution: string;
+  days: number;
+}
+
+const timeRanges: TimeRange[] = [
+  { label: '1G', value: '1G', resolution: '5', days: 1 },
+  { label: '7G', value: '7G', resolution: '15', days: 7 },
+  { label: '30G', value: '30G', resolution: '60', days: 30 },
+  { label: '1Y', value: '1Y', resolution: 'D', days: 365 },
+  { label: '5Y', value: '5Y', resolution: 'W', days: 1825 }
 ];
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export default function BorsaPage() {
-  const [selectedStock, setSelectedStock] = useState(stocks[0]);
-  const [selectedRange, setSelectedRange] = useState(timeRanges[0]);
-  const [chartData, setChartData] = useState<any>(null);
-  const [quoteData, setQuoteData] = useState<any>(null);
+  const [selectedTimeRange, setSelectedTimeRange] = useState<string>(timeRanges[0].value);
+  const [selectedStock, setSelectedStock] = useState<Stock>(stocks[0]);
+  const [chartData, setChartData] = useState<ChartData | null>(null);
+  const [stockData, setStockData] = useState<StockData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [stockQuotes, setStockQuotes] = useState<Record<string, { price: number; changePercent: number }>>({});
+  const [stockQuotes, setStockQuotes] = useState<Record<string, StockData>>({});
 
   const fetchStockData = async () => {
     try {
       setLoading(true);
       setError(null);
-
-      const [chartResponse, quoteResponse] = await Promise.all([
-        fetch(`/api/stocks?symbol=${selectedStock.symbol}&range=${selectedRange.value}&interval=${selectedRange.interval}`),
-        fetch(`/api/stocks/quote?symbol=${selectedStock.symbol}`)
-      ]);
-
-      if (!chartResponse.ok || !quoteResponse.ok) {
-        throw new Error('Veri alınamadı');
+      
+      const timeRange = timeRanges.find(r => r.value === selectedTimeRange);
+      if (!timeRange) {
+        throw new Error('Geçersiz zaman aralığı');
       }
 
-      const [chartJson, quoteJson] = await Promise.all([
-        chartResponse.json(),
-        quoteResponse.json()
+      const to = Math.floor(Date.now() / 1000);
+      const from = to - (timeRange.days * 24 * 60 * 60);
+
+      const [chartData, quoteData] = await Promise.all([
+        getStockChart(selectedStock.symbol, timeRange.resolution, from, to),
+        getStockQuote(selectedStock.symbol)
       ]);
 
-      if (chartJson.error || quoteJson.error) {
-        throw new Error(chartJson.error || quoteJson.error);
-      }
-
-      setChartData(chartJson);
-      setQuoteData(quoteJson);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata oluştu');
+      setStockData(quoteData);
+      setChartData(chartData);
+    } catch (error) {
+      console.error('Hisse verisi alınırken hata:', error);
+      setError('Veriler alınırken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
     } finally {
       setLoading(false);
     }
@@ -89,30 +101,28 @@ export default function BorsaPage() {
 
   useEffect(() => {
     fetchStockData();
-  }, [selectedStock, selectedRange]);
+  }, [selectedTimeRange, selectedStock]);
 
   useEffect(() => {
     const fetchAllQuotes = async () => {
-      const quotes: Record<string, { price: number; changePercent: number }> = {};
-      for (const stock of stocks) {
-        try {
-          const response = await fetch(`/api/stocks/quote?symbol=${stock.symbol}`);
-          const data = await response.json();
-          if (data.price && data.changePercent) {
-            quotes[stock.symbol] = {
-              price: data.price,
-              changePercent: data.changePercent
-            };
+      try {
+        const quotes: Record<string, StockData> = {};
+        for (const stock of stocks) {
+          try {
+            const data = await getStockQuote(stock.symbol);
+            quotes[stock.symbol] = data;
+          } catch (error) {
+            console.error(`${stock.symbol} için veri alınamadı:`, error);
           }
-        } catch (error) {
-          console.error(`Error fetching quote for ${stock.symbol}:`, error);
         }
+        setStockQuotes(quotes);
+      } catch (error) {
+        console.error('Toplu veri alınırken hata:', error);
       }
-      setStockQuotes(quotes);
     };
 
     fetchAllQuotes();
-    const interval = setInterval(fetchAllQuotes, 60000); // Her dakika güncelle
+    const interval = setInterval(fetchAllQuotes, 5000); // 5 saniyede bir güncelle
 
     return () => clearInterval(interval);
   }, []);
@@ -128,7 +138,7 @@ export default function BorsaPage() {
       x: {
         type: 'time',
         time: {
-          unit: selectedRange.value === '1d' ? 'hour' : 'day',
+          unit: selectedTimeRange === '1d' ? 'hour' : 'day',
           displayFormats: {
             hour: 'HH:mm',
             day: 'dd MMM',
@@ -169,6 +179,21 @@ export default function BorsaPage() {
       },
     },
   };
+
+  const lineChartData = chartData ? {
+    labels: chartData.timestamp.map(ts => new Date(ts * 1000)),
+    datasets: [
+      {
+        label: selectedStock.symbol,
+        data: chartData.prices,
+        borderColor: '#660566',
+        backgroundColor: '#660566',
+        pointRadius: 0,
+        borderWidth: 2,
+        tension: 0.1,
+      }
+    ]
+  } : null;
 
   return (
     <div className="min-h-screen bg-white">
@@ -246,35 +271,33 @@ export default function BorsaPage() {
                   <h2 className="text-xl font-semibold text-gray-900">
                     {selectedStock.name} ({selectedStock.symbol})
                   </h2>
-                  {quoteData && (
+                  {stockData && (
                     <div className="flex items-center gap-2">
                       <span className="text-2xl font-bold text-gray-900">
-                        ${quoteData.price?.toFixed(2)}
+                        ${stockData.price.toFixed(2)}
                       </span>
-                      <span className={`text-sm font-medium flex items-center gap-1 ${
-                        quoteData.changePercent > 0 ? 'text-green-500' : 'text-red-500'
+                      <span className={`text-sm font-medium ${
+                        stockData.changePercent > 0 ? 'text-green-500' : 'text-red-500'
                       }`}>
-                        {quoteData.changePercent > 0 ? '▲' : '▼'}
-                        {quoteData.changePercent > 0 ? '+' : ''}
-                        {quoteData.changePercent?.toFixed(2)}%
+                        {stockData.changePercent > 0 ? '▲' : '▼'}
+                        {stockData.changePercent > 0 ? '+' : ''}
+                        {stockData.changePercent.toFixed(2)}%
                       </span>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Zaman Aralığı Seçici */}
-              <div className="flex flex-wrap gap-2 bg-gray-100 p-1.5 rounded-lg self-stretch sm:self-auto">
+              {/* Zaman Aralığı Seçimi */}
+              <div className="flex flex-wrap gap-2">
                 {timeRanges.map((range) => (
                   <button
                     key={range.value}
-                    onClick={() => setSelectedRange(range)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      selectedRange.value === range.value
-                        ? 'bg-white text-gray-900 shadow-sm ring-1 ring-gray-200'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                    }`}
-                    aria-label={`${range.label} grafiğini göster`}
+                    onClick={() => setSelectedTimeRange(range.value)}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200
+                      ${selectedTimeRange === range.value
+                        ? 'bg-[#660566] text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-[#660566]/10'}`}
                   >
                     {range.label}
                   </button>
@@ -283,54 +306,24 @@ export default function BorsaPage() {
             </div>
 
             {/* Grafik */}
-            <div className="h-[400px] relative">
-              {loading ? (
-                <div className="h-full flex items-center justify-center">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#660566] border-t-transparent"></div>
-                    <span className="text-sm text-gray-500">Veriler yükleniyor...</span>
-                  </div>
+            {loading ? (
+              <div className="h-[400px] flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#660566] border-t-transparent"></div>
+              </div>
+            ) : error ? (
+              <div className="h-[400px] flex items-center justify-center">
+                <div className="text-red-500 text-center">
+                  <svg className="w-12 h-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p>{error}</p>
                 </div>
-              ) : error ? (
-                <div className="h-full flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-red-500 mb-3">{error}</div>
-                    <button
-                      onClick={fetchStockData}
-                      className="text-sm bg-[#660566] text-white px-4 py-2 rounded-lg hover:bg-[#330233] transition-colors duration-200"
-                    >
-                      Tekrar Dene
-                    </button>
-                  </div>
-                </div>
-              ) : chartData ? (
-                <>
-                  <Line
-                    data={{
-                      labels: chartData.chart.result[0].timestamp.map((t: number) => new Date(t * 1000)),
-                      datasets: [
-                        {
-                          label: selectedStock.symbol,
-                          data: chartData.chart.result[0].indicators.quote[0].close,
-                          borderColor: '#660566',
-                          backgroundColor: '#660566',
-                          borderWidth: 2,
-                          pointRadius: 0,
-                          tension: 0.1,
-                          fill: false,
-                        },
-                      ],
-                    }}
-                    options={chartOptions}
-                  />
-                  {chartData.chart.result[0].meta.delay > 0 && (
-                    <div className="text-sm text-gray-500 mt-4 text-center bg-gray-50 py-2 rounded-lg">
-                      * Veriler {chartData.chart.result[0].meta.delay} dakika gecikmeli olarak gösterilmektedir.
-                    </div>
-                  )}
-                </>
-              ) : null}
-            </div>
+              </div>
+            ) : lineChartData ? (
+              <div className="h-[400px]">
+                <Line data={lineChartData} options={chartOptions} />
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

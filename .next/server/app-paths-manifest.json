@@ -1,8 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/api/vehicles/route": "app/api/vehicles/route.js",
-  "/elektrikli-araclar/page": "app/elektrikli-araclar/page.js",
-  "/karsilastir/page": "app/karsilastir/page.js",
-  "/sarj-haritasi/page": "app/sarj-haritasi/page.js",
-  "/borsa/page": "app/borsa/page.js"
-}

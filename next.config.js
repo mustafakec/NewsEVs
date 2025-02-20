@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -18,11 +20,10 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    unoptimized: true,
     domains: ['placehold.co', 'logo.clearbit.com', 'elektrikliyiz.com'],
   },
   experimental: {
-    optimizeCss: true,
+    optimizeCss: false
   },
   reactStrictMode: true,
   swcMinify: true,

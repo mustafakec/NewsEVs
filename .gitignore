@@ -10,6 +10,13 @@
 /build
 /dist
 
+# Next.js
+/.next/
+/out/
+/public/sw.js
+/public/workbox-*.js
+/.swc/
+
 # Misc
 .DS_Store
 .env.local
@@ -51,3 +58,25 @@ logs
 # System Files
 .DS_Store
 Thumbs.db
+
+# Vercel
+.vercel
+
+# Turbo
+.turbo
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# PWA files
+**/public/precache.*.*.js
+**/public/sw.js
+**/public/workbox-*.js
+**/public/worker-*.js
+**/public/fallback-*.js
+**/public/precache.*.*.js.map
+**/public/sw.js.map
+**/public/workbox-*.js.map
+**/public/worker-*.js.map
+**/public/fallback-*.js.map

@@ -8,6 +8,7 @@ import { useFilteredVehicles, useElectricVehicleStore } from '@/viewmodels/useEl
 import type ElectricVehicle from '@/models/ElectricVehicle';
 import PremiumModal from '@/components/PremiumModal';
 import { useUserStore } from '@/stores/useUserStore';
+import { normalizeVehicleType } from '@/utils/vehicleUtils';
 
 // Araç kartını lazy loading ile yükle
 const VehicleCard = dynamic(() => import('@/views/VehicleCard'), {
@@ -26,16 +27,94 @@ const VehicleCard = dynamic(() => import('@/views/VehicleCard'), {
   ssr: true,
 });
 
-// Araç tipini standartlaştır fonksiyonu ayrı bir yardımcı modüle taşındı
-import { normalizeVehicleType } from '@/utils/vehicleUtils';
-
+// Ana sayfa bileşeni (istemci bileşeni)
 export default function ElectricVehiclesPage() {
+  // Client-side state
+  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
+  
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          <Suspense fallback={<PageLoading />}>
+            <PageContent 
+              onPremiumModalOpen={() => setIsPremiumModalOpen(true)} 
+            />
+          </Suspense>
+          
+          {/* Ana Premium Modal */}
+          <PremiumModal 
+            isOpen={isPremiumModalOpen} 
+            onClose={() => setIsPremiumModalOpen(false)}
+            aria-label="Premium üyelik"
+          />
+          
+          <div className="mt-12 border-t border-gray-100 pt-6">
+            <p className="text-xs text-gray-400 max-w-4xl mx-auto text-center flex flex-col items-center">
+              <span className="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Bu sayfadaki tüm markalar ve logolar bilgilendirme amaçlıdır. Firmalarla iş birliğimiz veya bağlantımız yoktur.
+              </span>
+              <span className="mt-1">Fiyatlar ve bilgiler değişiklik gösterebilir. Tüm bilgiler aylık güncellenir.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Sayfa yüklenirken gösterilecek loading bileşeni
+function PageLoading() {
+  return (
+    <>
+      <div className="text-center mb-8">
+        <div className="h-10 bg-gray-200 rounded w-1/3 mx-auto mb-4 animate-pulse"></div>
+        <div className="h-5 bg-gray-200 rounded w-2/3 mx-auto animate-pulse"></div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* Filtreler */}
+        <div className="lg:w-full flex-shrink-0">
+          <div className="sticky top-4">
+            <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
+              <div className="h-8 bg-gray-200 rounded w-1/2 mb-4 animate-pulse"></div>
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-5 bg-gray-200 rounded w-3/4 mt-3 animate-pulse"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Araç Listesi */}
+        <div className="md:col-span-3">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-xl shadow-sm p-4 animate-pulse">
+                <div className="w-full h-48 bg-purple-100 rounded-lg mb-4"></div>
+                <div className="h-6 bg-purple-100 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-purple-100 rounded w-1/2 mb-4"></div>
+                <div className="grid grid-cols-2 gap-2">
+                  {[...Array(4)].map((_, j) => (
+                    <div key={j} className="h-8 bg-purple-100 rounded"></div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// useSearchParams kullanılan sayfa içeriği - Suspense içinde kullanılmalı
+function PageContent({ onPremiumModalOpen }: { onPremiumModalOpen: () => void }) {
   const searchParams = useSearchParams();
   const setFilters = useElectricVehicleStore((state) => state.setFilters);
   const vehicleType = searchParams.get('tip'); // Anasayfadan gelen tip parametresini al
-  
-  // Ana PremiumModal için state
-  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
   
   // Sayfa ilk yüklendiğinde ve URL parametreleri değiştiğinde çalışır
   useEffect(() => {
@@ -53,7 +132,7 @@ export default function ElectricVehiclesPage() {
       const normalizedType = normalizeVehicleType(vehicleType);
       console.log('Normalize Edilmiş Tip:', normalizedType);
       
-      // Sadece araç tipi filtresini ayarla (setTimeout kullanımı kaldırıldı)
+      // Sadece araç tipi filtresini ayarla
       setFilters({ vehicleType: normalizedType });
       console.log('Filtre ayarlandı:', { vehicleType: normalizedType });
     }
@@ -96,73 +175,50 @@ export default function ElectricVehiclesPage() {
   const pageDescription = getPageDescription(vehicleType);
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent 
-                        bg-gradient-to-r from-[#660566] via-[#330233] to-black">
-              {pageTitle}
-            </h1>
-            <p className="text-gray-600 mt-2">
-              {pageDescription}
-            </p>
+    <>
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold bg-clip-text text-transparent 
+                    bg-gradient-to-r from-[#660566] via-[#330233] to-black">
+          {pageTitle}
+        </h1>
+        <p className="text-gray-600 mt-2">
+          {pageDescription}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* Filtreler */}
+        <div className="lg:w-full flex-shrink-0">
+          <div className="sticky top-4">
+            <VehicleFilters />
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Filtreler */}
-            <div className="lg:w-full flex-shrink-0">
-              <div className="sticky top-4">
-                <VehicleFilters />
-              </div>
-            </div>
-
-            {/* Araç Listesi */}
-            <div className="md:col-span-3">
-              <Suspense
-                fallback={
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {[...Array(6)].map((_, i) => (
-                      <div key={i} className="bg-white rounded-xl shadow-sm p-4 animate-pulse">
-                        <div className="w-full h-48 bg-purple-100 rounded-lg mb-4"></div>
-                        <div className="h-6 bg-purple-100 rounded w-3/4 mb-2"></div>
-                        <div className="h-4 bg-purple-100 rounded w-1/2 mb-4"></div>
-                        <div className="grid grid-cols-2 gap-2">
-                          {[...Array(4)].map((_, j) => (
-                            <div key={j} className="h-8 bg-purple-100 rounded"></div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
+        {/* Araç Listesi */}
+        <div className="md:col-span-3">
+          <Suspense
+            fallback={
+              <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="bg-white rounded-xl shadow-sm p-4 animate-pulse">
+                    <div className="w-full h-48 bg-purple-100 rounded-lg mb-4"></div>
+                    <div className="h-6 bg-purple-100 rounded w-3/4 mb-2"></div>
+                    <div className="h-4 bg-purple-100 rounded w-1/2 mb-4"></div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[...Array(4)].map((_, j) => (
+                        <div key={j} className="h-8 bg-purple-100 rounded"></div>
+                      ))}
+                    </div>
                   </div>
-                }
-              >
-                <VehicleListWithFilters openPremiumModal={() => setIsPremiumModalOpen(true)} />
-              </Suspense>
-            </div>
-          </div>
-
-          <div className="mt-12 border-t border-gray-100 pt-6">
-            <p className="text-xs text-gray-400 max-w-4xl mx-auto text-center flex flex-col items-center">
-              <span className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Bu sayfadaki tüm markalar ve logolar bilgilendirme amaçlıdır. Firmalarla iş birliğimiz veya bağlantımız yoktur.
-              </span>
-              <span className="mt-1">Fiyatlar ve bilgiler değişiklik gösterebilir. Tüm bilgiler aylık güncellenir.</span>
-            </p>
-          </div>
-          
-          {/* Ana Premium Modal */}
-          <PremiumModal 
-            isOpen={isPremiumModalOpen} 
-            onClose={() => setIsPremiumModalOpen(false)}
-            aria-label="Premium üyelik"
-          />
+                ))}
+              </div>
+            }
+          >
+            <VehicleListWithFilters openPremiumModal={onPremiumModalOpen} />
+          </Suspense>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -24,9 +24,33 @@ interface Comparison {
 }
 
 export default function ProfilePage() {
+  return (
+    <Suspense fallback={<ProfileLoading />}>
+      <ProfileContent />
+    </Suspense>
+  );
+}
+
+// Yükleme ekranı bileşeni
+function ProfileLoading() {
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="container mx-auto px-4">
+        <div className="bg-white rounded-xl shadow-sm p-6 animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+          <div className="h-32 bg-gray-200 rounded mb-6"></div>
+          <div className="h-64 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Ana içerik bileşeni
+function ProfileContent() {
   const searchParams = useSearchParams();
   const activeTab = searchParams.get('tab') || 'profil';
-  const { user, isLoggedIn } = useUserStore();
+  const { user, isLoggedIn, logout } = useUserStore();
   const { favorites, removeFavorite } = useFavoritesStore();
   const [passwordStrength, setPasswordStrength] = useState<{
     score: number;

@@ -2,62 +2,32 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import VehicleCard from '@/views/VehicleCard';
+import dynamic from 'next/dynamic';
 import VehicleFilters from '@/views/VehicleFilters';
-import { useVehicles } from '@/hooks/useVehicles';
 import { useFilteredVehicles, useElectricVehicleStore } from '@/viewmodels/useElectricVehicles';
-import type { UseVehiclesReturn } from '@/hooks/useVehicles';
 import type ElectricVehicle from '@/models/ElectricVehicle';
 import PremiumModal from '@/components/PremiumModal';
 import { useUserStore } from '@/stores/useUserStore';
 
-// Araç tipini standartlaştır
-const normalizeVehicleType = (type: string): string => {
-  // Önce gelen değeri büyük-küçük harf duyarsız hale getir
-  const lowerType = type.toLowerCase().trim();
-  
-  // Basit bir eşleşme tablosu oluştur
-  const typeMapping: Record<string, string> = {
-    'suv': 'SUV',
-    'crossover': 'SUV',
-    'cuv': 'SUV',
-    'coupe': 'Spor',
-    'sportback': 'Spor',
-    'sports': 'Spor',
-    'spor': 'Spor',
-    'cabrio': 'Spor',
-    'roadster': 'Spor',
-    'sedan': 'Sedan',
-    'hatchback': 'Hatchback',
-    'van': 'Ticari',
-    'ticari': 'Ticari',
-    'minivan': 'MPV',
-    'mpv': 'MPV',
-    'station wagon': 'Station Wagon',
-    'pickup': 'Pickup',
-    'minibüs': 'Otobüs',
-    'bus': 'Otobüs',
-    'otobüs': 'Otobüs',
-    'truck': 'Kamyonet',
-    'kamyonet': 'Kamyonet',
-    'motosiklet': 'Motosiklet',
-    'motorcycle': 'Motosiklet',
-    'moto': 'Motosiklet',
-    'scooter': 'Scooter',
-    'elektrikli scooter': 'Scooter',
-    'e-scooter': 'Scooter'
-  };
-  
-  // Eşleşme varsa, eşleşen tipi döndür
-  if (typeMapping[lowerType]) {
-    console.log(`Tip normalleştiriliyor: "${type}" => "${typeMapping[lowerType]}"`);
-    return typeMapping[lowerType];
-  }
-  
-  // Eşleşme bulunamazsa, ilk harf büyük gerisi küçük tipinde format
-  console.log(`Tip değişmedi: "${type}" (eşleşme bulunamadı)`);
-  return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
-};
+// Araç kartını lazy loading ile yükle
+const VehicleCard = dynamic(() => import('@/views/VehicleCard'), {
+  loading: () => (
+    <div className="bg-white rounded-xl shadow-sm p-4 animate-pulse">
+      <div className="w-full h-48 bg-purple-100 rounded-lg mb-4"></div>
+      <div className="h-6 bg-purple-100 rounded w-3/4 mb-2"></div>
+      <div className="h-4 bg-purple-100 rounded w-1/2 mb-4"></div>
+      <div className="grid grid-cols-2 gap-2">
+        {[...Array(4)].map((_, j) => (
+          <div key={j} className="h-8 bg-purple-100 rounded"></div>
+        ))}
+      </div>
+    </div>
+  ),
+  ssr: true,
+});
+
+// Araç tipini standartlaştır fonksiyonu ayrı bir yardımcı modüle taşındı
+import { normalizeVehicleType } from '@/utils/vehicleUtils';
 
 export default function ElectricVehiclesPage() {
   const searchParams = useSearchParams();
@@ -83,11 +53,9 @@ export default function ElectricVehiclesPage() {
       const normalizedType = normalizeVehicleType(vehicleType);
       console.log('Normalize Edilmiş Tip:', normalizedType);
       
-      // Sadece araç tipi filtresini ayarla (setTimeout ile biraz beklet)
-      setTimeout(() => {
-        setFilters({ vehicleType: normalizedType });
-        console.log('Filtre ayarlandı:', { vehicleType: normalizedType });
-      }, 10);
+      // Sadece araç tipi filtresini ayarla (setTimeout kullanımı kaldırıldı)
+      setFilters({ vehicleType: normalizedType });
+      console.log('Filtre ayarlandı:', { vehicleType: normalizedType });
     }
   }, [vehicleType, searchParams, setFilters]); // vehicleType veya searchParams değiştiğinde yeniden çalışır
   
@@ -177,7 +145,7 @@ export default function ElectricVehiclesPage() {
           <div className="mt-12 border-t border-gray-100 pt-6">
             <p className="text-xs text-gray-400 max-w-4xl mx-auto text-center flex flex-col items-center">
               <span className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Bu sayfadaki tüm markalar ve logolar bilgilendirme amaçlıdır. Firmalarla iş birliğimiz veya bağlantımız yoktur.
@@ -190,6 +158,7 @@ export default function ElectricVehiclesPage() {
           <PremiumModal 
             isOpen={isPremiumModalOpen} 
             onClose={() => setIsPremiumModalOpen(false)}
+            aria-label="Premium üyelik"
           />
         </div>
       </div>
@@ -197,6 +166,7 @@ export default function ElectricVehiclesPage() {
   );
 }
 
+// VehicleListWithFilters bileşeni ana dosyadan ayrıldı
 function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => void }) {
   const { vehicles, isLoading, error, isComingSoonActive } = useFilteredVehicles();
   const setFilters = useElectricVehicleStore((state) => state.setFilters);
@@ -215,6 +185,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
     setFilters({ comingSoon: false });
   };
 
+  // Erken dönüş (early return) yaparak daha iyi performans sağlıyoruz
   if (isLoading) {
     return (
       <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -238,7 +209,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
     return (
       <div className="bg-red-50 text-red-600 p-6 rounded-xl shadow-sm">
         <div className="flex items-center gap-3">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span>Araçlar yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</span>
@@ -251,7 +222,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
     return (
       <div className="text-center py-12">
         <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-8 h-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
           </svg>
         </div>
@@ -278,14 +249,14 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
           <div className="absolute inset-0 premium-blur" onClick={handleCancelPremium}></div>
           
           {/* Premium modal */}
-          <div className="relative z-40 bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+          <div className="relative z-40 bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transition-all duration-300">
             {/* Kapatma butonu */}
             <button 
               onClick={handleCancelPremium}
-              className="absolute right-4 top-4 text-gray-400 hover:text-gray-500"
+              className="absolute right-4 top-4 text-gray-400 hover:text-gray-500 transition-colors"
               aria-label="Kapat"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -293,7 +264,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
             {/* İkon */}
             <div className="flex justify-center pt-8 pb-4">
               <div className="w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-purple-900" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg className="w-8 h-8 text-purple-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                   <path 
                     strokeLinecap="round" 
                     strokeLinejoin="round" 
@@ -316,7 +287,8 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
               {/* Premium buton */}
               <button 
                 onClick={handlePremiumClick}
-                className="w-full bg-gradient-to-r from-[#660566] to-[#330233] text-white font-medium py-3 px-4 rounded-md hover:opacity-90 transition-colors"
+                className="w-full bg-gradient-to-r from-[#660566] to-[#330233] text-white font-medium py-3 px-4 rounded-md hover:opacity-90 transition-all duration-180"
+                aria-label="Premium üye ol"
               >
                 Premium Üye Ol
               </button>
@@ -324,7 +296,8 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
               {/* Daha sonra butonu */}
               <button 
                 onClick={handleCancelPremium}
-                className="w-full mt-3 bg-white text-gray-600 font-medium py-3 px-4 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors"
+                className="w-full mt-3 bg-white text-gray-600 font-medium py-3 px-4 rounded-md border border-gray-200 hover:bg-gray-50 transition-all duration-180"
+                aria-label="Daha sonra"
               >
                 Daha Sonra
               </button>

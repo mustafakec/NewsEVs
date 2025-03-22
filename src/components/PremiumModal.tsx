@@ -7,9 +7,10 @@ import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 interface PremiumModalProps {
   isOpen: boolean;
   onClose: () => void;
+  'aria-label'?: string;
 }
 
-const PremiumModal = ({ isOpen, onClose }: PremiumModalProps) => {
+const PremiumModal = ({ isOpen, onClose, 'aria-label': ariaLabel = 'Premium üyelik modalı' }: PremiumModalProps) => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   
   // Fiyat hesaplama

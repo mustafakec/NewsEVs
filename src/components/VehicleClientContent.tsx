@@ -11,7 +11,8 @@ import type ElectricVehicle from '@/models/ElectricVehicle';
 
 // Props için arayüz
 interface VehicleClientContentProps {
-  vehicle: ElectricVehicle;
+  vehicle?: ElectricVehicle;
+  initialVehicle?: ElectricVehicle;
 }
 
 // Formatlar
@@ -132,7 +133,25 @@ const XLogo = () => (
 );
 
 // Client Component
-export default function VehicleClientContent({ vehicle }: VehicleClientContentProps) {
+export default function VehicleClientContent({ vehicle, initialVehicle }: VehicleClientContentProps) {
+  // Eğer hem vehicle hem de initialVehicle varsa vehicle'ı tercih et, yoksa initialVehicle kullan
+  const vehicleData = vehicle || initialVehicle;
+  
+  // Eğer hiçbir araç verisi yoksa hata göster
+  if (!vehicleData) {
+    return (
+      <div className="p-8 text-center">
+        <div className="text-red-500 mb-4">
+          <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Araç bilgileri yüklenemedi</h2>
+        <p className="text-gray-600">Araç verileri eksik veya hatalı. Lütfen daha sonra tekrar deneyin.</p>
+      </div>
+    );
+  }
+  
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const router = useRouter();
   const setFilters = useElectricVehicleStore((state) => state.setFilters);
@@ -159,14 +178,14 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
 
   // Önceki görsel
   const handlePrevImage = () => {
-    if (!vehicle.images || vehicle.images.length <= 1) return;
-    setCurrentImageIndex((prev) => (prev === 0 ? vehicle.images.length - 1 : prev - 1));
+    if (!vehicleData.images || vehicleData.images.length <= 1) return;
+    setCurrentImageIndex((prev) => (prev === 0 ? vehicleData.images.length - 1 : prev - 1));
   };
 
   // Sonraki görsel
   const handleNextImage = () => {
-    if (!vehicle.images || vehicle.images.length <= 1) return;
-    setCurrentImageIndex((prev) => (prev === vehicle.images.length - 1 ? 0 : prev + 1));
+    if (!vehicleData.images || vehicleData.images.length <= 1) return;
+    setCurrentImageIndex((prev) => (prev === vehicleData.images.length - 1 ? 0 : prev + 1));
   };
 
   // Araç tipi filtrelemesi için fonksiyon
@@ -207,7 +226,7 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
         compareVehicles = JSON.parse(storedVehicles);
         
         // Eğer araç zaten karşılaştırma listesindeyse tekrar ekleme
-        if (compareVehicles.includes(vehicle.id)) {
+        if (compareVehicles.includes(vehicleData.id)) {
           console.log('Bu araç zaten karşılaştırma listenizde');
           router.push('/karsilastir');
           return;
@@ -221,11 +240,11 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
       }
       
       // Yeni aracı ekle
-      compareVehicles.push(vehicle.id);
+      compareVehicles.push(vehicleData.id);
       
       // Güncellenmiş listeyi localStorage'a kaydet
       localStorage.setItem('compareVehicles', JSON.stringify(compareVehicles));
-      console.log(`${vehicle.brand} ${vehicle.model} karşılaştırma listenize eklendi`);
+      console.log(`${vehicleData.brand} ${vehicleData.model} karşılaştırma listenize eklendi`);
       
       // Karşılaştırma sayfasına yönlendir
       router.push('/karsilastir');
@@ -262,8 +281,8 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
   
   const handleShare = (platform: string) => {
     const url = encodeURIComponent(window.location.href);
-    const title = encodeURIComponent(`${vehicle.brand} ${vehicle.model} Elektrikli Araç | elektrikliyiz`);
-    const text = encodeURIComponent(`${vehicle.brand} ${vehicle.model} elektrikli araç detaylarını keşfet`);
+    const title = encodeURIComponent(`${vehicleData.brand} ${vehicleData.model} Elektrikli Araç | elektrikliyiz`);
+    const text = encodeURIComponent(`${vehicleData.brand} ${vehicleData.model} elektrikli araç detaylarını keşfet`);
     
     let shareUrl = '';
     
@@ -332,7 +351,7 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
               <span className="text-gray-900 font-medium">
-                {vehicle.brand} {vehicle.model}
+                {vehicleData.brand} {vehicleData.model}
               </span>
             </div>
           </div>
@@ -340,23 +359,23 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
           {/* Araç Üst Bilgileri */}
           <div className="border-b border-gray-200 pb-8 mb-10">
             <div className="flex flex-wrap items-center justify-between mb-4">
-              <h1 className="text-3xl font-bold text-gray-900">{vehicle.brand} {vehicle.model}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{vehicleData.brand} {vehicleData.model}</h1>
               
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex gap-2">
                   <span className="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-medium">
-                    {getTypeWithSuffix(vehicle.type)}
+                    {getTypeWithSuffix(vehicleData.type)}
                   </span>
                   <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">
-                    {vehicle.year}
+                    {vehicleData.year}
                   </span>
-                  {vehicle.turkeyStatus?.available && (
+                  {vehicleData.turkeyStatus?.available && (
                     <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
                       🇹🇷 Türkiye'de Satışta
                     </span>
                   )}
                 </div>
-                <FavoriteButton vehicle={vehicle} />
+                <FavoriteButton vehicle={vehicleData} />
               </div>
             </div>
           </div>
@@ -366,10 +385,10 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
             {/* Görsel */}
             <div className="lg:col-span-3">
               <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 shadow-sm">
-                {vehicle.images && vehicle.images.length > 0 ? (
+                {vehicleData.images && vehicleData.images.length > 0 ? (
                   <Image
-                    src={vehicle.images[currentImageIndex]}
-                    alt={`${vehicle.brand} ${vehicle.model}`}
+                    src={vehicleData.images[currentImageIndex]}
+                    alt={`${vehicleData.brand} ${vehicleData.model}`}
                     fill
                     className="object-cover"
                     priority
@@ -381,7 +400,7 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
                 )}
 
                 {/* Görsel Geçiş Butonları */}
-                {vehicle.images && vehicle.images.length > 1 && (
+                {vehicleData.images && vehicleData.images.length > 1 && (
                   <>
                     <button
                       onClick={handlePrevImage}
@@ -406,9 +425,9 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
               </div>
               
               {/* Görsel İndikatörler */}
-              {vehicle.images && vehicle.images.length > 1 && (
+              {vehicleData.images && vehicleData.images.length > 1 && (
                 <div className="flex justify-center mt-4 gap-2">
-                  {vehicle.images.map((_, index) => (
+                  {vehicleData.images.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
@@ -427,30 +446,30 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
               {/* Fiyat */}
               <div className="mb-4">
                 <span className="block text-gray-500 text-sm">Fiyat</span>
-                <span className="block text-2xl font-bold text-[#660566]">{formatCurrency(vehicle.price.base, vehicle.price.currency)}</span>
+                <span className="block text-2xl font-bold text-[#660566]">{formatCurrency(vehicleData.price.base, vehicleData.price.currency)}</span>
               </div>
 
               {/* Öne Çıkan Özellikler */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
                   <span className="block text-gray-500 text-sm">Menzil</span>
-                  <span className="block font-bold">{vehicle.range} km</span>
+                  <span className="block font-bold">{vehicleData.range} km</span>
                 </div>
                 <div>
                   <span className="block text-gray-500 text-sm">Tüketim</span>
-                  <span className="block font-bold">{vehicle.efficiency.consumption} kWh/100 km</span>
+                  <span className="block font-bold">{vehicleData.efficiency.consumption} kWh/100 km</span>
                 </div>
                 <div>
                   <span className="block text-gray-500 text-sm">Batarya</span>
-                  <span className="block font-bold">{vehicle.batteryCapacity} kWh</span>
+                  <span className="block font-bold">{vehicleData.batteryCapacity} kWh</span>
                 </div>
                 <div>
                   <span className="block text-gray-500 text-sm">Motor</span>
-                  <span className="block font-bold">{vehicle.performance.power} HP</span>
+                  <span className="block font-bold">{vehicleData.performance.power} HP</span>
                 </div>
                 <div>
                   <span className="block text-gray-500 text-sm">Şarj</span>
-                  <span className="block font-bold">%20-%80: {vehicle.chargingTime.fastCharging.time10to80} dakika</span>
+                  <span className="block font-bold">%20-%80: {vehicleData.chargingTime.fastCharging.time10to80} dakika</span>
                 </div>
               </div>
 
@@ -463,11 +482,11 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
                   Karşılaştırmaya Ekle
                 </button>
                 <a 
-                  href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicle.type)).toLowerCase()}`}
-                  onClick={(e) => handleVehicleTypeClick(e, vehicle.type)}
+                  href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
+                  onClick={(e) => handleVehicleTypeClick(e, vehicleData.type)}
                   className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                 >
-                  Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicle.type), "accusative")} İncele
+                  Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} İncele
                 </a>
                 
                 {/* Paylaşım Butonu */}
@@ -548,23 +567,23 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
               <div className="divide-y divide-gray-100">
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Motor Gücü</span>
-                  <span className="font-medium">{vehicle.performance.power} HP</span>
+                  <span className="font-medium">{vehicleData.performance.power} HP</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Tork</span>
-                  <span className="font-medium">{vehicle.performance.torque} Nm</span>
+                  <span className="font-medium">{vehicleData.performance.torque} Nm</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Azami Hız</span>
-                  <span className="font-medium">{vehicle.performance.topSpeed} km/s</span>
+                  <span className="font-medium">{vehicleData.performance.topSpeed} km/s</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">0-100 km/s</span>
-                  <span className="font-medium">{vehicle.performance.acceleration} s</span>
+                  <span className="font-medium">{vehicleData.performance.acceleration} s</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Sürüş Sistemi</span>
-                  <span className="font-medium">{vehicle.performance.driveType || '-'}</span>
+                  <span className="font-medium">{vehicleData.performance.driveType || '-'}</span>
                 </div>
               </div>
             </div>
@@ -577,31 +596,31 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
               <div className="divide-y divide-gray-100">
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Batarya</span>
-                  <span className="font-medium">{vehicle.batteryCapacity} kWh</span>
+                  <span className="font-medium">{vehicleData.batteryCapacity} kWh</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Menzil</span>
-                  <span className="font-medium">{vehicle.range} km</span>
+                  <span className="font-medium">{vehicleData.range} km</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">DC Şarj Hızı</span>
-                  <span className="font-medium">{vehicle.chargingTime.fastCharging.power} kW</span>
+                  <span className="font-medium">{vehicleData.chargingTime.fastCharging.power} kW</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">AC Şarj Hızı</span>
-                  <span className="font-medium">{vehicle.chargingTime.ac} kW</span>
+                  <span className="font-medium">{vehicleData.chargingTime.ac} kW</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">DC Şarj Süresi</span>
-                  <span className="font-medium">{vehicle.chargingTime.fastCharging.time10to80} dakika</span>
+                  <span className="font-medium">{vehicleData.chargingTime.fastCharging.time10to80} dakika</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">AC Şarj Süresi</span>
-                  <span className="font-medium">{vehicle.chargingTime.ac} saat</span>
+                  <span className="font-medium">{vehicleData.chargingTime.ac} saat</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Ortalama Tüketim</span>
-                  <span className="font-medium">{vehicle.efficiency.consumption} kWh / 100 km</span>
+                  <span className="font-medium">{vehicleData.efficiency.consumption} kWh / 100 km</span>
                 </div>
               </div>
             </div>
@@ -614,23 +633,23 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
               <div className="divide-y divide-gray-100">
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Ağırlık</span>
-                  <span className="font-medium">{vehicle.dimensions.weight} kg</span>
+                  <span className="font-medium">{vehicleData.dimensions.weight} kg</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Uzunluk</span>
-                  <span className="font-medium">{vehicle.dimensions.length} mm</span>
+                  <span className="font-medium">{vehicleData.dimensions.length} mm</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Genişlik</span>
-                  <span className="font-medium">{vehicle.dimensions.width} mm</span>
+                  <span className="font-medium">{vehicleData.dimensions.width} mm</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Yükseklik</span>
-                  <span className="font-medium">{vehicle.dimensions.height} mm</span>
+                  <span className="font-medium">{vehicleData.dimensions.height} mm</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Bagaj Hacmi</span>
-                  <span className="font-medium">{vehicle.dimensions.cargoCapacity || '-'} litre</span>
+                  <span className="font-medium">{vehicleData.dimensions.cargoCapacity || '-'} litre</span>
                 </div>
               </div>
             </div>
@@ -647,16 +666,16 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
                 <div className="border-t border-gray-100">
                   <div className="flex py-3 border-b border-gray-100">
                     <div className="w-1/2 text-gray-700">Araç Tipi</div>
-                    <div className="w-1/2 text-right font-medium">{getTypeWithSuffix(vehicle.type)}</div>
+                    <div className="w-1/2 text-right font-medium">{getTypeWithSuffix(vehicleData.type)}</div>
                   </div>
                   <div className="flex py-3 border-b border-gray-100">
                     <div className="w-1/2 text-gray-700">Çıkış Tarihi</div>
-                    <div className="w-1/2 text-right font-medium">{vehicle.year}</div>
+                    <div className="w-1/2 text-right font-medium">{vehicleData.year}</div>
                   </div>
                   <div className="flex py-3 border-b border-gray-100">
                     <div className="w-1/2 text-gray-700">Otonom Sürüş</div>
                     <div className="w-1/2 text-right font-medium">
-                      {vehicle.comfort?.autonomousLevel ? 'Var' : '-'}
+                      {vehicleData.comfort?.autonomousLevel ? 'Var' : '-'}
                     </div>
                   </div>
                   <div className="flex py-3 border-b border-gray-100">
@@ -668,20 +687,20 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
                   <div className="flex py-3 border-b border-gray-100">
                     <div className="w-1/2 text-gray-700">Isı Pompası</div>
                     <div className="w-1/2 text-right font-medium">
-                      {vehicle.heatPump === 'yes' || vehicle.heatPump === 'optional' ? 'Var' : 'Yok'}
+                      {vehicleData.heatPump === 'yes' || vehicleData.heatPump === 'optional' ? 'Var' : 'Yok'}
                     </div>
                   </div>
                   <div className="flex py-3 border-b border-gray-100">
                     <div className="w-1/2 text-gray-700">V2L</div>
                     <div className="w-1/2 text-right font-medium">
-                      {vehicle.v2l === 'yes' || vehicle.v2l === 'optional' ? 'Var' : 'Yok'}
+                      {vehicleData.v2l === 'yes' || vehicleData.v2l === 'optional' ? 'Var' : 'Yok'}
                     </div>
                   </div>
                 </div>
 
                 {/* Normal özellikler listesi - görüntülenmesin */}
                 <ul className="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-                  {vehicle.features.map((feature, index) => (
+                  {vehicleData.features.map((feature, index) => (
                     <li key={`feature-${index}`} className="flex items-center text-gray-700">
                       <svg className="w-5 h-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -698,16 +717,16 @@ export default function VehicleClientContent({ vehicle }: VehicleClientContentPr
           <div className="bg-gradient-to-r from-purple-100 to-purple-50 rounded-xl p-8 mb-16">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicle.type))} Araçlar</h2>
-                <p className="text-gray-600">Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicle.type))} araçları inceleyebilir ve karşılaştırabilirsiniz.</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type))} Araçlar</h2>
+                <p className="text-gray-600">Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type))} araçları inceleyebilir ve karşılaştırabilirsiniz.</p>
               </div>
               <div className="flex gap-4">
                 <a 
-                  href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicle.type)).toLowerCase()}`}
-                  onClick={(e) => handleVehicleTypeClick(e, vehicle.type)}
+                  href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
+                  onClick={(e) => handleVehicleTypeClick(e, vehicleData.type)}
                   className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none"
                 >
-                  Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicle.type), "simple_plural")}
+                  Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "simple_plural")}
                 </a>
                 <a 
                   href="/elektrikli-araclar"

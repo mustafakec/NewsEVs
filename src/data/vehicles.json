@@ -1,0 +1,337 @@
+[
+  {
+    "id": "1",
+    "brand": "Tesla",
+    "model": "Model 3",
+    "year": 2023,
+    "type": "Sedan",
+    "range": 510,
+    "batteryCapacity": 60,
+    "chargingTime": {
+      "ac": 6,
+      "dc": 1.2,
+      "fastCharging": {
+        "power": 250,
+        "time10to80": 28
+      }
+    },
+    "performance": {
+      "acceleration": 3.3,
+      "topSpeed": 261,
+      "power": 325,
+      "torque": 450,
+      "driveType": "RWD"
+    },
+    "dimensions": {
+      "length": 4694,
+      "width": 2088,
+      "height": 1443,
+      "weight": 1830,
+      "cargoCapacity": 561
+    },
+    "efficiency": {
+      "consumption": 14.5
+    },
+    "price": {
+      "base": 1600000,
+      "currency": "TRY"
+    },
+    "images": [
+      "/vehicles/tesla-model-3.jpg",
+      "/logo.png"
+    ],
+    "features": [
+      "Autopilot",
+      "Panoramik Cam Tavan",
+      "15\" Dokunmatik Ekran",
+      "Kablosuz Şarj"
+    ],
+    "comfort": {
+      "seatingCapacity": 5,
+      "screens": 1,
+      "autonomousLevel": 2,
+      "parkAssist": true,
+      "climateControl": true,
+      "heatedSeats": true,
+      "navigation": true
+    },
+    "warranty": {
+      "battery": 8,
+      "vehicle": 4,
+      "maxKm": 160000
+    },
+    "heatPump": "yes",
+    "v2l": "no",
+    "turkeyStatus": {
+      "available": true
+    }
+  },
+  {
+    "id": "2",
+    "brand": "Volkswagen",
+    "model": "ID.4",
+    "year": 2023,
+    "type": "SUV",
+    "range": 520,
+    "batteryCapacity": 77,
+    "chargingTime": {
+      "ac": 7.5,
+      "dc": 1.7,
+      "fastCharging": {
+        "power": 135,
+        "time10to80": 30
+      }
+    },
+    "performance": {
+      "acceleration": 6.2,
+      "topSpeed": 160,
+      "power": 204,
+      "torque": 310,
+      "driveType": "RWD"
+    },
+    "dimensions": {
+      "length": 4584,
+      "width": 1852,
+      "height": 1640,
+      "weight": 2049,
+      "cargoCapacity": 543
+    },
+    "efficiency": {
+      "consumption": 16.8
+    },
+    "price": {
+      "base": 1750000,
+      "currency": "TRY"
+    },
+    "images": [
+      "/vehicles/vw-id4.jpg",
+      "/logo.png"
+    ],
+    "features": [
+      "IQ.Light LED Matrix Farlar",
+      "ID. Işık Konsepti",
+      "12\" Dokunmatik Ekran",
+      "Kablosuz App-Connect"
+    ],
+    "comfort": {
+      "seatingCapacity": 5,
+      "screens": 2,
+      "autonomousLevel": 2,
+      "parkAssist": true,
+      "climateControl": true,
+      "heatedSeats": true,
+      "navigation": true
+    },
+    "warranty": {
+      "battery": 8,
+      "vehicle": 4,
+      "maxKm": 160000
+    },
+    "heatPump": "yes",
+    "v2l": "no",
+    "turkeyStatus": {
+      "available": true
+    }
+  },
+  {
+    "id": "3",
+    "brand": "BMW",
+    "model": "i4",
+    "year": 2024,
+    "type": "Sedan",
+    "range": 590,
+    "batteryCapacity": 83.9,
+    "chargingTime": {
+      "ac": 8.5,
+      "dc": 1.5,
+      "fastCharging": {
+        "power": 200,
+        "time10to80": 31
+      }
+    },
+    "performance": {
+      "acceleration": 5.7,
+      "topSpeed": 190,
+      "power": 340,
+      "torque": 430,
+      "driveType": "RWD"
+    },
+    "dimensions": {
+      "length": 4783,
+      "width": 1852,
+      "height": 1448,
+      "weight": 2125,
+      "cargoCapacity": 470
+    },
+    "efficiency": {
+      "consumption": 16.1
+    },
+    "price": {
+      "base": 2500000,
+      "currency": "TRY"
+    },
+    "images": [
+      "/vehicles/bmw-i4.jpg",
+      "/logo.png"
+    ],
+    "features": [
+      "BMW İşletim Sistemi 8.0",
+      "BMW Curved Display",
+      "Harman Kardon Surround Ses Sistemi",
+      "BMW Efficient Dynamics"
+    ],
+    "comfort": {
+      "seatingCapacity": 5,
+      "screens": 2,
+      "autonomousLevel": 2,
+      "parkAssist": true,
+      "climateControl": true,
+      "heatedSeats": true,
+      "navigation": true
+    },
+    "warranty": {
+      "battery": 8,
+      "vehicle": 3,
+      "maxKm": 160000
+    },
+    "heatPump": "yes",
+    "v2l": "no",
+    "turkeyStatus": {
+      "available": true
+    }
+  },
+  {
+    "id": "4",
+    "brand": "Tesla",
+    "model": "Model Y",
+    "year": 2023,
+    "type": "SUV",
+    "range": 533,
+    "batteryCapacity": 75,
+    "chargingTime": {
+      "ac": 6.5,
+      "dc": 1.2,
+      "fastCharging": {
+        "power": 250,
+        "time10to80": 25
+      }
+    },
+    "performance": {
+      "acceleration": 5.0,
+      "topSpeed": 217,
+      "power": 340,
+      "torque": 510,
+      "driveType": "AWD"
+    },
+    "dimensions": {
+      "length": 4750,
+      "width": 2129,
+      "height": 1624,
+      "weight": 2000,
+      "cargoCapacity": 854
+    },
+    "efficiency": {
+      "consumption": 16.9
+    },
+    "price": {
+      "base": 2150000,
+      "currency": "TRY"
+    },
+    "images": [
+      "/vehicles/tesla-model-y.jpg",
+      "/logo.png"
+    ],
+    "features": [
+      "Autopilot",
+      "Panoramik Cam Tavan",
+      "15\" Dokunmatik Ekran",
+      "Kablosuz Şarj"
+    ],
+    "comfort": {
+      "seatingCapacity": 5,
+      "screens": 1,
+      "autonomousLevel": 3,
+      "parkAssist": true,
+      "climateControl": true,
+      "heatedSeats": true,
+      "navigation": true
+    },
+    "warranty": {
+      "battery": 8,
+      "vehicle": 4,
+      "maxKm": 200000
+    },
+    "heatPump": "yes",
+    "v2l": "optional",
+    "turkeyStatus": {
+      "available": true
+    }
+  },
+  {
+    "id": "5",
+    "brand": "Porsche",
+    "model": "Taycan",
+    "year": 2024,
+    "type": "Spor",
+    "range": 490,
+    "batteryCapacity": 93.4,
+    "chargingTime": {
+      "ac": 9,
+      "dc": 1.3,
+      "fastCharging": {
+        "power": 270,
+        "time10to80": 22
+      }
+    },
+    "performance": {
+      "acceleration": 2.8,
+      "topSpeed": 260,
+      "power": 560,
+      "torque": 850,
+      "driveType": "AWD"
+    },
+    "dimensions": {
+      "length": 4963,
+      "width": 1966,
+      "height": 1378,
+      "weight": 2340,
+      "cargoCapacity": 366
+    },
+    "efficiency": {
+      "consumption": 24.3
+    },
+    "price": {
+      "base": 8200000,
+      "currency": "TRY"
+    },
+    "images": [
+      "/vehicles/porsche-taycan.jpg",
+      "/logo.png"
+    ],
+    "features": [
+      "Porsche Electric Sport Sound",
+      "Burmester® 3D High-End Surround Ses Sistemi",
+      "Porsche Dynamic Chassis Control",
+      "Porsche Torque Vectoring Plus"
+    ],
+    "comfort": {
+      "seatingCapacity": 4,
+      "screens": 3,
+      "autonomousLevel": 2,
+      "parkAssist": true,
+      "climateControl": true,
+      "heatedSeats": true,
+      "navigation": true
+    },
+    "warranty": {
+      "battery": 8,
+      "vehicle": 3,
+      "maxKm": 160000
+    },
+    "heatPump": "yes",
+    "v2l": "no",
+    "turkeyStatus": {
+      "available": true
+    }
+  }
+] 

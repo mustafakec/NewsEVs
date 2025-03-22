@@ -10,7 +10,7 @@ export default function AboutPage() {
             Hakkımızda
           </h1>
           <p className="text-xl text-center text-gray-600 max-w-2xl mx-auto">
-            Elektrikli araç dünyasının öncü platformu
+            elektrikliyiz
           </p>
         </div>
       </div>
@@ -21,9 +21,7 @@ export default function AboutPage() {
           {/* Giriş */}
           <section className="prose prose-lg max-w-none">
             <p>
-              Elektrikliyiz, Türkiye'nin elektrikli araç ekosistemini güçlendirmek ve sürdürülebilir ulaşımı 
-              desteklemek amacıyla kurulmuş bir platformdur. Elektrikli araç sahipleri, meraklıları ve 
-              sektör profesyonellerini bir araya getirerek bilgi paylaşımını ve topluluk oluşumunu teşvik ediyoruz.
+            Elektrikliyiz, elektrikli araçların büyülü dünyasına adanmış bir topluluk olarak doğdu. Her şey sosyal medyada, bu çevre dostu teknolojinin tutkunlarını bir araya getirme hayaliyle başladı. Şimdi ise bu tutkuyu bir adım öteye taşıyarak, sizler için kapsamlı bir web sitesi oluşturduk. Burada, dünya genelinde satılan elektrikli araçların en güncel modellerini keşfedebilir, fiyat, menzil ve performans gibi özelliklerini karşılaştırabilir, hatta size en yakın şarj istasyonlarını hızlıca bulabilirsiniz. Amacımız, elektrikli araçlar hakkında güvenilir ve erişilebilir bilgiler sunarak, bu heyecan verici dönüşümün bir parçası olmanızı sağlamak. Sürdürülebilir bir geleceğe olan inancımızla, elektrikli araçların sadece bir ulaşım aracı değil, aynı zamanda bir yaşam tarzı olduğunu düşünüyoruz. Elektrikliyiz, çünkü bu enerji dolu yolculukta sizinle birlikteyiz!
             </p>
           </section>
 
@@ -39,9 +37,7 @@ export default function AboutPage() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">Misyonumuz</h2>
               <div className="prose prose-gray">
                 <p>
-                  Elektrikli araç kullanımını yaygınlaştırmak ve sürdürülebilir bir gelecek için toplumu 
-                  bilinçlendirmek. Kullanıcılarımıza güvenilir bilgi, destek ve topluluk deneyimi sunarak 
-                  elektrikli ulaşımın öncüsü olmak.
+                Elektrikli araçlar hakkında farkındalık yaratarak, bireylerin bilinçli seçimler yapmasına olanak tanımak ve sürdürülebilir ulaşımı herkes için erişilebilir kılmak.
                 </p>
               </div>
             </div>
@@ -56,9 +52,7 @@ export default function AboutPage() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">Vizyonumuz</h2>
               <div className="prose prose-gray">
                 <p>
-                  Türkiye'nin elektrikli araç dönüşümüne öncülük ederek, temiz enerji ve sürdürülebilir 
-                  ulaşım konusunda lider platform olmak. Yenilikçi çözümler ve güçlü topluluk yapımızla 
-                  sektörün gelişimine katkı sağlamak.
+                Elektrikli araçların yaygınlaştığı, çevre dostu bir dünyanın öncüsü olmak ve teknolojinin gücünü kullanarak daha temiz, daha yeşil bir geleceğe katkıda bulunmak.
                 </p>
               </div>
             </div>

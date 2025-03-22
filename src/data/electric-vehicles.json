@@ -1,0 +1,887 @@
+[
+  {
+    "id": "1",
+    "brand": "Tesla",
+    "model": "Model 3",
+    "year": 2023,
+    "type": "Sedan",
+    "range": 510,
+    "batteryCapacity": 75,
+    "chargingTime": {
+      "ac": 8,
+      "dc": 0.5,
+      "fastCharging": {
+        "power": 250,
+        "time10to80": 28
+      }
+    },
+    "performance": {
+      "acceleration": 3.3,
+      "topSpeed": 261,
+      "power": 450,
+      "torque": 639
+    },
+    "dimensions": {
+      "length": 4694,
+      "width": 1849,
+      "height": 1443,
+      "weight": 1760,
+      "cargoCapacity": 542
+    },
+    "efficiency": {
+      "consumption": 14.2,
+      "regenerativeBraking": true,
+      "ecoMode": true,
+      "energyRecovery": 90
+    },
+    "comfort": {
+      "seatingCapacity": 5,
+      "screens": 1,
+      "soundSystem": "Premium Sound",
+      "autonomousLevel": 2,
+      "parkAssist": true
+    },
+    "price": {
+      "base": 53990,
+      "currency": "TRY",
+      "withOptions": 58990,
+      "leasing": {
+        "monthly": 4950,
+        "duration": 48,
+        "downPayment": 15000
+      }
+    },
+    "images": [
+      "https://placehold.co/800x450/f3f4f6/d1d5db"
+    ],
+    "features": [
+      "Hızlı Şarj",
+      "Otopilot",
+      "Premium Ses Sistemi"
+    ],
+    "extraFeatures": [
+      "Over-the-air Yazılım Güncellemeleri",
+      "Sentry Mode",
+      "Uzaktan Kontrol",
+      "Dog Mode",
+      "Sesli Komut Sistemi"
+    ],
+    "warranty": {
+      "battery": 8,
+      "vehicle": 4,
+      "maxKm": 100000
+    },
+    "environmentalImpact": {
+      "co2Savings": 3600,
+      "recyclableMaterials": 85,
+      "greenEnergyPartnership": true
+    },
+    "heatPump": "yes",
+    "v2l": "no",
+    "turkeyStatus": {
+      "available": true,
+      "comingSoon": false,
+      "estimatedArrival": ""
+    }
+  },
+  {
+    "id": "2",
+    "brand": "Volkswagen",
+    "model": "ID.4",
+    "year": 2023,
+    "type": "SUV",
+    "range": 520,
+    "batteryCapacity": 82,
+    "chargingTime": {
+      "ac": 10,
+      "dc": 0.65,
+      "fastCharging": {
+        "power": 135,
+        "time10to80": 30
+      }
+    },
+    "performance": {
+      "acceleration": 6.2,
+      "topSpeed": 160,
+      "power": 204,
+      "torque": 310
+    },
+    "dimensions": {
+      "length": 4584,
+      "width": 1852,
+      "height": 1631,
+      "weight": 2124,
+      "cargoCapacity": 543
+    },
+    "efficiency": {
+      "consumption": 16.3,
+      "regenerativeBraking": true,
+      "ecoMode": true,
+      "energyRecovery": 75
+    },
+    "comfort": {
+      "seatingCapacity": 5,
+      "screens": 2,
+      "soundSystem": "Harman Kardon",
+      "autonomousLevel": 2,
+      "parkAssist": true
+    },
+    "price": {
+      "base": 62990,
+      "currency": "TRY",
+      "withOptions": 67990,
+      "leasing": {
+        "monthly": 5750,
+        "duration": 48,
+        "downPayment": 18000
+      }
+    },
+    "images": [
+      "https://placehold.co/800x450/f3f4f6/d1d5db"
+    ],
+    "features": [
+      "Hızlı Şarj",
+      "ID.Light",
+      "Adaptif Hız Sabitleyici"
+    ],
+    "extraFeatures": [
+      "Matrix LED Farlar",
+      "Augmented Reality Head-up Display",
+      "Kablosuz Şarj",
+      "Masaj Koltukları",
+      "Hava Kalitesi Sensörü"
+    ],
+    "warranty": {
+      "battery": 8,
+      "vehicle": 4,
+      "maxKm": 160000
+    },
+    "environmentalImpact": {
+      "co2Savings": 3800,
+      "recyclableMaterials": 80,
+      "greenEnergyPartnership": true
+    },
+    "heatPump": "optional",
+    "v2l": "no",
+    "turkeyStatus": {
+      "available": true,
+      "comingSoon": false,
+      "estimatedArrival": ""
+    }
+  },
+  {
+    "id": "3",
+    "brand": "Hyundai",
+    "model": "IONIQ 5",
+    "year": 2023,
+    "type": "Crossover",
+    "range": 507,
+    "batteryCapacity": 72.6,
+    "chargingTime": {
+      "ac": 6.8,
+      "dc": 0.3,
+      "fastCharging": {
+        "power": 350,
+        "time10to80": 18
+      }
+    },
+    "performance": {
+      "acceleration": 5.2,
+      "topSpeed": 185,
+      "power": 305,
+      "torque": 605
+    },
+    "dimensions": {
+      "length": 4635,
+      "width": 1890,
+      "height": 1605,
+      "weight": 2100,
+      "cargoCapacity": 531
+    },
+    "efficiency": {
+      "consumption": 15.5,
+      "regenerativeBraking": true,
+      "ecoMode": true,
+      "energyRecovery": 85
+    },
+    "comfort": {
+      "seatingCapacity": 5,
+      "screens": 2,
+      "soundSystem": "Bose Premium",
+      "autonomousLevel": 2,
+      "parkAssist": true
+    },
+    "price": {
+      "base": 65990,
+      "currency": "TRY",
+      "withOptions": 70990,
+      "leasing": {
+        "monthly": 6250,
+        "duration": 48,
+        "downPayment": 20000
+      }
+    },
+    "images": [
+      "https://placehold.co/800x450/f3f4f6/d1d5db"
+    ],
+    "features": [
+      "800V Ultra Hızlı Şarj",
+      "Vehicle-to-Load",
+      "Panoramik Cam Tavan"
+    ],
+    "warranty": {
+      "battery": 8,
+      "vehicle": 5,
+      "maxKm": 150000
+    },
+    "environmentalImpact": {
+      "co2Savings": 4100,
+      "recyclableMaterials": 90,
+      "greenEnergyPartnership": true
+    },
+    "heatPump": "yes",
+    "v2l": "yes",
+    "turkeyStatus": {
+      "available": true,
+      "comingSoon": false,
+      "estimatedArrival": ""
+    }
+  },
+  {
+    "id": "4",
+    "brand": "BMW",
+    "model": "i4 eDrive40",
+    "year": 2024,
+    "type": "Sedan",
+    "range": 589,
+    "batteryCapacity": 83.9,
+    "chargingTime": {
+      "ac": 8.25,
+      "dc": 0.53,
+      "fastCharging": {
+        "power": 200,
+        "time10to80": 31
+      }
+    },
+    "performance": {
+      "acceleration": 5.7,
+      "topSpeed": 190,
+      "power": 340,
+      "torque": 430
+    },
+    "dimensions": {
+      "length": 4783,
+      "width": 1852,
+      "height": 1448,
+      "weight": 2125,
+      "cargoCapacity": 470
+    },
+    "efficiency": {
+      "consumption": 16.1,
+      "regenerativeBraking": true,
+      "ecoMode": true,
+      "energyRecovery": 89
+    },
+    "comfort": {
+      "seatingCapacity": 5,
+      "screens": 2,
+      "soundSystem": "Harman Kardon",
+      "autonomousLevel": 2,
+      "parkAssist": true,
+      "heatedSeats": true,
+      "navigation": true
+    },
+    "price": {
+      "base": 92990,
+      "currency": "TRY",
+      "withOptions": 102990,
+      "leasing": {
+        "monthly": 8450,
+        "duration": 48,
+        "downPayment": 27900
+      }
+    },
+    "images": [
+      "https://placehold.co/800x450/f3f4f6/d1d5db"
+    ],
+    "features": [
+      "BMW iDrive 8.0",
+      "Curved Display",
+      "IconicSounds Electric",
+      "Sport Paket"
+    ],
+    "warranty": {
+      "battery": 8,
+      "vehicle": 3,
+      "maxKm": 160000
+    },
+    "environmentalImpact": {
+      "co2Savings": 3900,
+      "recyclableMaterials": 95,
+      "greenEnergyPartnership": true
+    },
+    "heatPump": "optional",
+    "v2l": "no",
+    "turkeyStatus": {
+      "available": true,
+      "comingSoon": false,
+      "estimatedArrival": ""
+    }
+  },
+  {
+    "id": "5",
+    "brand": "Kia",
+    "model": "EV9",
+    "year": 2024,
+    "type": "SUV",
+    "range": 541,
+    "batteryCapacity": 99.8,
+    "chargingTime": {
+      "ac": 9.5,
+      "dc": 0.37,
+      "fastCharging": {
+        "power": 240,
+        "time10to80": 24
+      }
+    },
+    "performance": {
+      "acceleration": 5.3,
+      "topSpeed": 200,
+      "power": 385,
+      "torque": 700,
+      "driveType": "AWD"
+    },
+    "dimensions": {
+      "length": 5010,
+      "width": 1980,
+      "height": 1755,
+      "weight": 2624,
+      "cargoCapacity": 828
+    },
+    "efficiency": {
+      "consumption": 22.8,
+      "regenerativeBraking": true,
+      "ecoMode": true,
+      "energyRecovery": 88
+    },
+    "comfort": {
+      "seatingCapacity": 7,
+      "screens": 3,
+      "soundSystem": "Meridian Premium",
+      "autonomousLevel": 3,
+      "parkAssist": true,
+      "climateControl": true,
+      "heatedSeats": true,
+      "navigation": true,
+      "parkingSensors": true
+    },
+    "price": {
+      "base": 115990,
+      "currency": "TRY",
+      "withOptions": 130990
+    },
+    "images": [
+      "https://placehold.co/800x450/f3f4f6/d1d5db"
+    ],
+    "features": [
+      "Digital Key 2.0",
+      "Highway Driving Pilot",
+      "Heads-Up Display",
+      "İkinci Sıra Kaptan Koltukları"
+    ],
+    "warranty": {
+      "battery": 9,
+      "vehicle": 5,
+      "maxKm": 150000
+    },
+    "environmentalImpact": {
+      "co2Savings": 4300,
+      "recyclableMaterials": 90,
+      "greenEnergyPartnership": true
+    },
+    "heatPump": "yes",
+    "v2l": "yes",
+    "turkeyStatus": {
+      "available": false,
+      "comingSoon": true,
+      "estimatedArrival": "2024-Q3"
+    }
+  },
+  {
+    "id": "6",
+    "brand": "Tesla",
+    "model": "Cybertruck",
+    "year": 2025,
+    "type": "Pickup",
+    "range": 800,
+    "batteryCapacity": 123,
+    "chargingTime": {
+      "ac": 10,
+      "dc": 0.4,
+      "fastCharging": {
+        "power": 350,
+        "time10to80": 22
+      }
+    },
+    "performance": {
+      "acceleration": 2.9,
+      "topSpeed": 210,
+      "power": 845,
+      "torque": 1200,
+      "driveType": "AWD"
+    },
+    "dimensions": {
+      "length": 5885,
+      "width": 2235,
+      "height": 1790,
+      "weight": 3500,
+      "cargoCapacity": 2830
+    },
+    "efficiency": {
+      "consumption": 21.5,
+      "regenerativeBraking": true,
+      "ecoMode": true,
+      "energyRecovery": 91
+    },
+    "comfort": {
+      "seatingCapacity": 5,
+      "screens": 1,
+      "soundSystem": "Premium Sound",
+      "autonomousLevel": 3,
+      "parkAssist": true,
+      "heatedSeats": true,
+      "navigation": true
+    },
+    "price": {
+      "base": 189990,
+      "currency": "TRY",
+      "withOptions": 220990
+    },
+    "images": [
+      "https://placehold.co/800x450/f3f4f6/d1d5db"
+    ],
+    "features": [
+      "Darbeye Dayanıklı Paslanmaz Çelik Gövde",
+      "Zırhlı Cam",
+      "Entegre Rampa",
+      "1600kg Çekiş Kapasitesi"
+    ],
+    "warranty": {
+      "battery": 8,
+      "vehicle": 5,
+      "maxKm": 160000
+    },
+    "environmentalImpact": {
+      "co2Savings": 5200,
+      "recyclableMaterials": 85,
+      "greenEnergyPartnership": true
+    },
+    "heatPump": "yes",
+    "v2l": "yes",
+    "turkeyStatus": {
+      "available": false,
+      "comingSoon": true,
+      "estimatedArrival": "2025-Q2"
+    }
+  },
+  {
+    "id": "7",
+    "brand": "Lucid",
+    "model": "Air Grand Touring",
+    "year": 2025,
+    "type": "Sedan",
+    "range": 820,
+    "batteryCapacity": 112,
+    "chargingTime": {
+      "ac": 9.5,
+      "dc": 0.35,
+      "fastCharging": {
+        "power": 300,
+        "time10to80": 20
+      }
+    },
+    "performance": {
+      "acceleration": 2.6,
+      "topSpeed": 270,
+      "power": 1050,
+      "torque": 1390,
+      "driveType": "AWD"
+    },
+    "dimensions": {
+      "length": 4975,
+      "width": 1939,
+      "height": 1410,
+      "weight": 2270,
+      "cargoCapacity": 739
+    },
+    "efficiency": {
+      "consumption": 13.8,
+      "regenerativeBraking": true,
+      "ecoMode": true,
+      "energyRecovery": 94
+    },
+    "comfort": {
+      "seatingCapacity": 5,
+      "screens": 3,
+      "soundSystem": "Dolby Atmos Surround",
+      "autonomousLevel": 3,
+      "parkAssist": true,
+      "heatedSeats": true,
+      "navigation": true,
+      "parkingSensors": true
+    },
+    "price": {
+      "base": 215990,
+      "currency": "TRY",
+      "withOptions": 245990
+    },
+    "images": [
+      "https://placehold.co/800x450/f3f4f6/d1d5db"
+    ],
+    "features": [
+      "Gelişmiş Sürücü Destek Sistemi",
+      "Cam Panoramik Tavan",
+      "Kişiye Özel Ses Sistemi",
+      "Doğal Malzemeler"
+    ],
+    "warranty": {
+      "battery": 10,
+      "vehicle": 6,
+      "maxKm": 180000
+    },
+    "environmentalImpact": {
+      "co2Savings": 5800,
+      "recyclableMaterials": 92,
+      "greenEnergyPartnership": true
+    },
+    "heatPump": "yes",
+    "v2l": "yes",
+    "turkeyStatus": {
+      "available": false,
+      "comingSoon": true,
+      "estimatedArrival": "2025-Q1"
+    }
+  },
+  {
+    "id": "8",
+    "brand": "Mercedes-Benz",
+    "model": "EQS SUV",
+    "year": 2024,
+    "type": "SUV",
+    "range": 660,
+    "batteryCapacity": 108,
+    "chargingTime": {
+      "ac": 11,
+      "dc": 0.53,
+      "fastCharging": {
+        "power": 200,
+        "time10to80": 32
+      }
+    },
+    "performance": {
+      "acceleration": 4.6,
+      "topSpeed": 210,
+      "power": 544,
+      "torque": 890,
+      "driveType": "AWD"
+    },
+    "dimensions": {
+      "length": 5125,
+      "width": 1959,
+      "height": 1718,
+      "weight": 2690,
+      "cargoCapacity": 645
+    },
+    "efficiency": {
+      "consumption": 19.2,
+      "regenerativeBraking": true,
+      "ecoMode": true,
+      "energyRecovery": 90
+    },
+    "comfort": {
+      "seatingCapacity": 7,
+      "screens": 5,
+      "soundSystem": "Burmester 3D Surround",
+      "autonomousLevel": 3,
+      "parkAssist": true,
+      "heatedSeats": true,
+      "navigation": true,
+      "parkingSensors": true,
+      "climateControl": true
+    },
+    "price": {
+      "base": 235990,
+      "currency": "TRY",
+      "withOptions": 285990
+    },
+    "images": [
+      "https://placehold.co/800x450/f3f4f6/d1d5db"
+    ],
+    "features": [
+      "MBUX Hyperscreen",
+      "Digital Light Farlar",
+      "Aktif Ambient Aydınlatma",
+      "4MATIC Tüm Tekerlerden Çekiş"
+    ],
+    "warranty": {
+      "battery": 10,
+      "vehicle": 5,
+      "maxKm": 160000
+    },
+    "environmentalImpact": {
+      "co2Savings": 4900,
+      "recyclableMaterials": 95,
+      "greenEnergyPartnership": true
+    },
+    "heatPump": "yes",
+    "v2l": "optional",
+    "turkeyStatus": {
+      "available": false,
+      "comingSoon": true,
+      "estimatedArrival": "2024-Q4"
+    }
+  },
+  {
+    "id": "9",
+    "brand": "Rimac",
+    "model": "Nevera",
+    "year": 2025,
+    "type": "Spor",
+    "range": 480,
+    "batteryCapacity": 120,
+    "chargingTime": {
+      "ac": 12,
+      "dc": 0.3,
+      "fastCharging": {
+        "power": 500,
+        "time10to80": 18
+      }
+    },
+    "performance": {
+      "acceleration": 1.85,
+      "topSpeed": 412,
+      "power": 1914,
+      "torque": 2360,
+      "driveType": "AWD"
+    },
+    "dimensions": {
+      "length": 4750,
+      "width": 1986,
+      "height": 1208,
+      "weight": 2150,
+      "cargoCapacity": 120
+    },
+    "efficiency": {
+      "consumption": 24.8,
+      "regenerativeBraking": true,
+      "ecoMode": true,
+      "energyRecovery": 85
+    },
+    "comfort": {
+      "seatingCapacity": 2,
+      "screens": 3,
+      "soundSystem": "Özel Tasarım Ses Sistemi",
+      "autonomousLevel": 2,
+      "parkAssist": true,
+      "heatedSeats": true,
+      "navigation": true
+    },
+    "price": {
+      "base": 4250000,
+      "currency": "TRY",
+      "withOptions": 4500000
+    },
+    "images": [
+      "https://placehold.co/800x450/f3f4f6/d1d5db"
+    ],
+    "features": [
+      "Karbon Fiber Monokok Şasi",
+      "Dört Elektrikli Motor",
+      "Aktif Aerodinamik",
+      "Sürüş Modu Seçimi"
+    ],
+    "warranty": {
+      "battery": 8,
+      "vehicle": 5,
+      "maxKm": 100000
+    },
+    "environmentalImpact": {
+      "co2Savings": 3200,
+      "recyclableMaterials": 70,
+      "greenEnergyPartnership": true
+    },
+    "heatPump": "optional",
+    "v2l": "no",
+    "turkeyStatus": {
+      "available": false,
+      "comingSoon": true,
+      "estimatedArrival": "2025-Q3"
+    }
+  },
+  {
+    "id": "xiaomi-mi-pro-2",
+    "brand": "Xiaomi",
+    "model": "Mi Electric Scooter Pro 2",
+    "year": 2023,
+    "type": "Scooter",
+    "range": 45,
+    "batteryCapacity": 0.472,
+    "chargingTime": {
+      "ac": 6,
+      "dc": 0,
+      "fastCharging": {
+        "power": 0,
+        "time10to80": 0
+      }
+    },
+    "performance": {
+      "acceleration": 7.5,
+      "topSpeed": 25,
+      "power": 0.6,
+      "torque": 25
+    },
+    "dimensions": {
+      "length": 1130,
+      "width": 430,
+      "height": 1160,
+      "weight": 14.2,
+      "cargoCapacity": 0
+    },
+    "efficiency": {
+      "consumption": 1.05,
+      "regenerativeBraking": true,
+      "ecoMode": true,
+      "energyRecovery": 10
+    },
+    "comfort": {
+      "seatingCapacity": 1,
+      "screens": 1,
+      "autonomousLevel": 0,
+      "parkAssist": false,
+      "climateControl": false,
+      "heatedSeats": false,
+      "navigation": false,
+      "parkingSensors": false
+    },
+    "price": {
+      "base": 9999,
+      "currency": "TRY",
+      "withOptions": 10999
+    },
+    "images": [
+      "/electric.png",
+      "/logo.png"
+    ],
+    "features": [
+      "8.5 inç Havasız Lastikler",
+      "LED Aydınlatma Sistemi",
+      "Çift Fren Sistemi",
+      "Bluetooth Bağlantısı ve Mobil Uygulama",
+      "45 km Menzil",
+      "25 km/s Maksimum Hız",
+      "14.2 kg Ağırlık",
+      "120 kg Maksimum Yük Kapasitesi",
+      "20% Eğime Kadar Tırmanabilme"
+    ],
+    "warranty": {
+      "battery": 2,
+      "vehicle": 2,
+      "maxKm": 5000
+    },
+    "environmentalImpact": {
+      "co2Savings": 180,
+      "recyclableMaterials": 60,
+      "greenEnergyPartnership": false
+    },
+    "heatPump": "no",
+    "v2l": "no",
+    "turkeyStatus": {
+      "available": true,
+      "comingSoon": false
+    }
+  },
+  {
+    "id": "segway-ninebot-max-g30",
+    "brand": "Segway",
+    "model": "Ninebot KickScooter MAX G30",
+    "year": 2023,
+    "type": "Scooter",
+    "range": 65,
+    "batteryCapacity": 0.551,
+    "chargingTime": {
+      "ac": 6.5,
+      "dc": 0,
+      "fastCharging": {
+        "power": 0,
+        "time10to80": 0
+      }
+    },
+    "performance": {
+      "acceleration": 6.8,
+      "topSpeed": 25,
+      "power": 0.7,
+      "torque": 30
+    },
+    "dimensions": {
+      "length": 1167,
+      "width": 423,
+      "height": 1215,
+      "weight": 18.7,
+      "cargoCapacity": 0
+    },
+    "efficiency": {
+      "consumption": 0.85,
+      "regenerativeBraking": true,
+      "ecoMode": true,
+      "energyRecovery": 15
+    },
+    "comfort": {
+      "seatingCapacity": 1,
+      "screens": 1,
+      "autonomousLevel": 0,
+      "parkAssist": false,
+      "climateControl": false,
+      "heatedSeats": false,
+      "navigation": false,
+      "parkingSensors": false
+    },
+    "price": {
+      "base": 14999,
+      "currency": "TRY",
+      "withOptions": 15999
+    },
+    "images": [
+      "/electric.png",
+      "/logo.png"
+    ],
+    "features": [
+      "10 inç Tubeless Lastikler",
+      "LED Ön ve Arka Aydınlatma",
+      "Elektronik ve Mekanik Fren Sistemi",
+      "Dahili Şarj Cihazı",
+      "IPX5 Su Geçirmezlik",
+      "Bluetooth Bağlantısı ve Mobil Uygulama",
+      "65 km Menzil",
+      "25 km/s Maksimum Hız", 
+      "18.7 kg Ağırlık",
+      "100 kg Maksimum Yük Kapasitesi",
+      "20% Eğime Kadar Tırmanabilme"
+    ],
+    "warranty": {
+      "battery": 2,
+      "vehicle": 1,
+      "maxKm": 7500
+    },
+    "environmentalImpact": {
+      "co2Savings": 200,
+      "recyclableMaterials": 65,
+      "greenEnergyPartnership": false
+    },
+    "heatPump": "no",
+    "v2l": "no",
+    "turkeyStatus": {
+      "available": true,
+      "comingSoon": false
+    }
+  }
+] 

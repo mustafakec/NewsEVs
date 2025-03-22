@@ -55,6 +55,16 @@ const Footer = () => {
                   Çerez Politikası
                 </Link>
               </li>
+              <li>
+                <Link href="/kvkk" className="text-gray-600 hover:text-[#660566] transition-colors">
+                  KVKK Aydınlatma Metni
+                </Link>
+              </li>
+              <li>
+                <Link href="/kullanim-kosullari" className="text-gray-600 hover:text-[#660566] transition-colors">
+                  Kullanım Koşulları
+                </Link>
+              </li>
             </ul>
           </div>
 

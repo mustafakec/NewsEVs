@@ -18,6 +18,23 @@ body {
   rgb(var(--background-start-rgb));
 }
 
+/* Premium araç stilleri */
+.premium-vehicle {
+  border-color: rgba(102, 5, 102, 0.5) !important;
+  box-shadow: 0 4px 20px rgba(102, 5, 102, 0.3);
+  position: relative;
+}
+
+/* Premium liste overlay */
+.premium-blur {
+  backdrop-filter: blur(6px);
+  background-color: rgba(102, 5, 102, 0.1);
+  transition: all 0.3s ease-in-out;
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

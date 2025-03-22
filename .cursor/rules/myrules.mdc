@@ -1,0 +1,55 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Next.js'in sunucu taraflı render (SSR) ve statik site oluşturma (SSG) özelliklerini kullanarak ilk yüklemeyi hızlandır.
+
+## Performance
+
+Gerektiğinde kod parçalarını (lazy import, dinamik kütüphaneler) dinamik import özelliği ile böl ve sadece ihtiyaç halinde yükle.
+Next.js tarafında sunucu taraflı işlemleri (getServerSideProps, getStaticProps) tercih ederek verimli I/O operasyonları sağla.
+
+## Optimizasyon
+
+Tailwind CSS'de mümkün olduğunca JIT (Just-In-Time) özelliğini kullanarak CSS dosya boyutunu düşük tut.
+Kod tekrarlarını (duplicate logic) ortadan kaldır; proje genelinde ortak fonksiyonlar veya bileşenler oluştur.
+Destekleyici bir modelleme yapısı kur; erken dönüş (early return) ve anlamlı değişkenler kullanarak performanslı bir yapı oluştur.
+
+## UI/UX
+
+Tailwind CSS sınıflarıyla dinamik stil tanımları yap (current-painter, current-salt, vb.) ve kullanıcının fareyi farklı alanlara getirdiğinde değişen efektler elde et.
+Mouse ve konum durumlarında görsel olarak farklı dinamik stilleri veya animasyonları devreye sok (örneğin transition-all, duration-180).
+Erişilebilirlik için her interaktif öğeye tabindex, aria-label vb. ekleyerek klavye navigasyonuna uygun hale getir.
+
+## Kod Yazım Kuralları
+
+HTML yapısında her zaman Tailwind sınıflarını kullan; CSS yazmayı veya "style" etiketini minimumda tut.
+BEM operatör yerine "class" kullanarak bileşenleri stilleyin.
+Event handler fonksiyonları (metodlar, callbackler) "handle" ile başlat (örneğin handleClick, handleGoOpen).
+Fonksiyon yerine "const" kullan (örn. const handleLogin = () => {}), gerekli ise tip tanımla (TypeScript kullanıyorsan, interface veya type tanımlarını es geçme).
+Mutasyonlar, eksiksiz ve çalışır kod yaz; hiçbir yerde "noop" veya boş fonksiyon kalmasın.
+
+## Güvenlik
+
+XSS ve CSRF gibi yaygın güvenlik açıklarına karşı CSP (Content Security Policy) ve CSRF token kullan.
+API isteklerinde input validation ve sanitization yap.
+Çevresel değişkenler (environment variables) için güvenli yönetim.
+
+## State Management
+
+React Context API veya Zustand gibi hafif state yönetim araçları kullan.
+Server state için React Query veya SWR kullan.
+Local storage ve session storage kullanım prensipleri.
+
+## Kod Organizasyonu
+
+Feature-based veya atomic design folder yapısı kullan.
+Reusable bileşenler ve utilities için ayrı klasörler oluştur.
+Constants ve type tanımları için merkezi yönetim.
+
+## Build ve Deployment
+
+Development ve production ortamları için farklı konfigürasyonlar kullan.
+Docker containerization kurallarına uy.
+CI/CD pipeline best practices uygula.

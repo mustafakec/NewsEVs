@@ -2,16 +2,26 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Providers from './providers';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
+import  Providers  from './providers';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieConsent from '@/components/CookieConsent';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 export const metadata: Metadata = {
-  title: 'Elektrikli Araç Dünyası',
-  description: 'Türkiye\'nin en kapsamlı elektrikli araç karşılaştırma platformu',
+  title: {
+    template: '%s | Elektrikliyiz',
+    default: 'Elektrikliyiz - Elektrikli Araç Topluluğu',
+  },
+  description: 'Türkiye\'deki elektrikli araç sahipleri ve meraklıları için topluluk. Araç incelemeleri, elektrikli araçlar hakkında bilgiler ve karşılaştırmalar.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
 };
 
 export default function RootLayout({
@@ -20,17 +30,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr">
-      <body className={inter.className}>
+    <html lang="tr" className={inter.variable}>
+      <body className="min-h-screen flex flex-col bg-gray-50">
         <Providers>
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-            <CookieConsent />
-          </div>
+          <ToastContainer position="top-right" autoClose={4000} closeOnClick pauseOnHover />
+          <Header />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer />
+          <CookieConsent />
         </Providers>
       </body>
     </html>

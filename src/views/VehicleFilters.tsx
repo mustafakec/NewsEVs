@@ -6,6 +6,9 @@ import { useVehicles } from '@/hooks/useVehicles';
 import type ElectricVehicle from '@/models/ElectricVehicle';
 import { useUserStore } from '@/stores/useUserStore';
 import { log } from 'console';
+import { useSearchParams } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 // Debounce hook'u - yazma işlemini geciktirir
 function useDebounce<T>(value: T, delay: number): T {
@@ -488,217 +491,241 @@ const SearchableDropdown = ({
   );
 };
 
+// Supabase'den araç markalarını çeken fonksiyon
+const fetchBrands = async () => {
+  const { data, error } = await supabase
+    .from('electric_vehicles')
+    .select('brand')
+    .order('brand');
+
+  if (error) {
+    console.error('Marka verileri çekilirken hata oluştu:', error);
+    return [];
+  }
+
+  // Benzersiz markaları al
+  const uniqueBrands = Array.from(new Set(data.map(item => item.brand)));
+  return uniqueBrands;
+};
+
+// Supabase'den araç tiplerini çeken fonksiyon
+const fetchVehicleTypes = async () => {
+  const { data, error } = await supabase
+    .from('electric_vehicles')
+    .select('type')
+    .order('type');
+
+  if (error) {
+    console.error('Araç tipleri çekilirken hata oluştu:', error);
+    return [];
+  }
+
+  // Benzersiz tipleri al
+  const uniqueTypes = Array.from(new Set(data.map(item => item.type)));
+  return uniqueTypes;
+};
+
 // Ana Filtre Bileşeni
 const VehicleFilters = () => {
-  // Zustand store'dan filtreleri ve fonksiyonları al
   const { 
-    filters, 
-    setFilters, 
     temporaryFilters,
     setTemporaryFilters, 
     applyFilters,
-    currency,
-    setCurrency
+    filters 
   } = useElectricVehicleStore();
   
-  // Kullanıcı bilgilerini al
-  const { user, isLoggedIn } = useUserStore();
-  const isPremiumUser = isLoggedIn && (user?.isPremium);
-  
-  // Vehicles data'yı al
-  const { data: vehicles = [] } = useVehicles();
-  
-  // Sayfa her açıldığında filtreleri sıfırla (premium özellikler hariç)
-  useEffect(() => {
-    // Varsayılan boş filtre objesi
-    const defaultFilters = {};
-    
-    // Tüm filtreleri sıfırla
-    setFilters(defaultFilters);
-    setTemporaryFilters(defaultFilters);
-    
-    // Filtreleri hemen uygula
-    setTimeout(() => {
-      applyFilters();
-    }, 100);
-    
-    console.log('Elektrikli araçlar sayfası yüklendi, filtreler sıfırlandı');
-  }, []); // Boş bağımlılık dizisi, sadece bileşen monte edildiğinde çalışır
-  
-  // Tüm markaları çıkart ve benzersiz yap
-  const allBrands = React.useMemo(() => {
-    if (!vehicles || vehicles.length === 0) return [];
-    
-    // Marka isimlerini al ve tekrarsız bir dizi oluştur
-    const uniqueBrands = Array.from(new Set(vehicles.map((vehicle: ElectricVehicle) => vehicle.brand)))
-      .sort((a: string, b: string) => a.localeCompare(b)); // Alfabetik sırala
-    
-    return uniqueBrands;
-  }, [vehicles]);
-  
-  // Filtrelenmiş markalar
-  const filteredBrands = React.useMemo(() => {
-    if (!temporaryFilters.brand) return allBrands;
-    
-    // Arama terimini küçük harfe çevir
-    const term = temporaryFilters.brand.toLowerCase();
-    
-    return allBrands.filter((brand: string) => {
-      return brand.toLowerCase().includes(term);
-    });
-  }, [allBrands, temporaryFilters.brand]);
-
-  // Her filtre grubu için açılıp kapanma durumunu tut
-  const [openSections, setOpenSections] = useState({
-    marka: true,        // Varsayılan olarak marka filtresi açık olsun
-    aracTipi: false,
-    fiyat: false,
-    batarya: false,
-    menzil: false,
-    tuketim: false,
-    sarj: false,
-    iciIsitma: false,
-    vsl: false,
-    turkiyeDurumu: false,
-    yakindaSatista: false,
+  const [filterPanels, setFilterPanels] = useState({
+    brand: true,
+    price: false,
+    battery: false,
+    range: false,
+    specs: false,
+    turkeyStatus: false,
   });
 
-  // Mobil görünüm için filtreler paneli görünürlüğü
-  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-  
-  // Filtreler değiştiğinde geçici filtreleri güncelle
-  useEffect(() => {
-    setTemporaryFilters({...filters});
-  }, [filters]);
+  // Markalar ve araç tipleri için React Query kullanımı
+  const { data: brands = [] } = useQuery({
+    queryKey: ['vehicleBrands'],
+    queryFn: fetchBrands,
+    staleTime: Infinity, // Marka listesi değişmediği için süresiz önbelleğe alınabilir
+  });
 
-  // Araç tipleri
-  const vehicleTypes = [
-    'Sedan', 
-    'Hatchback', 
-    'SUV', 
-    'Ticari', 
-    'Station Wagon', 
-    'Pickup', 
-    'MPV', 
-    'Spor', 
-    'Kamyonet', 
-    'Otobüs',
-    'Motosiklet',
-    'Scooter'
-  ];
+  const { data: vehicleTypes = [] } = useQuery({
+    queryKey: ['vehicleTypes'],
+    queryFn: fetchVehicleTypes,
+    staleTime: Infinity, // Tip listesi değişmediği için süresiz önbelleğe alınabilir
+  });
 
-  // Filtre başlığını aç/kapat
-  const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections({
-      ...openSections,
-      [section]: !openSections[section]
-    });
+  // Filter panel durumlarını tutan state ve toggle fonksiyonu
+  const toggleFilterPanel = (panel: keyof typeof filterPanels) => {
+    setFilterPanels((prev) => ({
+      ...prev,
+      [panel]: !prev[panel],
+    }));
   };
 
-  // Filtre değerini değiştir (geçici olarak)
-  const handleFilterChange = (key: string, value: any) => {
-    // Güncellenmiş value değeri
-    const updatedValue = value === '' ? undefined : value;
-    
-    // Zustand store'un setTemporaryFilters fonksiyonunu kullan
-    setTemporaryFilters({
-      [key]: updatedValue
-    });
-  };
-
-  // Min-max değerleri değiştir (geçici olarak)
-  const handleMinMaxChange = (key: string, minKey: string, maxKey: string, minValue: string | number | undefined, maxValue: string | number | undefined) => {
-    const updates: any = {};
-    
-    if (minValue !== undefined) {
-      updates[minKey] = minValue === '' ? undefined : Number(minValue);
+  // Marka filtresini değiştiren fonksiyon
+  const handleBrandChange = (brand: string) => {
+    if (temporaryFilters.brand === brand) {
+      // Aynı markaya tekrar tıklanırsa filtreyi kaldır
+      setTemporaryFilters({ brand: undefined });
+    } else {
+      // Yeni marka seçilirse filtreye ekle
+      setTemporaryFilters({ brand });
     }
-    
-    if (maxValue !== undefined) {
-      updates[maxKey] = maxValue === '' ? undefined : Number(maxValue);
+    // Anında uygula
+    applyFilters();
+  };
+
+  // Araç tipi filtresini değiştiren fonksiyon
+  const handleVehicleTypeChange = (vehicleType: string) => {
+    if (temporaryFilters.vehicleType === vehicleType) {
+      // Aynı tipe tekrar tıklanırsa filtreyi kaldır
+      setTemporaryFilters({ vehicleType: undefined });
+    } else {
+      // Yeni tip seçilirse filtreye ekle
+      setTemporaryFilters({ vehicleType });
     }
-    
-    // Zustand store'un setTemporaryFilters fonksiyonunu kullan
-    setTemporaryFilters(updates);
+    // Anında uygula
+    applyFilters();
   };
 
-  // Tüm filtreleri temizle
-  const handleClearFilters = () => {
-    // Boş filtre objesi oluşturalım
-    const emptyFilters = {};
-    
-    // ComingSoon filtresini özellikle false yaparak görünürlüğünü garantiyelim
+  // Range (değer aralığı) filtrelerini değiştiren fonksiyon
+  const handleRangeFilterChange = (type: string, value: string) => {
+    const numValue = value ? parseInt(value) : undefined;
+    switch (type) {
+      case 'minPrice':
+      case 'maxPrice':
+      case 'minBatteryCapacity':
+      case 'maxBatteryCapacity':
+      case 'minRange':
+      case 'maxRange':
+      case 'minConsumption':
+      case 'maxConsumption':
+      case 'minChargeSpeed':
+      case 'maxChargeSpeed':
+        setTemporaryFilters({ [type]: numValue });
+        break;
+    }
+  };
+
+  // Checkbox filterlarını değiştiren fonksiyon
+  const handleCheckboxFilterChange = (type: string, value: string | boolean) => {
+    switch (type) {
+      case 'heatPump':
+        setTemporaryFilters({ heatPump: value ? 'yes' : undefined });
+        break;
+      case 'v2l':
+        setTemporaryFilters({ v2l: value ? 'yes' : undefined });
+        break;
+      case 'turkeyStatus':
+        setTemporaryFilters({ turkeyStatus: value ? 'available' : undefined });
+        break;
+      case 'comingSoon':
+        setTemporaryFilters({ comingSoon: value === true });
+        break;
+    }
+  };
+
+  // Filtre formunun gönderilmesi
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    applyFilters();
+  };
+
+  // Tüm filtreleri sıfırlama
+  const handleResetFilters = () => {
     setTemporaryFilters({
-      ...emptyFilters,
-      comingSoon: false
+      brand: undefined,
+      vehicleType: undefined,
+      minPrice: undefined,
+      maxPrice: undefined,
+      minBatteryCapacity: undefined,
+      maxBatteryCapacity: undefined,
+      minRange: undefined,
+      maxRange: undefined,
+      minConsumption: undefined,
+      maxConsumption: undefined,
+      minChargeSpeed: undefined,
+      maxChargeSpeed: undefined,
+      heatPump: undefined,
+      v2l: undefined,
+      turkeyStatus: undefined,
+      comingSoon: undefined,
     });
-    
-    setFilters({
-      ...emptyFilters,
-      comingSoon: false
-    });
-    
-    // Direkt window.location.reload() kullanmak yerine
-    // useElectricVehicleStore'un state'ini doğrudan sıfırlayalım
-    // ve applyFilters fonksiyonunu çağıralım
-    
-    console.log('Tüm filtreler temizleniyor...');
-    
-    // Filtreleri direkt uygula, gecikmesiz
+    // Anında uygula
     applyFilters();
-    
-    // Mobil filtreyi kapat
-    setIsMobileFiltersOpen(false);
-  };
-  
-  // Geçici filtreleri uygula
-  const handleApplyFilters = () => {
-    // Zustand store'un applyFilters fonksiyonunu kullan
-    applyFilters();
-    
-    console.log('Filtreler uygulandı:', temporaryFilters);
-    setIsMobileFiltersOpen(false);
   };
 
-  // Filtre içerik bileşeni
-  const FiltersContent = () => (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      {/* Otomatik tamamlama önerilerini engellemek için stil */}
-      <NoAutocompleteStyles />
-      
-      {/* Marka */}
-      <FilterAccordion 
-        title="Marka" 
-        isOpen={openSections.marka} 
-        onToggle={() => toggleSection('marka')}
-      >
-        <div className="space-y-2">
-          <SearchableDropdown
-            options={allBrands}
-            selectedValue={temporaryFilters.brand}
-            onChange={(value) => {
-              setTemporaryFilters({
-                ...temporaryFilters,
-                brand: value
-              });
-            }}
-            placeholder="Marka seçin veya arayın..."
-          />
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="font-semibold text-lg text-gray-800">Filtreler</h2>
+        <button
+          type="button"
+          onClick={handleResetFilters}
+          className="text-sm text-[#660566] hover:text-[#4d044d] transition-colors"
+        >
+          Sıfırla
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Marka Filtresi */}
+        <div>
+          <div
+            className="flex justify-between items-center mb-2 cursor-pointer"
+            onClick={() => toggleFilterPanel('brand')}
+          >
+            <h3 className="font-medium">Markalar</h3>
+            <svg
+              className={`w-5 h-5 transition-transform ${
+                filterPanels.brand ? 'transform rotate-180' : ''
+              }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
         </div>
-      </FilterAccordion>
 
-      {/* Araç Tipi */}
-      <FilterAccordion 
-        title="Araç Tipi" 
-        isOpen={openSections.aracTipi} 
-        onToggle={() => toggleSection('aracTipi')}
-      >
-        <div className="grid grid-cols-2 gap-2">
+          {filterPanels.brand && (
+            <div className="mt-2 space-y-1 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-100 pr-1">
+              {brands.map((brand) => (
+                <div className="flex items-center" key={brand}>
+                  <button
+                    type="button"
+                    onClick={() => handleBrandChange(brand)}
+                    className={`w-full text-left px-2 py-1 rounded text-sm ${
+                      temporaryFilters.brand === brand
+                        ? 'bg-purple-100 text-[#660566] font-medium'
+                        : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    {brand}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Araç Tipi Filtresi */}
+        <div>
+          <h3 className="font-medium mb-2">Araç Tipi</h3>
+          <div className="flex flex-wrap gap-2">
           {vehicleTypes.map((type) => (
             <button
               key={type}
-              onClick={() => handleFilterChange('vehicleType', temporaryFilters.vehicleType === type ? '' : type)}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors text-left flex items-center ${
+                type="button"
+                onClick={() => handleVehicleTypeChange(type)}
+                className={`px-3 py-1 rounded-full text-xs font-medium ${
                 temporaryFilters.vehicleType === type
                   ? 'bg-[#660566] text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -708,326 +735,329 @@ const VehicleFilters = () => {
             </button>
           ))}
             </div>
-      </FilterAccordion>
+        </div>
 
-      {/* Fiyat */}
-      <FilterAccordion 
-        title="Fiyat" 
-        isOpen={openSections.fiyat} 
-        onToggle={() => toggleSection('fiyat')}
-      >
-        {/* Para birimi seçici */}
-        <CurrencySelector 
-          selectedCurrency={currency} 
-          onChange={(newCurrency) => setCurrency(newCurrency)} 
-        />
-        
-        <MinMaxInput
-          minValue={temporaryFilters.minPrice}
-          maxValue={temporaryFilters.maxPrice}
-          onChangeMin={(value) => {
-            // Sadece geçici filtreleri güncelle, gerçek filtreleri güncelleme
-            handleMinMaxChange('price', 'minPrice', 'maxPrice', value, temporaryFilters.maxPrice);
-          }}
-          onChangeMax={(value) => {
-            // Sadece geçici filtreleri güncelle, gerçek filtreleri güncelleme
-            handleMinMaxChange('price', 'minPrice', 'maxPrice', temporaryFilters.minPrice, value);
-          }}
-          unit={
-            currency === 'TRY' ? '₺' : 
-            currency === 'USD' ? '$' : 
-            currency === 'EUR' ? '€' : 
-            currency === 'CNY' ? '¥' : '₺'
-          }
-          formatThousands={true}
-        />
-      </FilterAccordion>
+        {/* Fiyat Aralığı */}
+        <div>
+          <div
+            className="flex justify-between items-center mb-2 cursor-pointer"
+            onClick={() => toggleFilterPanel('price')}
+          >
+            <h3 className="font-medium">Fiyat Aralığı</h3>
+            <svg
+              className={`w-5 h-5 transition-transform ${
+                filterPanels.price ? 'transform rotate-180' : ''
+              }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
 
-      {/* Batarya */}
-      <FilterAccordion 
-        title="Batarya Kapasitesi" 
-        isOpen={openSections.batarya} 
-        onToggle={() => toggleSection('batarya')}
-      >
-        <MinMaxInput
-          minValue={temporaryFilters.minBatteryCapacity}
-          maxValue={temporaryFilters.maxBatteryCapacity}
-          onChangeMin={(value) => {
-            // Sadece geçici filtreleri güncelle, gerçek filtreleri güncelleme
-            handleMinMaxChange('batteryCapacity', 'minBatteryCapacity', 'maxBatteryCapacity', value, temporaryFilters.maxBatteryCapacity);
-          }}
-          onChangeMax={(value) => {
-            // Sadece geçici filtreleri güncelle, gerçek filtreleri güncelleme
-            handleMinMaxChange('batteryCapacity', 'minBatteryCapacity', 'maxBatteryCapacity', temporaryFilters.minBatteryCapacity, value);
-          }}
-          unit="kWh"
-        />
-      </FilterAccordion>
-
-      {/* Menzil */}
-      <FilterAccordion 
-        title="Menzil" 
-        isOpen={openSections.menzil} 
-        onToggle={() => toggleSection('menzil')}
-      >
-        <MinMaxInput
-          minValue={temporaryFilters.minRange}
-          maxValue={temporaryFilters.maxRange}
-          onChangeMin={(value) => {
-            // Sadece geçici filtreleri güncelle, gerçek filtreleri güncelleme
-            handleMinMaxChange('range', 'minRange', 'maxRange', value, temporaryFilters.maxRange);
-          }}
-          onChangeMax={(value) => {
-            // Sadece geçici filtreleri güncelle, gerçek filtreleri güncelleme
-            handleMinMaxChange('range', 'minRange', 'maxRange', temporaryFilters.minRange, value);
-          }}
-          unit="km"
-        />
-      </FilterAccordion>
-
-      {/* Tüketim */}
-      <FilterAccordion 
-        title="Tüketim" 
-        isOpen={openSections.tuketim} 
-        onToggle={() => toggleSection('tuketim')}
-      >
-        <MinMaxInput
-          minValue={temporaryFilters.minConsumption}
-          maxValue={temporaryFilters.maxConsumption}
-          onChangeMin={(value) => {
-            // Sadece geçici filtreleri güncelle, gerçek filtreleri güncelleme
-            handleMinMaxChange('consumption', 'minConsumption', 'maxConsumption', value, temporaryFilters.maxConsumption);
-          }}
-          onChangeMax={(value) => {
-            // Sadece geçici filtreleri güncelle, gerçek filtreleri güncelleme
-            handleMinMaxChange('consumption', 'minConsumption', 'maxConsumption', temporaryFilters.minConsumption, value);
-          }}
-          unit="kWh/100km"
-          placeholder=""
-        />
-      </FilterAccordion>
-
-      {/* Şarj Hızı */}
-      <FilterAccordion 
-        title="Hızlı Şarj Gücü" 
-        isOpen={openSections.sarj} 
-        onToggle={() => toggleSection('sarj')}
-      >
-        <MinMaxInput
-          minValue={temporaryFilters.minChargeSpeed}
-          maxValue={temporaryFilters.maxChargeSpeed}
-          onChangeMin={(value) => {
-            // Sadece geçici filtreleri güncelle, gerçek filtreleri güncelleme
-            handleMinMaxChange('chargeSpeed', 'minChargeSpeed', 'maxChargeSpeed', value, temporaryFilters.maxChargeSpeed);
-          }}
-          onChangeMax={(value) => {
-            // Sadece geçici filtreleri güncelle, gerçek filtreleri güncelleme
-            handleMinMaxChange('chargeSpeed', 'minChargeSpeed', 'maxChargeSpeed', temporaryFilters.minChargeSpeed, value);
-          }}
-          unit="kW"
-        />
-      </FilterAccordion>
-
-      {/* Isı Pompası */}
-      <FilterAccordion 
-        title="Isı Pompası" 
-        isOpen={openSections.iciIsitma} 
-        onToggle={() => toggleSection('iciIsitma')}
-      >
-        <ButtonOptions
-          options={[
-            { label: 'Var', value: 'yes' },
-            { label: 'Yok', value: 'no' }
-          ]}
-          selectedOption={temporaryFilters.heatPump || ''}
-          onChange={(value) => {
-            // Sadece geçici filtreleri güncelle
-            setTemporaryFilters({
-              ...temporaryFilters,
-              heatPump: value === '' ? undefined : value
-            });
-          }}
-        />
-        <div className="mt-2 text-xs text-gray-500">
-          Isı pompası, elektrikli araçlarda enerji verimli ısıtma/soğutma sağlar ve kış aylarında menzili korur.
+          {filterPanels.price && (
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <div>
+                <label
+                  htmlFor="minPrice"
+                  className="block text-xs text-gray-500"
+                >
+                  Min (TL)
+                </label>
+                <input
+                  type="number"
+                  id="minPrice"
+                  value={temporaryFilters.minPrice || ''}
+                  onChange={(e) => handleRangeFilterChange('minPrice', e.target.value)}
+                  className="w-full border border-gray-300 rounded p-1.5 text-sm"
+                  placeholder="Min"
+                />
               </div>
-      </FilterAccordion>
-
-      {/* V2L */}
-      <FilterAccordion 
-        title="V2L (Vehicle-to-Load)" 
-        isOpen={openSections.vsl} 
-        onToggle={() => toggleSection('vsl')}
-      >
-        <ButtonOptions
-          options={[
-            { label: 'Var', value: 'yes' },
-            { label: 'Yok', value: 'no' }
-          ]}
-          selectedOption={temporaryFilters.v2l || ''}
-          onChange={(value) => {
-            // Sadece geçici filtreleri güncelle
-            setTemporaryFilters({
-              ...temporaryFilters,
-              v2l: value === '' ? undefined : value
-            });
-          }}
-        />
-        <div className="mt-2 text-xs text-gray-500">
-          V2L, aracın bataryasından harici cihazlara elektrik sağlama özelliğidir.
+              <div>
+                <label
+                  htmlFor="maxPrice"
+                  className="block text-xs text-gray-500"
+                >
+                  Max (TL)
+                </label>
+                <input
+                  type="number"
+                  id="maxPrice"
+                  value={temporaryFilters.maxPrice || ''}
+                  onChange={(e) => handleRangeFilterChange('maxPrice', e.target.value)}
+                  className="w-full border border-gray-300 rounded p-1.5 text-sm"
+                  placeholder="Max"
+                />
+              </div>
             </div>
-      </FilterAccordion>
+          )}
+        </div>
 
-      {/* Türkiye Durumu */}
-      <FilterAccordion 
-        title="Türkiye'de Satışta" 
-        isOpen={openSections.turkiyeDurumu} 
-        onToggle={() => toggleSection('turkiyeDurumu')}
-      >
-        <ButtonOptions
-          options={[
-            { label: 'Evet', value: 'available' },
-            { label: 'Hayır', value: 'unavailable' }
-          ]}
-          selectedOption={temporaryFilters.turkeyStatus || ''}
-          onChange={(value) => {
-            // Sadece geçici filtreleri güncelle
-            console.log('Türkiye Durumu değiştiriliyor:', value);
-            setTemporaryFilters({
-              ...temporaryFilters,
-              turkeyStatus: value === '' ? undefined : value
-            });
-          }}
-        />
-      </FilterAccordion>
+        {/* Batarya Kapasitesi */}
+        <div>
+          <div
+            className="flex justify-between items-center mb-2 cursor-pointer"
+            onClick={() => toggleFilterPanel('battery')}
+          >
+            <h3 className="font-medium">Batarya Kapasitesi</h3>
+            <svg
+              className={`w-5 h-5 transition-transform ${
+                filterPanels.battery ? 'transform rotate-180' : ''
+              }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
 
-      {/* Yakında Türkiye'de - Premium Filtre - Tamamen yeniden tasarlandı */}
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-2">
-              <div 
-                className={`relative w-10 h-5 transition-colors duration-200 ease-in-out rounded-full ${
-                  temporaryFilters.comingSoon ? 'bg-gradient-to-r from-[#660566] to-[#330233]' : 'bg-gray-200'
-                } ${!isPremiumUser ? 'opacity-50' : 'cursor-pointer'}`}
-                onClick={(e) => {
-                  // Olayı durdurarak üst katmana geçişini engelle
-                  e.stopPropagation();
-                  
-                  if (isPremiumUser) {
-                    // Premium kullanıcılar için sadece filtreleme işlemlerini yap
-                    // Modal açma
-                    console.log("Premium kullanıcı - filtre uygulanıyor, modal açılmıyor");
-                    const newValue = !temporaryFilters.comingSoon;
-                    
-                    // Filtreleri güncelle
-                    setTemporaryFilters({
-                      ...temporaryFilters,
-                      comingSoon: newValue
-                    });
-                    
-                    setFilters({
-                      ...filters,
-                      comingSoon: newValue
-                    });
-                    
-                    // Hemen uygula
-                    applyFilters();
-                  } else {
-                    // Premium olmayan kullanıcılar için modal aç
-                    console.log("Premium olmayan kullanıcı - premium modal açılıyor");
-                    const event = new CustomEvent('show-premium-modal');
-                    window.dispatchEvent(event);
-                  }
-                }}
-              >
-                <span 
-                  className={`absolute left-0.5 top-0.5 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
-                    temporaryFilters.comingSoon ? 'translate-x-5' : ''
-                  }`}
-                ></span>
+          {filterPanels.battery && (
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <div>
+                <label
+                  htmlFor="minBatteryCapacity"
+                  className="block text-xs text-gray-500"
+                >
+                  Min (kWh)
+                </label>
+                <input
+                  type="number"
+                  id="minBatteryCapacity"
+                  value={temporaryFilters.minBatteryCapacity || ''}
+                  onChange={(e) => handleRangeFilterChange('minBatteryCapacity', e.target.value)}
+                  className="w-full border border-gray-300 rounded p-1.5 text-sm"
+                  placeholder="Min"
+                />
               </div>
-              <span className="text-sm font-medium text-gray-800">Yakında Türkiye'de</span>
+              <div>
+                <label
+                  htmlFor="maxBatteryCapacity"
+                  className="block text-xs text-gray-500"
+                >
+                  Max (kWh)
+                </label>
+                <input
+                  type="number"
+                  id="maxBatteryCapacity"
+                  value={temporaryFilters.maxBatteryCapacity || ''}
+                  onChange={(e) => handleRangeFilterChange('maxBatteryCapacity', e.target.value)}
+                  className="w-full border border-gray-300 rounded p-1.5 text-sm"
+                  placeholder="Max"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Menzil */}
+        <div>
+          <div
+            className="flex justify-between items-center mb-2 cursor-pointer"
+            onClick={() => toggleFilterPanel('range')}
+          >
+            <h3 className="font-medium">Menzil</h3>
+            <svg
+              className={`w-5 h-5 transition-transform ${
+                filterPanels.range ? 'transform rotate-180' : ''
+              }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+              </div>
+
+          {filterPanels.range && (
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <div>
+                <label
+                  htmlFor="minRange"
+                  className="block text-xs text-gray-500"
+                >
+                  Min (km)
+                </label>
+                <input
+                  type="number"
+                  id="minRange"
+                  value={temporaryFilters.minRange || ''}
+                  onChange={(e) => handleRangeFilterChange('minRange', e.target.value)}
+                  className="w-full border border-gray-300 rounded p-1.5 text-sm"
+                  placeholder="Min"
+                />
+            </div>
+              <div>
+                <label
+                  htmlFor="maxRange"
+                  className="block text-xs text-gray-500"
+                >
+                  Max (km)
+                </label>
+                <input
+                  type="number"
+                  id="maxRange"
+                  value={temporaryFilters.maxRange || ''}
+                  onChange={(e) => handleRangeFilterChange('maxRange', e.target.value)}
+                  className="w-full border border-gray-300 rounded p-1.5 text-sm"
+                  placeholder="Max"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Diğer Özellikler */}
+        <div>
+          <div
+            className="flex justify-between items-center mb-2 cursor-pointer"
+            onClick={() => toggleFilterPanel('specs')}
+          >
+            <h3 className="font-medium">Diğer Özellikler</h3>
+            <svg
+              className={`w-5 h-5 transition-transform ${
+                filterPanels.specs ? 'transform rotate-180' : ''
+              }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
             </div>
             
-            {!isPremiumUser && (
-              <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-gradient-to-r from-[#660566] to-[#330233] rounded-full">
-                Premium
-              </span>
-            )}
+          {filterPanels.specs && (
+            <div className="mt-2 space-y-2">
+              {/* Isı Pompası */}
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="heatPumpYes"
+                  checked={temporaryFilters.heatPump === 'yes'}
+                  onChange={(e) => handleCheckboxFilterChange('heatPump', e.target.checked ? 'yes' : undefined)}
+                  className="w-4 h-4 text-[#660566] rounded border-gray-300 focus:ring-[#660566]"
+                />
+                <label 
+                  htmlFor="heatPumpYes" 
+                  className="ml-2 text-sm text-gray-700"
+                >
+                  Isı Pompası Var
+                </label>
           </div>
           
-          <p className="text-xs text-gray-500">
-            Türkiye pazarına yakın zamanda girmesi beklenen elektrikli araçları gösterir.
-          </p>
+              {/* V2L */}
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="v2lYes"
+                  checked={temporaryFilters.v2l === 'yes'}
+                  onChange={(e) => handleCheckboxFilterChange('v2l', e.target.checked ? 'yes' : undefined)}
+                  className="w-4 h-4 text-[#660566] rounded border-gray-300 focus:ring-[#660566]"
+                />
+                <label 
+                  htmlFor="v2lYes" 
+                  className="ml-2 text-sm text-gray-700"
+                >
+                  V2L Var
+                </label>
         </div>
-      </div>
-
-          {/* Filtre Butonları */}
-      <div className="p-4 flex flex-col gap-3 border-t border-gray-200">
-        <div className="flex gap-3">
-            <button
-              onClick={handleApplyFilters}
-              className="bg-gradient-to-r from-[#660566] to-[#330233] text-white px-4 py-3 rounded-lg
-                    hover:opacity-90 transition-colors duration-200 text-sm font-medium flex-1 whitespace-nowrap"
-            >
-              Filtreleri Uygula
-            </button>
-            <button
-              onClick={handleClearFilters}
-              className="text-gray-600 bg-gray-100 px-4 py-3 rounded-lg hover:bg-gray-200 
-                     transition-colors duration-200 text-sm font-medium flex-1 whitespace-nowrap"
-            >
-              Filtreleri Sil
-            </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  return (
-    <>
-      {/* Mobil Görünüm için Filtreler Butonu */}
-      <div className="lg:hidden p-4">
-        <button
-          className="flex items-center justify-center w-full bg-white border border-gray-300 px-4 py-2 rounded-lg shadow-sm text-gray-700"
-          onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
-        >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          Filtreleri Göster
-        </button>
-      </div>
-
-      {/* Mobil Filtre Paneli */}
-      {isMobileFiltersOpen && (
-        <div className="fixed inset-0 flex z-40 lg:hidden">
-          <div className="fixed inset-0 bg-black bg-opacity-25" onClick={() => setIsMobileFiltersOpen(false)}></div>
-          <div className="relative w-full max-w-xs bg-white h-full overflow-y-auto shadow-xl p-4">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-medium text-gray-900">Araç Filtreleri</h2>
-            <button
-              type="button"
-                className="-mr-2 w-10 h-10 flex items-center justify-center text-gray-500"
-                onClick={() => setIsMobileFiltersOpen(false)}
-              >
-                <span className="sr-only">Kapat</span>
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
             </div>
-            <FiltersContent />
+          )}
+      </div>
+
+        {/* Türkiye Durumu */}
+        <div>
+          <div
+            className="flex justify-between items-center mb-2 cursor-pointer"
+            onClick={() => toggleFilterPanel('turkeyStatus')}
+          >
+            <h3 className="font-medium">Türkiye Durumu</h3>
+            <svg
+              className={`w-5 h-5 transition-transform ${
+                filterPanels.turkeyStatus ? 'transform rotate-180' : ''
+              }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+        </div>
+
+          {filterPanels.turkeyStatus && (
+            <div className="mt-2 space-y-2">
+              {/* Türkiye'de Satışta */}
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="turkeyAvailable"
+                  checked={temporaryFilters.turkeyStatus === 'available'}
+                  onChange={(e) => handleCheckboxFilterChange('turkeyStatus', e.target.checked ? 'available' : undefined)}
+                  className="w-4 h-4 text-[#660566] rounded border-gray-300 focus:ring-[#660566]"
+                />
+                <label 
+                  htmlFor="turkeyAvailable" 
+                  className="ml-2 text-sm text-gray-700"
+                >
+                  Türkiye'de Satışta
+                </label>
+      </div>
+
+              {/* Yakında Türkiye'de */}
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="comingSoon"
+                  checked={temporaryFilters.comingSoon === true}
+                  onChange={(e) => handleCheckboxFilterChange('comingSoon', e.target.checked)}
+                  className="w-4 h-4 text-[#660566] rounded border-gray-300 focus:ring-[#660566]"
+                />
+                <label 
+                  htmlFor="comingSoon" 
+                  className="ml-2 text-sm text-gray-700"
+                >
+                  Yakında Türkiye'de
+                </label>
           </div>
         </div>
       )}
+        </div>
 
-      {/* Masaüstü Görünüm */}
-      <div className="hidden lg:block">
-        <FiltersContent />
+        {/* Filtreleri Uygula Butonu */}
+        <button
+          type="submit"
+          className="w-full py-2 bg-gradient-to-r from-[#660566] to-[#330233] text-white rounded-md text-sm font-medium hover:opacity-90 transition-colors duration-200"
+        >
+          Filtreleri Uygula
+        </button>
+      </form>
     </div>
-    </>
   );
 };
 

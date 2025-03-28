@@ -27,7 +27,8 @@
       "width": 2088,
       "height": 1443,
       "weight": 1830,
-      "cargoCapacity": 561
+      "cargoCapacity": 561,
+      "groundClearance": 140
     },
     "efficiency": {
       "consumption": 14.5
@@ -94,7 +95,8 @@
       "width": 1852,
       "height": 1640,
       "weight": 2049,
-      "cargoCapacity": 543
+      "cargoCapacity": 543,
+      "groundClearance": 200
     },
     "efficiency": {
       "consumption": 16.8
@@ -161,7 +163,8 @@
       "width": 1852,
       "height": 1448,
       "weight": 2125,
-      "cargoCapacity": 470
+      "cargoCapacity": 470,
+      "groundClearance": 125
     },
     "efficiency": {
       "consumption": 16.1
@@ -228,7 +231,8 @@
       "width": 2129,
       "height": 1624,
       "weight": 2000,
-      "cargoCapacity": 854
+      "cargoCapacity": 854,
+      "groundClearance": 167
     },
     "efficiency": {
       "consumption": 16.9
@@ -295,7 +299,8 @@
       "width": 1966,
       "height": 1378,
       "weight": 2340,
-      "cargoCapacity": 366
+      "cargoCapacity": 366,
+      "groundClearance": 110
     },
     "efficiency": {
       "consumption": 24.3

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import type ElectricVehicle from '@/models/ElectricVehicle';
+import { supabase, SupabaseElectricVehicle } from '@/lib/supabase';
 import vehiclesData from '@/data/electric-vehicles.json';
 
 export interface UseVehiclesReturn {
@@ -13,30 +14,39 @@ export interface UseVehiclesReturn {
  * SSR için kullanılabilir
  */
 export async function fetchVehicles(): Promise<ElectricVehicle[]> {
-  // Build zamanında ise doğrudan JSON verisini kullan
-  if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
-    return vehiclesData as ElectricVehicle[];
-  }
-  
-  // Geliştirme ortamında veya tarayıcıda API kullan
-  const baseUrl = typeof window !== 'undefined' 
-    ? window.location.origin 
-    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-    
   try {
-    const response = await fetch(`${baseUrl}/api/vehicles`, {
-      // SSR için cache stratejisi
-      next: { revalidate: 3600 } // 1 saatte bir yeniden doğrulama
-    });
+    // Supabase'den verileri çek
+    const { data, error } = await supabase
+      .from('electric_vehicles')
+      .select('*');
     
-    if (!response.ok) {
-      throw new Error('Araçlar yüklenirken bir hata oluştu');
+    if (error) {
+      console.error('Supabase veri çekme hatası:', error);
+      throw error;
     }
     
-    return response.json();
+    if (!data || data.length === 0) {
+      console.warn('Supabase\'den veri çekilemedi, yerel veriyi kullanıyorum.');
+      return vehiclesData as ElectricVehicle[];
+    }
+    
+    // Supabase verilerini uygulama modeline dönüştür - camelCase ve diğer dönüşümler için
+    // Bu örnek için tip zorlama (as) kullanıyoruz, gerçek uygulamada daha ayrıntılı bir eşleme gerekebilir
+    return data.map(vehicle => {
+      // Alan isimlerini camelCase'e dönüştürme
+      const result = {
+        ...vehicle,
+        batteryCapacity: vehicle.battery_capacity,
+        extraFeatures: vehicle.extra_features,
+        environmentalImpact: vehicle.environmental_impact,
+        turkeyStatus: vehicle.turkey_status
+      } as unknown as ElectricVehicle;
+      
+      return result;
+    });
   } catch (error) {
-    console.warn('API üzerinden veriler alınamadı, yerel veri kullanılıyor', error);
-    // API hatası durumunda yerel veriyi kullan
+    console.warn('Veri alınamadı, yerel veriyi kullanıyorum:', error);
+    // Herhangi bir hata durumunda yerel veriyi kullan
     return vehiclesData as ElectricVehicle[];
   }
 }

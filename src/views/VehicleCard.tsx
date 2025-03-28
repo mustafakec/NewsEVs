@@ -1,10 +1,11 @@
 "use client";
 
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import type ElectricVehicle from '@/models/ElectricVehicle';
+import { ElectricVehicle } from '@/models/ElectricVehicle';
+import { toSlug } from '@/utils/vehicleUtils';
 
 interface VehicleCardProps {
   vehicle: ElectricVehicle;
@@ -13,14 +14,34 @@ interface VehicleCardProps {
 
 const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   const router = useRouter();
+  const [price, setPrice] = useState<{ base: number; currency: string } | null>(null);
+  
+  // Fiyat bilgisini çek
+  useEffect(() => {
+    const fetchPrice = async () => {
+      if (!vehicle?.id) return;
+      
+      try {
+        const response = await fetch(`/api/vehicles/${vehicle.id}/price`);
+        if (!response.ok) throw new Error('Fiyat bilgisi alınamadı');
+        
+        const data = await response.json();
+        setPrice(data);
+      } catch (error) {
+        console.error('Fiyat bilgisi çekilirken hata oluştu:', error);
+      }
+    };
+
+    fetchPrice();
+  }, [vehicle?.id]);
+
   // isPremium kontrolünü sadece stil sınıfları için kullanacağız
   const isPremium = vehicle.turkeyStatus?.comingSoon;
 
   // Marka ve modelden URL oluştur - özel karakterleri ve boşlukları doğru şekilde işle
   const getVehicleUrl = (vehicle: ElectricVehicle): string => {
-    const brand = vehicle.brand.toLowerCase().trim();
-    const model = vehicle.model.toLowerCase().trim().replace(/\s+/g, '-');
-    const url = `/elektrikli-araclar/${brand}-${model}`;
+    const slug = toSlug(`${vehicle.brand}-${vehicle.model}`);
+    const url = `/elektrikli-araclar/${slug}`;
     console.log(`URL oluşturuldu: ${vehicle.brand} ${vehicle.model} -> ${url}`);
     return url;
   };
@@ -81,7 +102,9 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
       {/* Resim Alanı */}
       <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
         <Image
-          src={vehicle.images[0]}
+          src={vehicle.images && vehicle.images.length > 0 
+            ? vehicle.images[0] 
+            : '/images/car-placeholder.jpg'}
           alt={`${vehicle.brand} ${vehicle.model}`}
           width={800}
           height={450}
@@ -103,7 +126,13 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
           </div>
           <div className="text-right">
             <p className="font-semibold text-lg text-gray-900">
-              {new Intl.NumberFormat('tr-TR').format(vehicle.price.base)} {vehicle.price.currency === "TRY" ? "TL" : vehicle.price.currency}
+              {price?.base ? (
+                <>
+                  {new Intl.NumberFormat('tr-TR').format(price.base)} {price.currency === "TRY" ? "TL" : price.currency}
+                </>
+              ) : (
+                'Fiyat Bilgisi Yok'
+              )}
             </p>
             <p className="text-xs text-gray-500">Başlangıç Fiyatı</p>
           </div>
@@ -112,20 +141,60 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
         {/* Özellikler */}
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <p className="text-xs text-gray-500 mb-1">Menzil</p>
-            <p className="font-medium text-sm">{vehicle.range} km</p>
+            <p className="text-xs text-gray-500 mb-1">Motor Gücü</p>
+            <p className="font-medium text-sm">
+              {vehicle.performance?.power 
+                ? `${vehicle.performance.power} HP` 
+                : 'Belirtilmemiş'}
+            </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 mb-1">Şarj Süresi</p>
-            <p className="font-medium text-sm">{vehicle.chargingTime.fastCharging.time10to80} dk</p>
+            <p className="text-xs text-gray-500 mb-1">Tork</p>
+            <p className="font-medium text-sm">
+              {vehicle.performance?.torque 
+                ? `${vehicle.performance.torque} Nm` 
+                : 'Belirtilmemiş'}
+            </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 mb-1">Hızlanma</p>
-            <p className="font-medium text-sm">{vehicle.performance.acceleration}s</p>
+            <p className="text-xs text-gray-500 mb-1">Sürüş Sistemi</p>
+            <p className="font-medium text-sm">
+              {vehicle.performance?.driveType || 'Belirtilmemiş'}
+            </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 mb-1">Maksimum Hız</p>
-            <p className="font-medium text-sm">{vehicle.performance.topSpeed} km/s</p>
+            <p className="text-xs text-gray-500 mb-1">Azami Hız</p>
+            <p className="font-medium text-sm">
+              {vehicle.performance?.topSpeed 
+                ? `${vehicle.performance.topSpeed} km/s` 
+                : 'Belirtilmemiş'}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 mb-1">0-100 km/s</p>
+            <p className="font-medium text-sm">
+              {vehicle.performance?.acceleration 
+                ? `${vehicle.performance.acceleration}s` 
+                : 'Belirtilmemiş'}
+            </p>
+          </div>
+        </div>
+
+        {/* Özellikler Listesi */}
+        <div className="mt-4">
+          <div className="flex flex-wrap gap-2">
+            {vehicle.features?.map((feature: { name: string; isExtra: boolean }, index: number) => (
+              <span 
+                key={`feature-${index}`}
+                className={`text-xs px-2 py-1 rounded-full ${
+                  feature.isExtra 
+                    ? 'bg-purple-100 text-purple-800' 
+                    : 'bg-gray-100 text-gray-800'
+                }`}
+              >
+                {feature.name}
+              </span>
+            ))}
           </div>
         </div>
 

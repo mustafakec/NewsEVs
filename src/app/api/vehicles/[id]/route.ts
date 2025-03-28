@@ -1,17 +1,7 @@
 import { NextResponse } from 'next/server';
 import vehiclesData from '@/data/vehicles.json';
-import type ElectricVehicle from '@/models/ElectricVehicle';
-
-// String'i slug formatına dönüştüren yardımcı fonksiyon
-function toSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/\s+/g, '-')      // Boşlukları tire ile değiştir
-    .replace(/\./g, '')        // Noktaları kaldır
-    .normalize('NFD')          // Aksanlı karakterleri ayır
-    .replace(/[\u0300-\u036f]/g, '') // Aksan işaretlerini kaldır
-    .replace(/[^a-z0-9-]/g, ''); // Alfanümerik olmayan karakterleri kaldır
-}
+import { ElectricVehicle } from '@/models/ElectricVehicle';
+import { toSlug } from '@/utils/vehicleUtils';
 
 export async function GET(
   request: Request,
@@ -21,8 +11,8 @@ export async function GET(
     const id = params.id;
     console.log('API çağrısı:', id);
     
-    // Tüm araçları al
-    const vehicles = vehiclesData as ElectricVehicle[];
+    // Tüm araçları al ve tip dönüşümünü güvenli bir şekilde yap
+    const vehicles = (vehiclesData as unknown) as ElectricVehicle[];
     
     // Gelen ID parametresini normalize et
     const normalizedId = toSlug(id);

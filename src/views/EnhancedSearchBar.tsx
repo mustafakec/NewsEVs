@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVehicles } from '@/hooks/useVehicles';
 import type ElectricVehicle from '@/models/ElectricVehicle';
+import { toSlug } from '@/utils/vehicleUtils';
 
 const EnhancedSearchBar = () => {
   const router = useRouter();
@@ -139,13 +140,7 @@ const EnhancedSearchBar = () => {
       saveSearch(`${vehicle.brand} ${vehicle.model}`);
       
       // Araç adını URL uyumlu slug formatına dönüştür
-      const slug = `${vehicle.brand}-${vehicle.model}`
-        .toLowerCase()
-        .replace(/\s+/g, '-')      // Boşlukları tire ile değiştir
-        .replace(/\./g, '')        // Noktaları kaldır
-        .normalize('NFD')          // Aksanlı karakterleri ayır
-        .replace(/[\u0300-\u036f]/g, '') // Aksan işaretlerini kaldır
-        .replace(/[^a-z0-9-]/g, ''); // Alfanümerik olmayan karakterleri kaldır
+      const slug = toSlug(`${vehicle.brand}-${vehicle.model}`);
       
       console.log(`Araç yönlendirme: ${vehicle.brand} ${vehicle.model} -> ${slug}`);
       
@@ -160,17 +155,6 @@ const EnhancedSearchBar = () => {
       router.push('/elektrikli-araclar');
     }
   };
-
-  // String'i slug formatına dönüştüren yardımcı fonksiyon
-  function toSlug(text: string): string {
-    return text
-      .toLowerCase()
-      .replace(/\s+/g, '-')      // Boşlukları tire ile değiştir
-      .replace(/\./g, '')        // Noktaları kaldır
-      .normalize('NFD')          // Aksanlı karakterleri ayır
-      .replace(/[\u0300-\u036f]/g, '') // Aksan işaretlerini kaldır
-      .replace(/[^a-z0-9-]/g, ''); // Alfanümerik olmayan karakterleri kaldır
-  }
 
   const handlePopularClick = (term: string) => {
     // Önce arama terimini set et

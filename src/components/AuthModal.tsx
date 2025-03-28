@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
@@ -11,15 +11,56 @@ import { useRouter } from 'next/navigation';
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode?: 'login' | 'register';
+  initialMode?: 'login' | 'register' | 'resetPassword';
 }
 
+// Şifre güçlendirme
+type PasswordStrength = 'weak' | 'medium' | 'strong';
+
 export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) {
-  const [mode, setMode] = useState<'login' | 'register'>(initialMode);
+  const [mode, setMode] = useState<'login' | 'register' | 'resetPassword'>(initialMode);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [password, setPassword] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>('weak');
   const setUser = useUserStore(state => state.setUser);
   const router = useRouter();
+
+  // Şifre gücünü değerlendiren fonksiyon
+  const evaluatePasswordStrength = (pass: string): PasswordStrength => {
+    // Boş şifre
+    if (!pass) return 'weak';
+    
+    let score = 0;
+    
+    // Minimum 6 karakter
+    if (pass.length >= 6) score += 1;
+    
+    // Büyük harf içeriyor
+    if (/[A-Z]/.test(pass)) score += 1;
+    
+    // Küçük harf içeriyor
+    if (/[a-z]/.test(pass)) score += 1;
+    
+    // Sayı içeriyor
+    if (/[0-9]/.test(pass)) score += 1;
+    
+    // Skora göre güçlendirme seviyesi belirleme
+    if (score <= 2) return 'weak';
+    if (score <= 3) return 'medium';
+    return 'strong';
+  };
+
+  // Şifre değiştiğinde gücünü değerlendir
+  useEffect(() => {
+    setPasswordStrength(evaluatePasswordStrength(password));
+  }, [password]);
+
+  // Şifre kriterleri kontrolleri
+  const hasMinLength = password.length >= 6;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,9 +79,36 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           onClose();
           router.push('/profil');
         }
-      } else {
-        // Register işlemi burada yapılacak
-        setError('Kayıt sistemi henüz aktif değil');
+      } else if (mode === 'register') {
+        // Şifre güvenliği kontrolü
+        if (passwordStrength === 'weak') {
+          setError('Lütfen daha güçlü bir şifre oluşturun');
+          return;
+        }
+        
+        const name = formData.get('name') as string;
+        
+        // Gerçek bir kayıt işlemi burada olacak, şimdilik mock bir başarı mesajı gösterelim
+        setError('Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
+        setTimeout(() => {
+          setMode('login');
+          setPassword('');
+          setError(null);
+        }, 2000);
+      } else if (mode === 'resetPassword') {
+        // Şifre sıfırlama işlemi
+        if (passwordStrength === 'weak') {
+          setError('Lütfen daha güçlü bir şifre oluşturun');
+          return;
+        }
+        
+        // Gerçek bir şifre sıfırlama işlemi burada olacak
+        setError('Şifre sıfırlama talebi alındı. E-posta adresinize gönderilen bağlantıyı kontrol edin.');
+        setTimeout(() => {
+          setMode('login');
+          setPassword('');
+          setError(null);
+        }, 3000);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Bir hata oluştu');
@@ -92,8 +160,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 {/* Mode Selector */}
                 <div className="flex gap-3 justify-center mb-6">
                   <button
-                    onClick={() => setMode('login')}
-                    className={`px-6 py-2 rounded-lg font-medium transition-all duration-200 text-[13px]
+                    onClick={() => {
+                      setMode('login');
+                      setPassword('');
+                      setError(null);
+                    }}
+                    className={`flex-1 px-6 py-2 rounded-lg font-medium transition-all duration-200 text-[13px]
                       ${mode === 'login' 
                         ? 'bg-gradient-to-r from-[#660566] to-[#330233] text-white shadow-lg hover:shadow-xl' 
                         : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
@@ -101,34 +173,18 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     Giriş Yap
                   </button>
                   <button
-                    onClick={() => setMode('register')}
-                    className={`px-6 py-2 rounded-lg font-medium transition-all duration-200 text-[13px]
+                    onClick={() => {
+                      setMode('register');
+                      setPassword('');
+                      setError(null);
+                    }}
+                    className={`flex-1 px-6 py-2 rounded-lg font-medium transition-all duration-200 text-[13px]
                       ${mode === 'register' 
                         ? 'bg-gradient-to-r from-[#660566] to-[#330233] text-white shadow-lg hover:shadow-xl' 
                         : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
                   >
                     Kayıt Ol
                   </button>
-                </div>
-
-                {/* Google Sign In */}
-                <button 
-                  disabled={isLoading}
-                  className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 
-                         rounded-lg px-4 py-2.5 text-gray-700 font-medium hover:bg-gray-50 transition-colors mb-5 text-[13px]
-                         disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Image src="/google-icon.svg" alt="Google" width={19} height={19} />
-                  {mode === 'login' ? 'Google ile Giriş Yap' : 'Google ile Kayıt Ol'}
-                </button>
-
-                <div className="relative mb-5">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center text-[11px]">
-                    <span className="px-2 bg-white text-gray-500">veya e-posta ile devam et</span>
-                  </div>
                 </div>
 
                 {/* Error Message */}
@@ -150,22 +206,6 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                           type="text"
                           id="name"
                           name="name"
-                          className="w-full px-3.5 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                          required
-                          disabled={isLoading}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="phone" className="block text-[11px] font-medium text-gray-700 mb-1">
-                          Telefon Numarası
-                        </label>
-                        <input
-                          type="tel"
-                          id="phone"
-                          name="phone"
-                          placeholder="5XX XXX XX XX"
-                          pattern="[0-9]{10}"
                           className="w-full px-3.5 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                           required
                           disabled={isLoading}
@@ -196,15 +236,64 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                       type="password"
                       id="password"
                       name="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       className="w-full px-3.5 py-2 text-[13px] border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       required
                       disabled={isLoading}
                     />
+                    
+                    {/* Şifre güvenlik seviyesi (kayıt olurken veya şifremi unuttum kısmında) */}
+                    {(mode === 'register' || mode === 'resetPassword') && password && (
+                      <div className="mt-2">
+                        <div className="flex items-center space-x-1 mb-2">
+                          <div className={`h-1 flex-1 rounded-full ${
+                            passwordStrength === 'weak' ? 'bg-red-400' : 
+                            passwordStrength === 'medium' ? 'bg-yellow-400' : 'bg-green-400'
+                          }`}></div>
+                          <div className={`h-1 flex-1 rounded-full ${
+                            passwordStrength === 'weak' ? 'bg-gray-200' : 
+                            passwordStrength === 'medium' ? 'bg-yellow-400' : 'bg-green-400'
+                          }`}></div>
+                          <div className={`h-1 flex-1 rounded-full ${
+                            passwordStrength === 'strong' ? 'bg-green-400' : 'bg-gray-200'
+                          }`}></div>
+                        </div>
+                        
+                        {/* Şifre kriterleri listesi */}
+                        <ul className="text-[11px] text-gray-600 space-y-1 mt-2">
+                          <li className="flex items-center">
+                            <span className={`mr-1 ${hasMinLength ? 'text-green-500' : 'text-red-500'}`}>
+                              {hasMinLength ? '✓' : '✗'}
+                            </span>
+                            En az 6 karakter
+                          </li>
+                          <li className="flex items-center">
+                            <span className={`mr-1 ${hasUpperCase ? 'text-green-500' : 'text-red-500'}`}>
+                              {hasUpperCase ? '✓' : '✗'}
+                            </span>
+                            En az bir büyük harf
+                          </li>
+                          <li className="flex items-center">
+                            <span className={`mr-1 ${hasLowerCase ? 'text-green-500' : 'text-red-500'}`}>
+                              {hasLowerCase ? '✓' : '✗'}
+                            </span>
+                            En az bir küçük harf
+                          </li>
+                          <li className="flex items-center">
+                            <span className={`mr-1 ${hasNumber ? 'text-green-500' : 'text-red-500'}`}>
+                              {hasNumber ? '✓' : '✗'}
+                            </span>
+                            En az bir rakam
+                          </li>
+                        </ul>
+                      </div>
+                    )}
                   </div>
 
                   <button
                     type="submit"
-                    disabled={isLoading}
+                    disabled={isLoading || (mode === 'register' && passwordStrength === 'weak')}
                     className="w-full bg-gradient-to-r from-[#660566] to-[#330233] text-white text-[13px]
                            rounded-lg px-4 py-2.5 font-medium shadow-lg
                            hover:opacity-90 transition-all duration-200
@@ -214,9 +303,40 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                       <div className="flex items-center justify-center">
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                       </div>
-                    ) : mode === 'login' ? 'Giriş Yap' : 'Kayıt Ol'}
+                    ) : mode === 'login' ? 'Giriş Yap' : mode === 'resetPassword' ? 'Şifremi Sıfırla' : 'Kayıt Ol'}
                   </button>
                 </form>
+
+                {/* Şifremi Unuttum veya Hesap Oluştur linkleri */}
+                {mode === 'login' && (
+                  <div className="mt-4 text-center text-sm">
+                    <button 
+                      onClick={() => {
+                        setMode('resetPassword');
+                        setPassword('');
+                        setError(null);
+                      }}
+                      className="text-[#660566] hover:text-[#4d044d] transition-colors text-[12px]"
+                    >
+                      Şifremi Unuttum
+                    </button>
+                  </div>
+                )}
+
+                {mode === 'resetPassword' && (
+                  <div className="mt-4 text-center text-sm">
+                    <button 
+                      onClick={() => {
+                        setMode('login');
+                        setPassword('');
+                        setError(null);
+                      }}
+                      className="text-[#660566] hover:text-[#4d044d] transition-colors text-[12px]"
+                    >
+                      Giriş Sayfasına Dön
+                    </button>
+                  </div>
+                )}
 
                 {/* Close Button */}
                 <button

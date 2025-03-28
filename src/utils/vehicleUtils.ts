@@ -45,4 +45,18 @@ export const normalizeVehicleType = (type: string): string => {
   
   // Eşleşme bulunamazsa, ilk harf büyük gerisi küçük tipinde format
   return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
+};
+
+/**
+ * String'i URL slug formatına dönüştüren yardımcı fonksiyon
+ * Özel karakterleri ve boşlukları temizler, tirelere dönüştürür
+ */
+export const toSlug = (text: string): string => {
+  return text
+    .toLowerCase()
+    .replace(/\s+/g, '-')      // Boşlukları tire ile değiştir
+    .replace(/\./g, '')        // Noktaları kaldır
+    .normalize('NFD')          // Aksanlı karakterleri ayır
+    .replace(/[\u0300-\u036f]/g, '') // Aksan işaretlerini kaldır
+    .replace(/[^a-z0-9-]/g, ''); // Alfanümerik olmayan karakterleri kaldır
 }; 

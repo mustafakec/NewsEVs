@@ -5,27 +5,21 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'placehold.co',
+        hostname: '**',
       },
-      {
-        protocol: 'https',
-        hostname: 'logo.clearbit.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'elektrikliyiz.com',
-      }
     ],
+    domains: ['localhost'],
     dangerouslyAllowSVG: true,
-    contentDispositionType: 'attachment',
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    domains: ['placehold.co', 'logo.clearbit.com', 'elektrikliyiz.com'],
   },
   experimental: {
     optimizeCss: true,
+    serverActions: true,
   },
   reactStrictMode: true,
   swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
   headers: async () => {
     return [
       {

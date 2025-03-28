@@ -3,9 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import ElectricVehicle from '@/models/ElectricVehicle';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
+import { supabase } from '@/lib/supabase';
+import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 
-// Araç tipini standartlaştır
-const normalizeVehicleType = (type: string): string => {
+// Araç tipini standartlaştır - dışa aktardık, utils içerisinde kullanılıyor
+export const normalizeVehicleType = (type: string): string => {
   // Önce gelen değeri büyük-küçük harf duyarsız hale getir
   const lowerType = type.toLowerCase().trim();
   
@@ -29,28 +31,179 @@ const normalizeVehicleType = (type: string): string => {
     'station wagon': 'Station Wagon',
     'pickup': 'Pickup',
     'minibüs': 'Otobüs',
-    'bus': 'Otobüs',
     'otobüs': 'Otobüs',
-    'truck': 'Kamyonet',
-    'kamyonet': 'Kamyonet',
-    'motosiklet': 'Motosiklet',
-    'motorcycle': 'Motosiklet',
-    'moto': 'Motosiklet',
-    'scooter': 'Scooter',
-    'elektrikli scooter': 'Scooter',
-    'e-scooter': 'Scooter'
+    'bus': 'Otobüs',
   };
   
-  // Eşleşme varsa, eşleşen tipi döndür
-  if (typeMapping[lowerType]) {
-    console.log(`Tip normalleştiriliyor: "${type}" => "${typeMapping[lowerType]}"`);
-    return typeMapping[lowerType];
+  // Eşleşme varsa standart değeri döndür, yoksa orijinal değeri kullan
+  return typeMapping[lowerType] || type;
+};
+
+// Filtre tipi tanımı
+type Filters = {
+  brand?: string;
+  vehicleType?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minBatteryCapacity?: number;
+  maxBatteryCapacity?: number;
+  minRange?: number;
+  maxRange?: number;
+  minConsumption?: number;
+  maxConsumption?: number;
+  minChargeSpeed?: number;
+  maxChargeSpeed?: number;
+  heatPump?: string; // 'yes' | 'no' | 'optional'
+  v2l?: string; // 'yes' | 'no' | 'optional'
+  turkeyStatus?: string; // 'available' | 'unavailable'
+  comingSoon?: boolean; // Türkiye'de yakında satışa sunulacak
+  searchTerm?: string; // Arama terimi
+};
+
+// Supabase'den araç verilerini çeken ve filtreleme yapan fonksiyon
+async function fetchVehiclesFromSupabase(filters: Filters = {}): Promise<ElectricVehicle[]> {
+  try {
+    // Temel sorgu
+    let query = supabase
+      .from('electric_vehicles')
+      .select('*');
+    
+    // Filtreler uygulanıyor
+    query = applyFiltersToQuery(query, filters);
+    
+    // Sorguyu çalıştır
+    const { data, error } = await query;
+    
+    if (error) {
+      console.error('Supabase veri çekme hatası:', error);
+      throw error;
+    }
+    
+    if (!data || data.length === 0) {
+      console.warn('Supabase\'den veri çekilemedi veya filtrelere uygun sonuç yok.');
+      return [];
+    }
+    
+    // Supabase'den gelen veriyi ElectricVehicle formatına dönüştür
+    const vehicles: ElectricVehicle[] = data.map(vehicle => ({
+      id: vehicle.id,
+      brand: vehicle.brand,
+      model: vehicle.model,
+      year: vehicle.year,
+      type: vehicle.type,
+      range: vehicle.range,
+      batteryCapacity: vehicle.battery_capacity,
+      chargingTime: vehicle.charging_time as any,
+      performance: vehicle.performance as any,
+      dimensions: vehicle.dimensions as any,
+      efficiency: vehicle.efficiency as any,
+      comfort: vehicle.comfort as any,
+      price: vehicle.price as any,
+      images: vehicle.images,
+      features: vehicle.features,
+      extraFeatures: vehicle.extra_features || undefined,
+      warranty: vehicle.warranty as any,
+      environmentalImpact: vehicle.environmental_impact as any,
+      heatPump: vehicle.heat_pump,
+      v2l: vehicle.v2l,
+      turkeyStatus: vehicle.turkey_status as any
+    }));
+    
+    return vehicles;
+  } catch (error) {
+    console.error('Araç verileri çekilirken hata oluştu:', error);
+    return [];
+  }
+}
+
+// Supabase sorgusuna filtreleri uygulayan yardımcı fonksiyon
+function applyFiltersToQuery(query: any, filters: Filters) {
+  // Marka filtresi
+  if (filters.brand) {
+    query = query.ilike('brand', `%${filters.brand}%`);
   }
   
-  // Eşleşme bulunamazsa, ilk harf büyük gerisi küçük tipinde format
-  console.log(`Tip değişmedi: "${type}" (eşleşme bulunamadı)`);
-  return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
-};
+  // Araç tipi filtresi
+  if (filters.vehicleType) {
+    const normalizedType = normalizeVehicleType(filters.vehicleType);
+    query = query.eq('type', normalizedType);
+  }
+  
+  // Fiyat filtreleri
+  if (filters.minPrice) {
+    query = query.gte('price->base', filters.minPrice);
+  }
+  if (filters.maxPrice) {
+    query = query.lte('price->base', filters.maxPrice);
+  }
+  
+  // Batarya kapasitesi filtreleri
+  if (filters.minBatteryCapacity) {
+    query = query.gte('battery_capacity', filters.minBatteryCapacity);
+  }
+  if (filters.maxBatteryCapacity) {
+    query = query.lte('battery_capacity', filters.maxBatteryCapacity);
+  }
+  
+  // Menzil filtreleri
+  if (filters.minRange) {
+    query = query.gte('range', filters.minRange);
+  }
+  if (filters.maxRange) {
+    query = query.lte('range', filters.maxRange);
+  }
+  
+  // Tüketim filtreleri
+  if (filters.minConsumption) {
+    query = query.gte('efficiency->consumption', filters.minConsumption);
+  }
+  if (filters.maxConsumption) {
+    query = query.lte('efficiency->consumption', filters.maxConsumption);
+  }
+  
+  // Şarj hızı filtreleri
+  if (filters.minChargeSpeed) {
+    query = query.gte('charging_time->fastCharging->power', filters.minChargeSpeed);
+  }
+  if (filters.maxChargeSpeed) {
+    query = query.lte('charging_time->fastCharging->power', filters.maxChargeSpeed);
+  }
+  
+  // Isı pompası filtresi
+  if (filters.heatPump) {
+    query = query.eq('heat_pump', filters.heatPump);
+  }
+  
+  // V2L filtresi
+  if (filters.v2l) {
+    query = query.eq('v2l', filters.v2l);
+  }
+  
+  // Türkiye durumu filtresi
+  if (filters.turkeyStatus) {
+    query = query.eq('turkey_status->available', filters.turkeyStatus === 'available');
+  }
+  
+  // Yakında geliyor filtresi
+  if (filters.comingSoon !== undefined) {
+    if (filters.comingSoon) {
+      query = query.eq('turkey_status->comingSoon', true);
+    } else {
+      // comingSoon=false ise, comingSoon=true olan araçları hariç tut
+      query = query.or('turkey_status->comingSoon.is.null,turkey_status->comingSoon.eq.false');
+    }
+  }
+  
+  // Arama terimi filtresi
+  if (filters.searchTerm) {
+    const searchLower = filters.searchTerm.toLowerCase();
+    query = query.or(
+      `brand.ilike.%${searchLower}%,model.ilike.%${searchLower}%,type.ilike.%${searchLower}%`
+    );
+  }
+  
+  return query;
+}
 
 // Para birimi tipleri için tip tanımı
 export type CurrencyType = 'TRY' | 'USD' | 'EUR' | 'CNY';
@@ -60,45 +213,11 @@ interface ElectricVehicleStore {
   setSelectedVehicle: (vehicle: ElectricVehicle | null) => void;
   currency: CurrencyType; // Para birimi seçimi
   setCurrency: (currency: CurrencyType) => void; // Para birimi güncelleme fonksiyonu
-  filters: {
-    brand?: string;
-    vehicleType?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    minBatteryCapacity?: number;
-    maxBatteryCapacity?: number;
-    minRange?: number;
-    maxRange?: number;
-    minConsumption?: number;
-    maxConsumption?: number;
-    minChargeSpeed?: number;
-    maxChargeSpeed?: number;
-    heatPump?: string; // 'yes' | 'no' | 'optional'
-    v2l?: string; // 'yes' | 'no' | 'optional'
-    turkeyStatus?: string; // 'available' | 'unavailable'
-    comingSoon?: boolean; // Türkiye'de yakında satışa sunulacak
-  };
-  temporaryFilters: {
-    brand?: string;
-    vehicleType?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    minBatteryCapacity?: number;
-    maxBatteryCapacity?: number;
-    minRange?: number;
-    maxRange?: number;
-    minConsumption?: number;
-    maxConsumption?: number;
-    minChargeSpeed?: number;
-    maxChargeSpeed?: number;
-    heatPump?: string;
-    v2l?: string;
-    turkeyStatus?: string;
-    comingSoon?: boolean;
-  };
-  setTemporaryFilters: (filters: Partial<ElectricVehicleStore['temporaryFilters']>) => void;
+  filters: Filters;
+  temporaryFilters: Filters;
+  setTemporaryFilters: (filters: Partial<Filters>) => void;
   applyFilters: () => void;
-  setFilters: (filters: Partial<ElectricVehicleStore['filters']>) => void;
+  setFilters: (filters: Partial<Filters>) => void;
 }
 
 // Zustand store
@@ -121,18 +240,15 @@ export const useElectricVehicleStore = create<ElectricVehicleStore>((set) => ({
   })),
 }));
 
-// React Query hook
+// React Query hook - Supabase'den filtreli verileri çeker
 export const useElectricVehicles = () => {
+  const filters = useElectricVehicleStore((state) => state.filters);
+  
   return useQuery({
-    queryKey: ['electricVehicles'],
-    queryFn: async () => {
-      const baseUrl = window.location.origin;
-      const response = await fetch(`${baseUrl}/api/vehicles`);
-      if (!response.ok) {
-        throw new Error('Araçlar yüklenirken bir hata oluştu');
-      }
-      return response.json() as Promise<ElectricVehicle[]>;
-    },
+    queryKey: ['electricVehicles', filters],
+    queryFn: () => fetchVehiclesFromSupabase(filters),
+    staleTime: 5 * 60 * 1000, // 5 dakika önbellek
+    refetchOnWindowFocus: false, // Pencere odağı değiştiğinde yeniden veri çekme
   });
 };
 
@@ -140,6 +256,7 @@ export const useFilteredVehicles = () => {
   const { data: vehicles = [], isLoading, error } = useElectricVehicles();
   const searchParams = useSearchParams();
   const filters = useElectricVehicleStore((state) => state.filters);
+  const setFilters = useElectricVehicleStore((state) => state.setFilters);
   
   const urlVehicleType = searchParams.get('tip');
   const searchTerm = searchParams.get('search');
@@ -147,103 +264,28 @@ export const useFilteredVehicles = () => {
   // URL'den gelen araç tipi filtresini state'e uygula
   useEffect(() => {
     if (urlVehicleType) {
-      useElectricVehicleStore.getState().setFilters({ 
+      setFilters({ 
         vehicleType: normalizeVehicleType(urlVehicleType) 
       });
     }
-  }, [urlVehicleType]);
+  }, [urlVehicleType, setFilters]);
   
-  const filteredVehicles = useMemo(() => {
-    if (!vehicles) return [];
-    
-    let filtered = [...vehicles];
-    
-    // Arama terimine göre filtreleme
+  // Arama terimi varsa, filtrelere ekle
+  useEffect(() => {
     if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter(vehicle => 
-        vehicle.brand.toLowerCase().includes(searchLower) || 
-        vehicle.model.toLowerCase().includes(searchLower) ||
-        vehicle.type.toLowerCase().includes(searchLower) ||
-        `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchLower)
-      );
+      setFilters({ searchTerm });
     }
-    
-    // Diğer filtreler
-    if (filters.brand) {
-      filtered = filtered.filter(vehicle => 
-        vehicle.brand.toLowerCase().includes(filters.brand!.toLowerCase())
-      );
-    }
-    
-    // Araç tipi filtreleme
-    if (filters.vehicleType) {
-      const normalizedFilterType = normalizeVehicleType(filters.vehicleType);
-      
-      filtered = filtered.filter(vehicle => {
-        const normalizedVehicleType = normalizeVehicleType(vehicle.type);
-        return normalizedVehicleType === normalizedFilterType;
-      });
-    }
-    
-    // Premium araçlar ve Türkiye'de yakında
-    filtered = filtered.filter(vehicle => {
-      // "Yakında Türkiye'de" filtresi aktif ise, SADECE comingSoon özelliği true olan araçları göster
-      if (filters.comingSoon === true) {
-        return vehicle.turkeyStatus?.comingSoon === true;
-      }
-      
-      // ComingSoon filtresi aktif değilse, comingSoon=true olan araçları filtreleme
-      if (vehicle.turkeyStatus?.comingSoon === true && !filters.comingSoon) {
-        return false;
-      }
-      
-      // Fiyat filtreleme
-      if (filters.minPrice && vehicle.price.base < filters.minPrice) return false;
-      if (filters.maxPrice && vehicle.price.base > filters.maxPrice) return false;
-      
-      // Batarya kapasitesi filtreleme
-      if (filters.minBatteryCapacity && vehicle.batteryCapacity < filters.minBatteryCapacity) return false;
-      if (filters.maxBatteryCapacity && vehicle.batteryCapacity > filters.maxBatteryCapacity) return false;
-      
-      // Menzil filtreleme
-      if (filters.minRange && vehicle.range < filters.minRange) return false;
-      if (filters.maxRange && vehicle.range > filters.maxRange) return false;
-      
-      // Tüketim filtreleme
-      if (filters.minConsumption && vehicle.efficiency.consumption < filters.minConsumption) return false;
-      if (filters.maxConsumption && vehicle.efficiency.consumption > filters.maxConsumption) return false;
-      
-      // Şarj hızı filtreleme
-      if (filters.minChargeSpeed && vehicle.chargingTime.fastCharging.power < filters.minChargeSpeed) return false;
-      if (filters.maxChargeSpeed && vehicle.chargingTime.fastCharging.power > filters.maxChargeSpeed) return false;
-      
-      // Isı pompası filtreleme
-      if (filters.heatPump && vehicle.heatPump !== filters.heatPump) return false;
-      
-      // V2L filtreleme
-      if (filters.v2l && vehicle.v2l !== filters.v2l) return false;
-      
-      // Türkiye'de satışta mı filtreleme
-      if (filters.turkeyStatus) {
-        if (filters.turkeyStatus === 'available' && (!vehicle.turkeyStatus || !vehicle.turkeyStatus.available)) {
-          return false;
-        }
-        if (filters.turkeyStatus === 'unavailable' && vehicle.turkeyStatus && vehicle.turkeyStatus.available) {
-          return false;
-        }
-      }
-      
-      return true;
-    });
-    
-    return filtered;
-  }, [vehicles, filters, searchTerm]);
+  }, [searchTerm, setFilters]);
+
+  // Yakında geliyor kontrolü
+  const isComingSoonActive = useMemo(() => {
+    return filters.comingSoon === true;
+  }, [filters.comingSoon]);
   
   return {
-    vehicles: filteredVehicles,
+    vehicles,
     isLoading,
     error,
-    isComingSoonActive: !!filters.comingSoon,
+    isComingSoonActive
   };
 }; 

@@ -44,7 +44,7 @@ export async function fetchVehicles(): Promise<ElectricVehicle[]> {
     // Supabase verilerini uygulama modeline dönüştür - camelCase ve diğer dönüşümler için
     // Bu örnek için tip zorlama (as) kullanıyoruz, gerçek uygulamada daha ayrıntılı bir eşleme gerekebilir
 
-    return data.map(vehicle => {
+    return data.map((vehicle: any) => {
 
       // Alan isimlerini camelCase'e dönüştürme
       const result = {
@@ -64,7 +64,7 @@ export async function fetchVehicles(): Promise<ElectricVehicle[]> {
         efficiency: vehicle.efficiencies,
         comfort: vehicle.comforts,
         price: vehicle.prices,
-        images: vehicle.images,
+        images: vehicle.images?.map((img: any) => img.url),
         warranty: vehicle.warranties,
       } as unknown as ElectricVehicle;
 

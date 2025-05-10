@@ -16,7 +16,7 @@ export interface ElectricVehicle {
       time10to80: number; // 10%'dan 80%'e şarj süresi (dakika)
     };
   };
-  
+
   performance?: {
     power: number; // Motor Gücü (HP)
     torque: number; // Tork (Nm)
@@ -24,7 +24,7 @@ export interface ElectricVehicle {
     topSpeed: number; // Azami Hız (km/s)
     acceleration: number; // 0-100 km/s (saniye)
   };
-  
+
   dimensions?: {
     length: number;
     width: number;
@@ -33,14 +33,14 @@ export interface ElectricVehicle {
     cargoCapacity: number;
     groundClearance: number;
   };
-  
+
   efficiency?: {
     consumption: number; // kWh/100km
     regenerativeBraking: boolean; // Rejeneratif fren sistemi
     ecoMode: boolean; // Ekonomi modu
     energyRecovery: number; // Enerji geri kazanım oranı (%)
   };
-  
+
   comfort?: {
     seatingCapacity: number;
     screens: number;
@@ -52,7 +52,7 @@ export interface ElectricVehicle {
     navigation: boolean; // Navigasyon
     parkingSensors: boolean; // Park sensörleri
   };
-  
+
   price?: {
     base: number;
     currency: string;
@@ -61,19 +61,19 @@ export interface ElectricVehicle {
     leasingDuration: number;
     leasingDownPayment: number;
   };
-  
+
   images?: string[];
   features?: Array<{
     name: string;
     isExtra: boolean;
   }>;
-  
+
   warranty?: {
     battery: number; // Yıl cinsinden batarya garantisi
     vehicle: number; // Yıl cinsinden araç garantisi
     maxKm: number; // Maksimum garanti kilometresi
   };
-  
+
   environmentalImpact?: {
     co2Savings: number; // kg/yıl CO2 tasarrufu
     recyclableMaterials: number; // Geri dönüştürülebilir malzeme oranı (%)

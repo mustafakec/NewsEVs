@@ -184,7 +184,7 @@ function ProfileContent() {
             <div className="relative h-48">
               {vehicle.images && vehicle.images[0] && (
                 <Image
-                  src={vehicle.images[0]?.url}
+                  src={vehicle.images[0]}
                   alt={`${vehicle.brand} ${vehicle.model}`}
                   fill
                   className="object-cover"

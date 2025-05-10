@@ -222,7 +222,7 @@ export default function ComparePage() {
                 <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
                   {selectedVehicles[index]?.images?.[0] && (
                     <img
-                      src={selectedVehicles[index]?.images[0]?.url}
+                      src={selectedVehicles[index]?.images[0]}
                       alt={`${selectedVehicles[index]?.brand} ${selectedVehicles[index]?.model}`}
                       className="w-full h-full object-cover"
                     />
@@ -351,7 +351,7 @@ export default function ComparePage() {
                         id: v.id,
                         brand: v.brand,
                         model: v.model,
-                        image: v?.images && v.images?.length > 0 && v.images[0]?.url
+                        image: v?.images && v.images?.length > 0 && v.images[0]
                       }))
                     };
 

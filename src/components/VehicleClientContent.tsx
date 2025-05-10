@@ -405,7 +405,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
               <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
                 {vehicleData.images && vehicleData.images.length > 0 ? (
                   <Image
-                    src={vehicleData.images[currentImageIndex]?.url}
+                    src={vehicleData.images[currentImageIndex]}
                     alt={`${vehicleData.brand} ${vehicleData.model}`}
                     fill
                     className="object-cover"

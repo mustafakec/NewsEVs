@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+// import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  // const { signIn } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,7 +19,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await signIn(email, password);
+      // await signIn(email, password);
       router.push('/dashboard');
     } catch (error: any) {
       setError(error.message || 'Giriş yapılırken bir hata oluştu');

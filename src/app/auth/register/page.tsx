@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+// import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -12,7 +12,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
+  // const { signUp } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,7 +27,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await signUp(email, password, fullName);
+      // await signUp(email, password, fullName);
       router.push('/auth/verify-email');
     } catch (error: any) {
       setError(error.message || 'Kayıt olurken bir hata oluştu');

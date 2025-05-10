@@ -328,7 +328,7 @@ export default function SarjPage() {
   const [currentCharge, setCurrentCharge] = useState<number>(0);
   const [targetCharge, setTargetCharge] = useState<number>(0);
   const [kwhPrice, setKwhPrice] = useState<number>(0);
-  
+
   // Rota oluşturma için gerekli state'ler
   const [isRouteMode, setIsRouteMode] = useState(false);
   const [startLocation, setStartLocation] = useState<string>("");
@@ -338,7 +338,7 @@ export default function SarjPage() {
   const directionsRenderer = useRef<google.maps.DirectionsRenderer | null>(null);
   const [nearbyStationsOnRoute, setNearbyStationsOnRoute] = useState<ChargingStation[]>([]);
   const [showPremiumRouteModal, setShowPremiumRouteModal] = useState(false);
-  
+
   const [calculationResult, setCalculationResult] = useState<{
     energyToAdd: number;
     totalCost: number;
@@ -374,11 +374,11 @@ export default function SarjPage() {
               station.location.lng
             )
           }));
-          
+
           const sortedStations = stationsWithDistance
             .sort((a, b) => a.distance - b.distance)
             .map(({ distance, ...station }) => station);
-          
+
           setStations(sortedStations);
           setIsLoading(false);
         },
@@ -540,7 +540,7 @@ export default function SarjPage() {
           }
         });
 
-        const availableConnections = station.connections.filter(conn => 
+        const availableConnections = station.connections.filter(conn =>
           conn.isOperational && conn.status === 'Aktif'
         ).length;
 
@@ -590,8 +590,8 @@ export default function SarjPage() {
                   <div class="text-sm">
                     <strong>Operatör:</strong> ${station.operator.name}<br>
                     <strong>İletişim:</strong> ${station.operator.phone}<br>
-                    ${station.operator.website ? 
-                      `<a href="${station.operator.website}" target="_blank" class="text-purple-600 hover:text-purple-800">
+                    ${station.operator.website ?
+              `<a href="${station.operator.website}" target="_blank" class="text-purple-600 hover:text-purple-800">
                         Website
                       </a>` : ''}
                   </div>
@@ -623,6 +623,7 @@ export default function SarjPage() {
 
       isMapInitialized.current = true;
     } catch (error) {
+
       console.error('Harita yüklenirken bir hata oluştu:', error);
     }
   };
@@ -656,31 +657,31 @@ export default function SarjPage() {
 
     // Eklenecek enerji (kWh)
     const energyToAdd = batteryCapacity * (targetCharge - currentCharge) / 100;
-    
+
     // Toplam maliyet
     const totalCost = energyToAdd * kwhPrice;
-    
+
     // Şarj süreleri
     const hours50kW = energyToAdd / 50;
     const minutes50kW = Math.round(hours50kW * 60);
-    const chargingTime50kW = minutes50kW >= 60 
-      ? `${Math.floor(minutes50kW / 60)} saat ${minutes50kW % 60} dakika` 
+    const chargingTime50kW = minutes50kW >= 60
+      ? `${Math.floor(minutes50kW / 60)} saat ${minutes50kW % 60} dakika`
       : `${minutes50kW} dakika`;
-    
+
     const hours150kW = energyToAdd / 150;
     const minutes150kW = Math.round(hours150kW * 60);
-    const chargingTime150kW = minutes150kW >= 60 
-      ? `${Math.floor(minutes150kW / 60)} saat ${minutes150kW % 60} dakika` 
+    const chargingTime150kW = minutes150kW >= 60
+      ? `${Math.floor(minutes150kW / 60)} saat ${minutes150kW % 60} dakika`
       : `${minutes150kW} dakika`;
-    
+
     // Tahmini menzil artışı (yaklaşık 6 km/kWh varsayımı ile)
     const estimatedRange = Math.round(energyToAdd * 6);
-    
+
     // Detaylı şarj maliyeti hesaplamalarını ekleyelim
     const acChargingHours = energyToAdd / 11; // 11 kW AC şarj için
     const dcChargingHours = energyToAdd / 50; // 50 kW DC şarj için
     const superChargerHours = energyToAdd / 250; // 250 kW DC süper şarj için
-    
+
     setCalculationResult({
       energyToAdd,
       totalCost,
@@ -688,13 +689,13 @@ export default function SarjPage() {
       chargingTime150kW,
       kwhPrice,
       estimatedRange,
-      acChargingTime: acChargingHours >= 1 
+      acChargingTime: acChargingHours >= 1
         ? `${Math.floor(acChargingHours)} saat ${Math.round((acChargingHours % 1) * 60)} dakika`
         : `${Math.round(acChargingHours * 60)} dakika`,
-      dcChargingTime: dcChargingHours >= 1 
+      dcChargingTime: dcChargingHours >= 1
         ? `${Math.floor(dcChargingHours)} saat ${Math.round((dcChargingHours % 1) * 60)} dakika`
         : `${Math.round(dcChargingHours * 60)} dakika`,
-      superChargerTime: superChargerHours >= 1 
+      superChargerTime: superChargerHours >= 1
         ? `${Math.floor(superChargerHours)} saat ${Math.round((superChargerHours % 1) * 60)} dakika`
         : `${Math.round(superChargerHours * 60)} dakika`,
     });
@@ -716,13 +717,13 @@ export default function SarjPage() {
   const handleCloseRouteModal = () => {
     setShowPremiumRouteModal(false);
   };
-  
+
   // Rota oluşturma
   const createRoute = () => {
     if (!window.google || !mapInstance.current || !startLocation || !endLocation) return;
-    
+
     const directionsService = new window.google.maps.DirectionsService();
-    
+
     if (!directionsRenderer.current) {
       directionsRenderer.current = new window.google.maps.DirectionsRenderer({
         map: mapInstance.current,
@@ -736,7 +737,7 @@ export default function SarjPage() {
     } else {
       directionsRenderer.current.setMap(mapInstance.current);
     }
-    
+
     directionsService.route({
       origin: startLocation,
       destination: endLocation,
@@ -746,7 +747,7 @@ export default function SarjPage() {
       if (status === window.google.maps.DirectionsStatus.OK && result) {
         directionsRenderer.current?.setDirections(result);
         setCurrentRoute(result.routes[0]);
-        
+
         // Rota üzerindeki şarj istasyonlarını bul
         findChargingStationsOnRoute(result.routes[0]);
       } else {
@@ -754,17 +755,17 @@ export default function SarjPage() {
       }
     });
   };
-  
+
   // Rota üzerindeki şarj istasyonlarını bulma
   const findChargingStationsOnRoute = (route: google.maps.DirectionsRoute) => {
     if (!route || !route.legs || route.legs.length === 0 || !mapInstance.current) return;
-    
+
     // Önceki markerları temizle
     googlePlacesMarkers.forEach(marker => marker.setMap(null));
-    
+
     // Rota üzerinden stratejik noktaları ayarla (her 20-30 km'de bir)
-    const routePoints: {lat: number, lng: number}[] = [];
-    
+    const routePoints: { lat: number, lng: number }[] = [];
+
     // Her bacak için adım adım noktaları topla
     route.legs.forEach(leg => {
       leg.steps.forEach(step => {
@@ -772,38 +773,37 @@ export default function SarjPage() {
         // Daha uzun mesafeler için daha az nokta al
         const samplingDistance = distance > 50000 ? 30000 : 20000; // 20-30 km'de bir nokta örnekle
         const numPoints = Math.max(2, Math.floor(distance / samplingDistance));
-        
+
         for (let i = 0; i < numPoints; i++) {
           const progress = i / (numPoints - 1);
           const lat = step.start_location.lat() + (step.end_location.lat() - step.start_location.lat()) * progress;
           const lng = step.start_location.lng() + (step.end_location.lng() - step.start_location.lng()) * progress;
-          
+
           routePoints.push({ lat, lng });
         }
       });
     });
-    
-    console.log(`Rota üzerinde ${routePoints.length} stratejik nokta belirlendi`);
-    
+
+
     // Places API'si ile şarj istasyonlarını ara
     const newMarkers: google.maps.Marker[] = [];
     let foundStations: any[] = [];
     let processedPoints = 0;
-    
+
     // Arama sonuçlarını işleme fonksiyonu
-    const processSearchResults = (results: google.maps.places.PlaceResult[] | null, status: google.maps.places.PlacesServiceStatus, searchPoint: {lat: number, lng: number}) => {
+    const processSearchResults = (results: google.maps.places.PlaceResult[] | null, status: google.maps.places.PlacesServiceStatus, searchPoint: { lat: number, lng: number }) => {
       processedPoints++;
-      
+
       if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
         results.forEach(place => {
           // Zaten eklenmiş istasyonu tekrar ekleme (place_id kontrolü)
           if (foundStations.some(station => station.place_id === place.place_id)) {
             return;
           }
-          
+
           if (place.geometry && place.geometry.location) {
             foundStations.push(place);
-            
+
             const marker = new window.google.maps.Marker({
               map: mapInstance.current!,
               position: place.geometry.location,
@@ -813,7 +813,7 @@ export default function SarjPage() {
               },
               zIndex: 10 // Rotanın üzerinde göster
             });
-            
+
             // Marker için bilgi penceresi oluştur
             const infoWindow = new window.google.maps.InfoWindow({
               content: `
@@ -836,7 +836,7 @@ export default function SarjPage() {
                 </div>
               `
             });
-            
+
             marker.addListener('click', () => {
               if (currentInfoWindow.current) {
                 currentInfoWindow.current.close();
@@ -844,28 +844,27 @@ export default function SarjPage() {
               infoWindow.open(mapInstance.current!, marker);
               currentInfoWindow.current = infoWindow;
             });
-            
+
             newMarkers.push(marker);
           }
         });
       }
-      
+
       // Tüm noktalar işlendiğinde işlemi tamamla
       if (processedPoints === routePoints.length) {
-        console.log(`Toplam ${foundStations.length} şarj istasyonu bulundu`);
-        
+
         if (foundStations.length === 0) {
           alert('Rota üzerinde şarj istasyonu bulunamadı. Farklı bir rota deneyin veya daha geniş bir arama yapın.');
         }
-        
+
         setGooglePlacesMarkers(newMarkers);
         setNearbyStationsOnRoute(foundStations);
       }
     };
-    
+
     // Rota üzerindeki her stratejik noktada arama yap
     const service = new window.google.maps.places.PlacesService(mapInstance.current);
-    
+
     routePoints.forEach(point => {
       const request = {
         location: point,
@@ -873,16 +872,16 @@ export default function SarjPage() {
         keyword: 'elektrikli araç şarj istasyonu',
         type: 'point_of_interest'
       };
-      
+
       // Arama isteklerini bir süre farkıyla gönder (rate limiting)
       setTimeout(() => {
-        service.nearbySearch(request, (results, status) => 
+        service.nearbySearch(request, (results, status) =>
           processSearchResults(results, status, point)
         );
       }, 300 * routePoints.indexOf(point)); // Her nokta için 300ms bekle
     });
   };
-  
+
   // Rota modunu iptal et
   const cancelRouteMode = () => {
     setShowRouteInputs(false);
@@ -890,11 +889,11 @@ export default function SarjPage() {
     setEndLocation("");
     setCurrentRoute(null);
     setNearbyStationsOnRoute([]);
-    
+
     if (directionsRenderer.current) {
       directionsRenderer.current.setMap(null);
     }
-    
+
     // Orjinal haritayı göster
     initMap();
   };
@@ -944,18 +943,18 @@ export default function SarjPage() {
               ) : (
                 <div className="relative">
                   <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
-                  <button
-                    onClick={searchNearbyChargingStations}
+                    <button
+                      onClick={searchNearbyChargingStations}
                       className="bg-white px-4 py-2 rounded-lg shadow-md
                              text-[#660566] font-medium hover:bg-[#660566] hover:text-white
                                transition-colors duration-200 flex items-center gap-2"
-                  >
+                    >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
                       </svg>
-                    Yakındaki Şarj İstasyonlarını Bul
-                  </button>
-                    
+                      Yakındaki Şarj İstasyonlarını Bul
+                    </button>
+
                     {!showRouteInputs ? (
                       <button
                         onClick={handleRouteButtonClick}
@@ -985,7 +984,7 @@ export default function SarjPage() {
                       </button>
                     )}
                   </div>
-                  
+
                   {/* Rota giriş kutuları */}
                   {showRouteInputs && (
                     <div className="absolute top-4 left-4 z-10 bg-white p-4 rounded-lg shadow-md w-72">
@@ -993,8 +992,8 @@ export default function SarjPage() {
                       <div className="space-y-3">
                         <div>
                           <label htmlFor="start-location" className="block text-xs text-gray-600 mb-1">Başlangıç Noktası</label>
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             id="start-location"
                             value={startLocation}
                             onChange={(e) => setStartLocation(e.target.value)}
@@ -1004,8 +1003,8 @@ export default function SarjPage() {
                         </div>
                         <div>
                           <label htmlFor="end-location" className="block text-xs text-gray-600 mb-1">Varış Noktası</label>
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             id="end-location"
                             value={endLocation}
                             onChange={(e) => setEndLocation(e.target.value)}
@@ -1023,7 +1022,7 @@ export default function SarjPage() {
                       </div>
                     </div>
                   )}
-                  
+
                   <div ref={mapRef} className="w-full h-[600px]"></div>
                 </div>
               )}
@@ -1050,62 +1049,62 @@ export default function SarjPage() {
                 </div>
 
                 <div className="p-6 pt-8">
-              {/* Tesla */}
+                  {/* Tesla */}
                   <div className="mb-8">
                     <div className="flex items-center gap-4 mb-4">
-                  <img src="/icons/tesla.png" alt="Tesla Logo" className="h-8" />
+                      <img src="/icons/tesla.png" alt="Tesla Logo" className="h-8" />
                       <h3 className="text-lg font-semibold text-gray-900">Tesla</h3>
-                </div>
+                    </div>
                     <div className="bg-gray-50 rounded-xl p-4">
-                    <div className="flex justify-between items-center mb-2">
+                      <div className="flex justify-between items-center mb-2">
                         <span className="text-gray-600">DC Şarj (250 kW)</span>
-                      <span className="text-[#660566] font-semibold">8,8₺ / kWh</span>
+                        <span className="text-[#660566] font-semibold">8,8₺ / kWh</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Trugo */}
+                  {/* Trugo */}
                   <div className="mb-8">
                     <div className="flex items-center gap-4 mb-4">
-                  <img src="/icons/trugo.png" alt="Trugo Logo" className="h-8" />
+                      <img src="/icons/trugo.png" alt="Trugo Logo" className="h-8" />
                       <h3 className="text-lg font-semibold text-gray-900">Trugo</h3>
-                </div>
+                    </div>
                     <div className="space-y-3">
                       <div className="bg-gray-50 rounded-xl p-4">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-gray-600">AC Şarj (≤ 22 kW)</span>
-                      <span className="text-[#660566] font-semibold">8,49₺ / kWh</span>
-                    </div>
-                  </div>
+                          <span className="text-[#660566] font-semibold">8,49₺ / kWh</span>
+                        </div>
+                      </div>
                       <div className="bg-gray-50 rounded-xl p-4">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-gray-600">DC Şarj ({'<'} 150 kW)</span>
-                      <span className="text-[#660566] font-semibold">10,60₺ / kWh</span>
-                    </div>
-                  </div>
+                          <span className="text-[#660566] font-semibold">10,60₺ / kWh</span>
+                        </div>
+                      </div>
                       <div className="bg-gray-50 rounded-xl p-4">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-gray-600">DC Şarj (≥ 150 kW)</span>
-                      <span className="text-[#660566] font-semibold">11,82₺ / kWh</span>
+                          <span className="text-[#660566] font-semibold">11,82₺ / kWh</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
 
                   {/* Bilgilendirme */}
                   <div className="mt-6 text-center space-y-4">
-              <div className="inline-flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg text-gray-600">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                    <div className="inline-flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg text-gray-600">
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
                       <span>Diğer şarj istasyonları çok yakında.</span>
-              </div>
+                    </div>
                     <div className="text-center text-xs text-gray-400 px-3 py-1.5">
                       <svg className="w-3.5 h-3.5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
                       <span>Fiyatlar ve bilgiler değişiklik gösterebilir. Bu sayfadaki tüm markalar ve logolar bilgilendirme amaçlıdır. Firmalarla iş birliğimiz veya bağlantımız yoktur.</span>
                     </div>
                   </div>
@@ -1120,20 +1119,20 @@ export default function SarjPage() {
                     Premium
                   </span>
                 </div>
-                
+
                 <div className="bg-gradient-to-r from-[#660566]/10 via-purple-50 to-[#660566]/5 p-6 border-b border-gray-100">
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">Şarj Maliyeti Hesaplayıcı</h3>
                   <p className="text-gray-700 text-sm mb-0">Aracınızın şarj maliyetini hesaplayın.</p>
                 </div>
-                
+
                 {/* Premium içerik overlay */}
                 {!isPremiumUser && (
                   <div className="absolute inset-x-0 top-[104px] bottom-0 z-10 flex items-center justify-center bg-white">
                     <div className="p-6 max-w-md text-center">
                       <div className="w-16 h-16 bg-[#660566]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg className="w-8 h-8 text-[#660566]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                       </div>
                       <h2 className="text-xl font-bold text-gray-900 mb-3">Premium Özellik</h2>
@@ -1143,7 +1142,7 @@ export default function SarjPage() {
                         </p>
                       </div>
                       <div className="space-y-3">
-                        <button 
+                        <button
                           onClick={() => {
                             // Header'daki Premium modal'ı açmak için özel event yayınla
                             const event = new Event('show-premium-modal');
@@ -1158,7 +1157,7 @@ export default function SarjPage() {
                     </div>
                   </div>
                 )}
-                
+
                 <div className="p-6">
                   <div className="space-y-4">
                     <div>
@@ -1176,7 +1175,7 @@ export default function SarjPage() {
                         }}
                       />
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="currentCharge" className="block text-sm font-medium text-gray-700 mb-1">
@@ -1195,7 +1194,7 @@ export default function SarjPage() {
                           }}
                         />
                       </div>
-                      
+
                       <div>
                         <label htmlFor="targetCharge" className="block text-sm font-medium text-gray-700 mb-1">
                           Hedef Şarj (%)
@@ -1214,7 +1213,7 @@ export default function SarjPage() {
                         />
                       </div>
                     </div>
-                    
+
                     <div>
                       <label htmlFor="kwhPrice" className="block text-sm font-medium text-gray-700 mb-1">
                         Şarj Ücreti (₺/kWh)
@@ -1231,7 +1230,7 @@ export default function SarjPage() {
                         }}
                       />
                     </div>
-                    
+
                     <div className="mt-2">
                       <button
                         onClick={calculateChargingCost}
@@ -1245,7 +1244,7 @@ export default function SarjPage() {
                       </button>
                     </div>
                   </div>
-                  
+
                   {calculationResult !== null && (
                     <div className="mt-6 p-5 bg-[#660566]/5 rounded-xl">
                       <h4 className="text-lg font-semibold text-gray-900 mb-3">Hesaplama Sonucu</h4>
@@ -1292,7 +1291,7 @@ export default function SarjPage() {
               <div className="bg-white w-full max-w-md p-6 rounded-xl shadow-xl">
                 <div className="flex items-center justify-between">
                   <div></div>
-                  <button 
+                  <button
                     onClick={handleCloseRouteModal}
                     className="text-gray-500 hover:text-gray-700"
                   >
@@ -1300,23 +1299,23 @@ export default function SarjPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
-        </div>
-                
+                </div>
+
                 <div className="mt-4">
                   <div className="w-16 h-16 bg-[#660566]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-[#660566]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                     </svg>
                   </div>
-                  
+
                   <h2 className="text-xl font-bold text-gray-900 text-center mb-3">Premium Özellik</h2>
-                  
+
                   <p className="text-gray-600 text-center">
                     Rota oluşturma ve rota üzerindeki şarj istasyonlarını görüntüleme özelliği Premium üyelere özeldir.
                   </p>
-                  
+
                   <div className="mt-6 space-y-4">
-                    <button 
+                    <button
                       onClick={() => {
                         // Premium modal'ı açacak eventi tetikle
                         const event = new Event('show-premium-modal');

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useElectricVehicles } from '@/viewmodels/useElectricVehicles';
-import type ElectricVehicle from '@/models/ElectricVehicle';
+import type { ElectricVehicle } from '@/models/ElectricVehicle';
 import { useUserStore } from '@/stores/useUserStore';
 
 export default function ComparePage() {
@@ -24,7 +24,6 @@ export default function ComparePage() {
       useUserStore.setState((state) => ({
         user: state.user ? { ...state.user, isPremium: true } : null
       }));
-      console.log('test@test.com kullanıcısının premium özellikleri aktifleştirildi');
     }
   }, [isLoggedIn, isPremium]);
 
@@ -32,12 +31,12 @@ export default function ComparePage() {
     const newSelectedVehicles = [...selectedVehicles];
     newSelectedVehicles[index] = vehicle;
     setSelectedVehicles(newSelectedVehicles);
-    
+
     // Seçim yapıldığında dropdown'ı kapat ve arama terimini temizle
     const newDropdownOpen = [...dropdownOpen];
     newDropdownOpen[index] = false;
     setDropdownOpen(newDropdownOpen);
-    
+
     const newSearchTerms = [...searchTerms];
     newSearchTerms[index] = '';
     setSearchTerms(newSearchTerms);
@@ -52,7 +51,7 @@ export default function ComparePage() {
     const newDropdownOpen = [...dropdownOpen];
     newDropdownOpen[index] = true;
     setDropdownOpen(newDropdownOpen);
-    
+
     // Arama yapılırken seçili aracı temizlemeyelim, sadece yeni sonuçları gösterelim
   };
 
@@ -87,13 +86,13 @@ export default function ComparePage() {
         const savedVehicleIds = localStorage.getItem('compareVehicles');
         if (savedVehicleIds) {
           const parsedIds = JSON.parse(savedVehicleIds);
-          
+
           if (Array.isArray(parsedIds) && parsedIds.length > 0) {
             // ID'lere göre gerçek araç nesnelerini bul
-            const savedVehicles = parsedIds.map(id => 
+            const savedVehicles = parsedIds.map(id =>
               vehicles.find(vehicle => vehicle.id === id) || null
             );
-            
+
             // En fazla 3 araç seçebiliriz
             const newSelectedVehicles = [...selectedVehicles];
             savedVehicles.forEach((vehicle, index) => {
@@ -101,9 +100,9 @@ export default function ComparePage() {
                 newSelectedVehicles[index] = vehicle;
               }
             });
-            
+
             setSelectedVehicles(newSelectedVehicles);
-            
+
             // Karşılaştırma verileri yüklendikten sonra localStorage'ı temizle
             // Bu sayede sayfa yenilendiğinde tekrar aynı veriler yüklenmez
             localStorage.removeItem('compareVehicles');
@@ -124,8 +123,8 @@ export default function ComparePage() {
   const renderVehicleSelector = (index: number) => {
     // 3. slot ve kullanıcı premium değilse premium modal göster
     const isPremiumSlot = index === 2 && !isPremium;
-    const filteredVehicles = vehicles?.filter(vehicle => 
-      vehicle.brand.toLowerCase().includes(searchTerms[index].toLowerCase()) || 
+    const filteredVehicles = vehicles?.filter(vehicle =>
+      vehicle.brand.toLowerCase().includes(searchTerms[index].toLowerCase()) ||
       vehicle.model.toLowerCase().includes(searchTerms[index].toLowerCase())
     );
 
@@ -139,13 +138,13 @@ export default function ComparePage() {
           </div>
           <div className="p-4 overflow-visible">
             <div ref={(el) => { dropdownRefs.current[index] = el; }} className="relative w-full overflow-visible">
-              <div 
+              <div
                 className="flex items-center relative w-full"
               >
                 <input
                   type="text"
-                  value={selectedVehicles[index] && searchTerms[index] === '' 
-                    ? `${selectedVehicles[index]?.brand} ${selectedVehicles[index]?.model}` 
+                  value={selectedVehicles[index] && searchTerms[index] === ''
+                    ? `${selectedVehicles[index]?.brand} ${selectedVehicles[index]?.model}`
                     : searchTerms[index]}
                   onChange={(e) => handleSearchChange(e.target.value, index)}
                   onFocus={() => {
@@ -153,14 +152,14 @@ export default function ComparePage() {
                       setShowPremiumModal(true);
                       return;
                     }
-                    
+
                     // Input'a focus yapıldığında search terms'i temizleyelim ki kullanıcı yazabilsin
                     if (selectedVehicles[index]) {
                       const newSearchTerms = [...searchTerms];
                       newSearchTerms[index] = '';
                       setSearchTerms(newSearchTerms);
                     }
-                    
+
                     toggleDropdown(index);
                   }}
                   placeholder="Araç Seçin veya Arayın"
@@ -169,18 +168,18 @@ export default function ComparePage() {
                              focus:border-transparent transition-all duration-200 ${isPremiumSlot && !showPremiumModal ? 'opacity-50' : ''}`}
                   disabled={isPremiumSlot && !showPremiumModal}
                 />
-                <button 
+                <button
                   className="absolute right-3 text-gray-500 hover:text-gray-700"
                   onClick={() => toggleDropdown(index)}
                   tabIndex={-1}
                   aria-label="Arama menüsünü aç/kapat"
                 >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    strokeWidth={1.5} 
-                    stroke="currentColor" 
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
                     className="w-5 h-5"
                   >
                     {dropdownOpen[index] ? (
@@ -191,13 +190,13 @@ export default function ComparePage() {
                   </svg>
                 </button>
               </div>
-              
+
               {/* Dropdown Menü */}
               {dropdownOpen[index] && (
                 <div className="absolute z-50 top-full left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto mt-1">
                   {filteredVehicles?.length ? (
                     filteredVehicles.map(vehicle => (
-                      <div 
+                      <div
                         key={vehicle.id}
                         onClick={() => {
                           if (isPremiumSlot && !showPremiumModal) {
@@ -223,7 +222,7 @@ export default function ComparePage() {
                 <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
                   {selectedVehicles[index]?.images?.[0] && (
                     <img
-                      src={selectedVehicles[index]?.images[0]}
+                      src={selectedVehicles[index]?.images[0]?.url}
                       alt={`${selectedVehicles[index]?.brand} ${selectedVehicles[index]?.model}`}
                       className="w-full h-full object-cover"
                     />
@@ -325,7 +324,7 @@ export default function ComparePage() {
                 </div>
               ))}
             </div>
-            
+
             {/* Karşılaştırmayı Kaydet Butonu */}
             <div className="mt-8 pt-6 border-t border-gray-100 flex justify-center">
               <button
@@ -335,15 +334,15 @@ export default function ComparePage() {
                     openAuthModal();
                     return;
                   }
-                  
+
                   // Karşılaştırmayı kaydet
                   const vehicles = selectedVehicles.filter(Boolean) as ElectricVehicle[];
-                  
+
                   // localStorage'a karşılaştırma bilgilerini kaydet
                   try {
                     const savedComparisons = localStorage.getItem('savedComparisons');
                     let comparisons = savedComparisons ? JSON.parse(savedComparisons) : [];
-                    
+
                     // Yeni karşılaştırma nesnesi oluştur
                     const newComparison = {
                       id: Date.now().toString(),
@@ -352,14 +351,14 @@ export default function ComparePage() {
                         id: v.id,
                         brand: v.brand,
                         model: v.model,
-                        image: v.images[0]
+                        image: v?.images && v.images?.length > 0 && v.images[0]?.url
                       }))
                     };
-                    
+
                     // Karşılaştırmayı kaydet
                     comparisons.push(newComparison);
                     localStorage.setItem('savedComparisons', JSON.stringify(comparisons));
-                    
+
                     // Kullanıcıya bildir
                     alert('Karşılaştırma kaydedildi! Profil sayfanızdaki "Karşılaştırmalarım" sekmesinden görüntüleyebilirsiniz.');
                   } catch (error) {
@@ -396,7 +395,7 @@ export default function ComparePage() {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
         <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative">
-          <button 
+          <button
             onClick={() => setShowPremiumModal(false)}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
           >
@@ -404,12 +403,12 @@ export default function ComparePage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          
+
           <div className="text-center mb-6">
             <div className="w-16 h-16 bg-[#660566]/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-[#660566]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Premium İçerik</h3>
@@ -417,7 +416,7 @@ export default function ComparePage() {
               Premium üyelik ile 3 aracı aynı anda karşılaştırabilir ve detaylı analizler yapabilirsiniz.
             </p>
             <div className="space-y-3">
-              <button 
+              <button
                 onClick={() => {
                   const event = new Event('show-premium-modal');
                   window.dispatchEvent(event);
@@ -428,7 +427,7 @@ export default function ComparePage() {
               >
                 Premium Üye Ol
               </button>
-              <button 
+              <button
                 onClick={() => setShowPremiumModal(false)}
                 className="w-full text-gray-600 px-4 py-2 rounded-lg font-medium border border-gray-200
                        hover:bg-gray-50 transition-all duration-200"

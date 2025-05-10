@@ -9,7 +9,6 @@ const SearchBar = () => {
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // TODO: Arama işlemi
-    console.log('Arama yapılıyor:', searchTerm);
   };
 
   return (
@@ -22,9 +21,8 @@ const SearchBar = () => {
           <div className="flex items-center">
             <div className="absolute left-6">
               <svg
-                className={`w-5 h-5 transition-colors duration-200 ${
-                  isFocused ? 'text-purple-500' : 'text-gray-400'
-                }`}
+                className={`w-5 h-5 transition-colors duration-200 ${isFocused ? 'text-purple-500' : 'text-gray-400'
+                  }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -82,5 +80,5 @@ const SearchBar = () => {
   );
 };
 
-export default SearchBar; 
+export default SearchBar;
 

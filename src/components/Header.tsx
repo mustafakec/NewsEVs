@@ -28,7 +28,7 @@ const Header = () => {
     const interval = setInterval(() => {
       setIsVisible(prev => !prev);
     }, 5000); // 5 saniyede bir değişim
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -37,18 +37,16 @@ const Header = () => {
     const handleOpenPremiumModal = () => {
       // Premium kullanıcılara modalı gösterme
       if (isLoggedIn && (user?.isPremium || user?.email === "test@test.com")) {
-        console.log("Premium kullanıcı için modal gösterilmiyor:", user?.name);
         return;
       }
-      
+
       // Premium olmayan kullanıcılara modalı göster
-      console.log("Premium modal gösteriliyor - kullanıcı premium değil");
       setIsPremiumModalOpen(true);
     };
 
     // Global event dinleyicisi ekleme
     window.addEventListener('show-premium-modal', handleOpenPremiumModal);
-    
+
     // Component unmount olduğunda temizle
     return () => {
       window.removeEventListener('show-premium-modal', handleOpenPremiumModal);
@@ -64,7 +62,7 @@ const Header = () => {
 
     // Global event dinleyicisi ekleme
     window.addEventListener('show-auth-modal', handleOpenAuthModal);
-    
+
     // Component unmount olduğunda temizle
     return () => {
       window.removeEventListener('show-auth-modal', handleOpenAuthModal);
@@ -78,7 +76,7 @@ const Header = () => {
         setIsProfileMenuOpen(false);
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -89,7 +87,7 @@ const Header = () => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
   };
-  
+
   const handlePremiumClick = () => {
     setIsPremiumModalOpen(true);
   };
@@ -97,18 +95,17 @@ const Header = () => {
   // Elektrikli araçlar sayfasına yönlendiren ve filtreleri sıfırlayan fonksiyon
   const handleElectricVehiclesClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    
+
     // Tüm filtreleri boş obje ile sıfırlama
     const emptyFilters = {};
     setFilters(emptyFilters);
     setTemporaryFilters(emptyFilters);
-    
+
     // Filtreleri uygula - değişikliklerin anında etkili olması için
-    console.log('Üst menüden elektrikli araçlar sayfasına gidiliyor, filtreler sıfırlanıyor');
-    
+
     // Elektrikli araçlar sayfasına yönlendirme
     router.push('/elektrikli-araclar');
-    
+
     // Eğer halihazırda elektrikli araçlar sayfasındaysak sayfayı yenile
     if (window.location.pathname === '/elektrikli-araclar') {
       setTimeout(() => {
@@ -136,9 +133,9 @@ const Header = () => {
 
             {/* Ana Menü */}
             <nav className="hidden md:flex items-center gap-6">
-              <a href="/elektrikli-araclar" 
-                 onClick={handleElectricVehiclesClick} 
-                 className="text-gray-600 hover:text-[#660566] transition-colors cursor-pointer">
+              <a href="/elektrikli-araclar"
+                onClick={handleElectricVehiclesClick}
+                className="text-gray-600 hover:text-[#660566] transition-colors cursor-pointer">
                 Elektrikli Araçlar
               </a>
               <Link href="/karsilastir" className="text-gray-600 hover:text-[#660566] transition-colors">
@@ -153,7 +150,7 @@ const Header = () => {
               <Link href="/blog" className="text-gray-600 hover:text-[#660566] transition-colors">
                 Blog
               </Link>
-              
+
               {/* Premium butonu - Premium kullanıcılar için gizlenecek */}
               {!(isLoggedIn && user?.isPremium) && (
                 <motion.button
@@ -168,7 +165,7 @@ const Header = () => {
                     duration: 0.3,
                     ease: "easeInOut",
                   }}
-                  whileHover={{ 
+                  whileHover={{
                     scale: 1.05,
                     boxShadow: "0px 0px 8px rgba(102, 5, 102, 0.3)"
                   }}
@@ -278,7 +275,7 @@ const Header = () => {
                   Premium
                 </motion.button>
               )}
-              
+
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -402,12 +399,12 @@ const Header = () => {
       </header>
 
       {/* Auth Modal */}
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
+      <AuthModal
+        isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         initialMode={authMode}
       />
-      
+
       {/* Premium Modal */}
       <PremiumModal
         isOpen={isPremiumModalOpen}

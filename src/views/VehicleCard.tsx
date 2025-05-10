@@ -15,16 +15,16 @@ interface VehicleCardProps {
 const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   const router = useRouter();
   const [price, setPrice] = useState<{ base: number; currency: string } | null>(null);
-  
+
   // Fiyat bilgisini çek
   useEffect(() => {
     const fetchPrice = async () => {
       if (!vehicle?.id) return;
-      
+
       try {
         const response = await fetch(`/api/vehicles/${vehicle.id}/price`);
         if (!response.ok) throw new Error('Fiyat bilgisi alınamadı');
-        
+
         const data = await response.json();
         setPrice(data);
       } catch (error) {
@@ -42,7 +42,6 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   const getVehicleUrl = (vehicle: ElectricVehicle): string => {
     const slug = toSlug(`${vehicle.brand}-${vehicle.model}`);
     const url = `/elektrikli-araclar/${slug}`;
-    console.log(`URL oluşturuldu: ${vehicle.brand} ${vehicle.model} -> ${url}`);
     return url;
   };
 
@@ -56,36 +55,34 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   const handleAddToCompare = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation(); // Parent div'in onClick'ini engelle
-    
+
     try {
       // LocalStorage'da karşılaştırma verilerini kontrol et
       const storedVehicles = localStorage.getItem('compareVehicles');
       let compareVehicles: string[] = [];
-      
+
       if (storedVehicles) {
         compareVehicles = JSON.parse(storedVehicles);
-        
+
         // Eğer araç zaten karşılaştırma listesindeyse tekrar ekleme
         if (compareVehicles.includes(vehicle.id)) {
-          console.log('Bu araç zaten karşılaştırma listenizde');
           router.push('/karsilastir');
           return;
         }
-        
+
         // Maksimum 3 araç kontrolü
         if (compareVehicles.length >= 3) {
           // İlk aracı çıkar, yenisini ekle (1. araç yerine güncelleme)
           compareVehicles.shift();
         }
       }
-      
+
       // Yeni aracı ekle
       compareVehicles.push(vehicle.id);
-      
+
       // Güncellenmiş listeyi localStorage'a kaydet
       localStorage.setItem('compareVehicles', JSON.stringify(compareVehicles));
-      console.log(`${vehicle.brand} ${vehicle.model} karşılaştırma listenize eklendi`);
-      
+
       // Karşılaştırma sayfasına yönlendir
       router.push('/karsilastir');
     } catch (error) {
@@ -94,16 +91,16 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   };
 
   return (
-    <div 
-      onClick={handleCardClick} 
+    <div
+      onClick={handleCardClick}
       className={`bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-200
                   hover:shadow-lg group cursor-pointer relative ${isPremium ? 'premium-vehicle' : ''}`}
     >
       {/* Resim Alanı */}
       <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
         <Image
-          src={vehicle.images && vehicle.images.length > 0 
-            ? vehicle.images[0] 
+          src={vehicle.images && vehicle.images.length > 0
+            ? vehicle.images[0]?.url
             : '/images/car-placeholder.jpg'}
           alt={`${vehicle.brand} ${vehicle.model}`}
           width={800}
@@ -143,16 +140,16 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
           <div>
             <p className="text-xs text-gray-500 mb-1">Motor Gücü</p>
             <p className="font-medium text-sm">
-              {vehicle.performance?.power 
-                ? `${vehicle.performance.power} HP` 
+              {vehicle.performance?.power
+                ? `${vehicle.performance.power} HP`
                 : 'Belirtilmemiş'}
             </p>
           </div>
           <div>
             <p className="text-xs text-gray-500 mb-1">Tork</p>
             <p className="font-medium text-sm">
-              {vehicle.performance?.torque 
-                ? `${vehicle.performance.torque} Nm` 
+              {vehicle.performance?.torque
+                ? `${vehicle.performance.torque} Nm`
                 : 'Belirtilmemiş'}
             </p>
           </div>
@@ -165,16 +162,16 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
           <div>
             <p className="text-xs text-gray-500 mb-1">Azami Hız</p>
             <p className="font-medium text-sm">
-              {vehicle.performance?.topSpeed 
-                ? `${vehicle.performance.topSpeed} km/s` 
+              {vehicle.performance?.topSpeed
+                ? `${vehicle.performance.topSpeed} km/s`
                 : 'Belirtilmemiş'}
             </p>
           </div>
           <div>
             <p className="text-xs text-gray-500 mb-1">0-100 km/s</p>
             <p className="font-medium text-sm">
-              {vehicle.performance?.acceleration 
-                ? `${vehicle.performance.acceleration}s` 
+              {vehicle.performance?.acceleration
+                ? `${vehicle.performance.acceleration}s`
                 : 'Belirtilmemiş'}
             </p>
           </div>
@@ -184,13 +181,12 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
         <div className="mt-4">
           <div className="flex flex-wrap gap-2">
             {vehicle.features?.map((feature: { name: string; isExtra: boolean }, index: number) => (
-              <span 
+              <span
                 key={`feature-${index}`}
-                className={`text-xs px-2 py-1 rounded-full ${
-                  feature.isExtra 
-                    ? 'bg-purple-100 text-purple-800' 
-                    : 'bg-gray-100 text-gray-800'
-                }`}
+                className={`text-xs px-2 py-1 rounded-full ${feature.isExtra
+                  ? 'bg-purple-100 text-purple-800'
+                  : 'bg-gray-100 text-gray-800'
+                  }`}
               >
                 {feature.name}
               </span>
@@ -200,7 +196,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
 
         {/* Alt Butonlar */}
         <div className="flex items-center justify-between mt-4">
-          <a 
+          <a
             href={getVehicleUrl(vehicle)}
             className="z-10 inline-block bg-[#660566] hover:bg-[#4d0d4d] text-white text-center text-sm px-5 py-2 rounded-lg transition-colors duration-200 cursor-pointer"
             aria-label={`${vehicle.brand} ${vehicle.model} aracını incele`}
@@ -210,7 +206,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
           >
             İncele
           </a>
-          <button 
+          <button
             className="border border-gray-200 text-gray-600 text-sm px-5 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
             onClick={handleAddToCompare}
             aria-label={`${vehicle.brand} ${vehicle.model} aracını karşılaştırma listesine ekle`}

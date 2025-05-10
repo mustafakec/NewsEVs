@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import VehicleFilters from '@/views/VehicleFilters';
 import { useFilteredVehicles, useElectricVehicleStore } from '@/viewmodels/useElectricVehicles';
-import type ElectricVehicle from '@/models/ElectricVehicle';
+import type { ElectricVehicle } from '@/models/ElectricVehicle';
 import PremiumModal from '@/components/PremiumModal';
 import { useUserStore } from '@/stores/useUserStore';
 import { normalizeVehicleType } from '@/utils/vehicleUtils';
@@ -31,24 +31,24 @@ const VehicleCard = dynamic(() => import('@/views/VehicleCard'), {
 export default function ElectricVehiclesClient() {
   // Client-side state
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
-  
+
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <Suspense fallback={<PageLoading />}>
-            <PageContent 
-              onPremiumModalOpen={() => setIsPremiumModalOpen(true)} 
+            <PageContent
+              onPremiumModalOpen={() => setIsPremiumModalOpen(true)}
             />
           </Suspense>
-          
+
           {/* Ana Premium Modal */}
-          <PremiumModal 
-            isOpen={isPremiumModalOpen} 
+          <PremiumModal
+            isOpen={isPremiumModalOpen}
             onClose={() => setIsPremiumModalOpen(false)}
             aria-label="Premium üyelik"
           />
-          
+
           <div className="mt-12 border-t border-gray-100 pt-6">
             <p className="text-xs text-gray-400 max-w-4xl mx-auto text-center flex flex-col items-center">
               <span className="flex items-center">
@@ -113,65 +113,60 @@ function PageContent({ onPremiumModalOpen }: { onPremiumModalOpen: () => void })
   const searchParams = useSearchParams();
   const setFilters = useElectricVehicleStore((state) => state.setFilters);
   const vehicleType = searchParams.get('tip'); // Anasayfadan gelen tip parametresini al
-  
+
   // Sayfa ilk yüklendiğinde ve URL parametreleri değiştiğinde çalışır
   useEffect(() => {
-    console.log('Elektrikli araçlar sayfası yüklendi veya URL parametreleri değişti');
-    console.log('Filtreler sıfırlanıyor...');
-    
+
     // Önce tüm filtreleri temizle
     setFilters({});
-    
+
     // URL'de tip parametresi varsa, sadece o filtreyi uygula
     if (vehicleType) {
-      console.log('URL Parametresi:', vehicleType);
-      
+
       // Tipi normalize et
       const normalizedType = normalizeVehicleType(vehicleType);
-      console.log('Normalize Edilmiş Tip:', normalizedType);
-      
+
       // Sadece araç tipi filtresini ayarla
       setFilters({ vehicleType: normalizedType });
-      console.log('Filtre ayarlandı:', { vehicleType: normalizedType });
     }
   }, [vehicleType, searchParams, setFilters]); // vehicleType veya searchParams değiştiğinde yeniden çalışır
-  
+
   // Başlık için kullanılacak formatlama
   const getPageTitle = (type: string | null): string => {
     if (!type) return 'Elektrikli Araçlar';
-    
+
     const normalizedType = normalizeVehicleType(type);
-    
+
     // Özel başlık formatları
     if (normalizedType === 'Motosiklet') return 'Elektrikli Motosikletler';
     if (normalizedType === 'Scooter') return 'Elektrikli Scooterlar';
-    
+
     // Diğer araç tipleri için standart format
     return `Elektrikli ${normalizedType} Araçlar`;
   };
-  
+
   // Sayfa açıklaması için kullanılacak formatlama
   const getPageDescription = (type: string | null): string => {
     if (!type) return 'Elektrikli araç modellerini inceleyin, karşılaştırın ve size en uygun olanı bulun.';
-    
+
     const normalizedType = normalizeVehicleType(type);
-    
+
     // Özel açıklama formatları
-    if (normalizedType === 'Motosiklet') 
+    if (normalizedType === 'Motosiklet')
       return 'Elektrikli motosiklet modellerini inceleyin, karşılaştırın ve size en uygun olanı bulun.';
-    if (normalizedType === 'Scooter') 
+    if (normalizedType === 'Scooter')
       return 'Elektrikli scooter modellerini inceleyin, karşılaştırın ve size en uygun olanı bulun.';
-    
+
     // Diğer araç tipleri için standart format
     return 'Elektrikli araç modellerini inceleyin, karşılaştırın ve size en uygun olanı bulun.';
   };
-  
+
   // Sayfa başlığı
   const pageTitle = getPageTitle(vehicleType);
-  
+
   // Sayfa açıklaması
   const pageDescription = getPageDescription(vehicleType);
-  
+
   return (
     <>
       <div className="text-center mb-8">
@@ -224,7 +219,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
   const setFilters = useElectricVehicleStore((state) => state.setFilters);
   const { user } = useUserStore();
   const isPremium = user?.isPremium || false;
-  
+
   // Premium Üye Ol butonuna tıklandığında ana Premium modalı açacak fonksiyon
   const handlePremiumClick = () => {
     // Önce comingSoon filtresini kapat
@@ -232,11 +227,11 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
     // Ana Premium modalını aç
     openPremiumModal();
   };
-  
+
   const handleCancelPremium = () => {
     setFilters({ comingSoon: false });
   };
-  
+
   // Erken dönüş (early return) yaparak daha iyi performans sağlıyoruz
   if (isLoading) {
     return (
@@ -256,7 +251,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="bg-red-50 text-red-600 p-6 rounded-xl shadow-sm">
@@ -269,7 +264,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
       </div>
     );
   }
-  
+
   if (!vehicles?.length) {
     return (
       <div className="text-center py-12">
@@ -282,7 +277,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
       </div>
     );
   }
-  
+
   return (
     <div className="relative">
       <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -293,17 +288,17 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
           />
         ))}
       </div>
-      
+
       {/* Premium overlay - sadece içerik alanına uygulanıyor */}
       {isComingSoonActive && !isPremium && (
         <div className="absolute inset-0 flex items-center justify-center z-30">
           {/* Blur efekti */}
           <div className="absolute inset-0 premium-blur" onClick={handleCancelPremium}></div>
-          
+
           {/* Premium modal */}
           <div className="relative z-40 bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transition-all duration-300">
             {/* Kapatma butonu */}
-            <button 
+            <button
               onClick={handleCancelPremium}
               className="absolute right-4 top-4 text-gray-400 hover:text-gray-500 transition-colors"
               aria-label="Kapat"
@@ -312,41 +307,41 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            
+
             {/* İkon */}
             <div className="flex justify-center pt-8 pb-4">
               <div className="w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center">
                 <svg className="w-8 h-8 text-purple-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={1.5} 
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" 
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                   />
                 </svg>
               </div>
             </div>
-            
+
             {/* Başlık */}
             <h3 className="text-center text-xl font-semibold text-gray-900 px-6">Premium İçerik</h3>
-            
+
             {/* Açıklama */}
             <div className="p-6 pt-3">
               <p className="text-center text-gray-600 mb-8">
                 Bu içerik premium üyelere özeldir. Premium üyelik ile Türkiye'de yakın zamanda satışa sunulacak olan elektrikli araçları görüntüleyebilirsiniz.
               </p>
-              
+
               {/* Premium buton */}
-              <button 
+              <button
                 onClick={handlePremiumClick}
                 className="w-full bg-gradient-to-r from-[#660566] to-[#330233] text-white font-medium py-3 px-4 rounded-md hover:opacity-90 transition-all duration-180"
                 aria-label="Premium üye ol"
               >
                 Premium Üye Ol
               </button>
-              
+
               {/* Daha sonra butonu */}
-              <button 
+              <button
                 onClick={handleCancelPremium}
                 className="w-full mt-3 bg-white text-gray-600 font-medium py-3 px-4 rounded-md border border-gray-200 hover:bg-gray-50 transition-all duration-180"
                 aria-label="Daha sonra"

@@ -184,7 +184,7 @@ function ProfileContent() {
             <div className="relative h-48">
               {vehicle.images && vehicle.images[0] && (
                 <Image
-                  src={vehicle.images[0]}
+                  src={vehicle.images[0]?.url}
                   alt={`${vehicle.brand} ${vehicle.model}`}
                   fill
                   className="object-cover"
@@ -229,11 +229,11 @@ function ProfileContent() {
                 </div>
                 <div>
                   <span className="text-gray-500">Motor</span>
-                  <p className="font-medium">{vehicle.performance.power} HP</p>
+                  <p className="font-medium">{vehicle?.performance?.power} HP</p>
                 </div>
                 <div>
                   <span className="text-gray-500">Fiyat</span>
-                  <p className="font-medium">{formatPrice(vehicle.price)}</p>
+                  <p className="font-medium">{formatPrice(vehicle?.price!)}</p>
                 </div>
               </div>
               <Link
@@ -253,7 +253,7 @@ function ProfileContent() {
     // Karşılaştırmayı listeden sil
     const updatedComparisons = savedComparisons.filter(comp => comp.id !== comparisonId);
     setSavedComparisons(updatedComparisons);
-    
+
     // LocalStorage'ı güncelle
     localStorage.setItem('savedComparisons', JSON.stringify(updatedComparisons));
   };
@@ -282,7 +282,7 @@ function ProfileContent() {
         return (
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Karşılaştırmalarım</h2>
-            
+
             {savedComparisons.length > 0 ? (
               <div className="space-y-6">
                 {savedComparisons.map((comparison) => (
@@ -369,7 +369,7 @@ function ProfileContent() {
                   const currentPassword = formData.get('currentPassword');
                   const newPassword = formData.get('newPassword');
                   const confirmPassword = formData.get('confirmPassword');
-                  
+
                   if (newPassword !== confirmPassword) {
                     alert('Yeni şifreler eşleşmiyor!');
                     return;
@@ -380,9 +380,8 @@ function ProfileContent() {
                     alert('Lütfen daha güçlü bir şifre belirleyin!');
                     return;
                   }
-                  
+
                   // TODO: API'ye şifre değiştirme isteği gönderilecek
-                  console.log('Şifre değiştirme isteği gönderildi');
                 }}>
                   <div>
                     <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
@@ -416,23 +415,21 @@ function ProfileContent() {
                     <div className="mt-2">
                       <div className="flex items-center gap-2 mb-1">
                         <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full transition-all duration-300 ${
-                              passwordStrength.color === 'gray' ? 'w-0 bg-gray-300' :
+                          <div
+                            className={`h-full transition-all duration-300 ${passwordStrength.color === 'gray' ? 'w-0 bg-gray-300' :
                               passwordStrength.color === 'red' ? 'w-1/4 bg-red-500' :
-                              passwordStrength.color === 'yellow' ? 'w-2/4 bg-yellow-500' :
-                              passwordStrength.color === 'blue' ? 'w-3/4 bg-blue-500' :
-                              'w-full bg-green-500'
-                            }`}
+                                passwordStrength.color === 'yellow' ? 'w-2/4 bg-yellow-500' :
+                                  passwordStrength.color === 'blue' ? 'w-3/4 bg-blue-500' :
+                                    'w-full bg-green-500'
+                              }`}
                           />
                         </div>
-                        <span className={`text-sm font-medium ${
-                          passwordStrength.color === 'gray' ? 'text-gray-500' :
+                        <span className={`text-sm font-medium ${passwordStrength.color === 'gray' ? 'text-gray-500' :
                           passwordStrength.color === 'red' ? 'text-red-500' :
-                          passwordStrength.color === 'yellow' ? 'text-yellow-600' :
-                          passwordStrength.color === 'blue' ? 'text-blue-500' :
-                          'text-green-500'
-                        }`}>
+                            passwordStrength.color === 'yellow' ? 'text-yellow-600' :
+                              passwordStrength.color === 'blue' ? 'text-blue-500' :
+                                'text-green-500'
+                          }`}>
                           {passwordStrength.text}
                         </span>
                       </div>
@@ -572,8 +569,8 @@ function ProfileContent() {
                           <h4 className="text-sm font-medium text-gray-500 mb-1">Ödeme Yöntemi</h4>
                           <div className="flex items-center gap-2">
                             <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none">
-                              <rect x="2" y="5" width="20" height="14" rx="2" className="stroke-current" strokeWidth="2"/>
-                              <path d="M2 10H22" className="stroke-current" strokeWidth="2"/>
+                              <rect x="2" y="5" width="20" height="14" rx="2" className="stroke-current" strokeWidth="2" />
+                              <path d="M2 10H22" className="stroke-current" strokeWidth="2" />
                             </svg>
                             <span className="text-gray-900">•••• 4242</span>
                           </div>
@@ -600,7 +597,7 @@ function ProfileContent() {
                       </div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">Premium'a Yükseltin</h3>
                       <p className="text-gray-500 mb-6">Tüm özelliklere erişim kazanın ve premium avantajlarından yararlanın.</p>
-                      <button 
+                      <button
                         onClick={() => window.dispatchEvent(new Event('show-premium-modal'))}
                         className="w-full px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#660566] to-[#330233] rounded-lg hover:opacity-90 transition-colors"
                       >
@@ -681,41 +678,37 @@ function ProfileContent() {
           <div className="flex border-b border-gray-200 mb-8">
             <Link
               href="/profil"
-              className={`px-4 py-2 -mb-px text-sm font-medium ${
-                activeTab === 'profil'
-                  ? 'text-[#660566] border-b-2 border-[#660566]'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
+              className={`px-4 py-2 -mb-px text-sm font-medium ${activeTab === 'profil'
+                ? 'text-[#660566] border-b-2 border-[#660566]'
+                : 'text-gray-500 hover:text-gray-700'
+                }`}
             >
               Profilim
             </Link>
             <Link
               href="/profil?tab=favoriler"
-              className={`px-4 py-2 -mb-px text-sm font-medium ${
-                activeTab === 'favoriler'
-                  ? 'text-[#660566] border-b-2 border-[#660566]'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
+              className={`px-4 py-2 -mb-px text-sm font-medium ${activeTab === 'favoriler'
+                ? 'text-[#660566] border-b-2 border-[#660566]'
+                : 'text-gray-500 hover:text-gray-700'
+                }`}
             >
               Favorilerim
             </Link>
             <Link
               href="/profil?tab=karsilastirmalar"
-              className={`px-4 py-2 -mb-px text-sm font-medium ${
-                activeTab === 'karsilastirmalar'
-                  ? 'text-[#660566] border-b-2 border-[#660566]'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
+              className={`px-4 py-2 -mb-px text-sm font-medium ${activeTab === 'karsilastirmalar'
+                ? 'text-[#660566] border-b-2 border-[#660566]'
+                : 'text-gray-500 hover:text-gray-700'
+                }`}
             >
               Karşılaştırmalarım
             </Link>
             <Link
               href="/profil?tab=guvenlik"
-              className={`px-4 py-2 -mb-px text-sm font-medium ${
-                activeTab === 'guvenlik'
-                  ? 'text-[#660566] border-b-2 border-[#660566]'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
+              className={`px-4 py-2 -mb-px text-sm font-medium ${activeTab === 'guvenlik'
+                ? 'text-[#660566] border-b-2 border-[#660566]'
+                : 'text-gray-500 hover:text-gray-700'
+                }`}
             >
               Güvenlik
             </Link>

@@ -34,7 +34,7 @@ export const supabase = createClient<SupabaseDatabase>(supabaseUrl, supabaseKey)
 // Elektrikli araç tablosu için tipler ve helper fonksiyonlar
 export type SupabaseElectricVehicle = {
   id: string;
-  brand: string; 
+  brand: string;
   model: string;
   year: number;
   type: string;
@@ -115,7 +115,7 @@ export type SupabaseElectricVehicle = {
 }
 
 // Tip tanımlamaları
-export type Tables<T extends keyof SupabaseDatabase['public']['Tables']> = 
+export type Tables<T extends keyof SupabaseDatabase['public']['Tables']> =
   SupabaseDatabase['public']['Tables'][T]['Row'];
 
 // Elektrikli araçlar için yardımcı fonksiyonlar
@@ -123,12 +123,12 @@ export const getElectricVehicles = async () => {
   const { data, error } = await supabase
     .from('electric_vehicles')
     .select('*');
-  
+
   if (error) {
     console.error('Elektrikli araçlar yüklenirken hata oluştu:', error);
     return [];
   }
-  
+
   return data || [];
 };
 
@@ -138,12 +138,12 @@ export const getElectricVehicleById = async (id: string) => {
     .select('*')
     .eq('id', id)
     .single();
-  
+
   if (error) {
     console.error(`ID ${id} olan araç yüklenirken hata oluştu:`, error);
     return null;
   }
-  
+
   return data;
 };
 

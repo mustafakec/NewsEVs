@@ -13,7 +13,7 @@ const users = [
     isPremium: true, // Premium kullanıcı
     premiumExpiry: "2025-01-15",
     savedVehicles: 12,
-    comparisons: 8,
+    comparisons: 9,
     lastLogin: new Date().toISOString()
   },
   {

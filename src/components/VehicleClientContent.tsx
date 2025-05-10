@@ -26,7 +26,7 @@ const formatCurrency = (price: number, currency: string = "₺") => {
 const normalizeVehicleType = (type: string): string => {
   // Önce gelen değeri büyük-küçük harf duyarsız hale getir
   const lowerType = type.toLowerCase().trim();
-  
+
   // Basit bir eşleşme tablosu oluştur
   const typeMapping: Record<string, string> = {
     'suv': 'SUV',
@@ -58,12 +58,12 @@ const normalizeVehicleType = (type: string): string => {
     'elektrikli scooter': 'Scooter',
     'e-scooter': 'Scooter'
   };
-  
+
   // Eşleşme varsa, eşleşen tipi döndür
   if (typeMapping[lowerType]) {
     return typeMapping[lowerType];
   }
-  
+
   // Eşleşme bulunamazsa, ilk harf büyük gerisi küçük tipinde format
   return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
 };
@@ -71,7 +71,7 @@ const normalizeVehicleType = (type: string): string => {
 // Türkçe'de doğru eki getirmek için yardımcı fonksiyon
 const getTypeSuffix = (type: string): string => {
   const lastLetter = type.slice(-1).toLowerCase();
-  
+
   // Ünlü uyumu ve son harfe göre ek belirleme
   // Türkçe dilbilgisi kurallarına göre son sese bağlı olarak -lar/-ler veya -ları/-leri eki gelir
   const vowels = 'aeıioöuü';
@@ -99,7 +99,7 @@ const getTypeSuffix = (type: string): string => {
 // Araç tipine göre doğru eki ekleyen fonksiyon
 const getTypeWithSuffix = (type: string, suffix: string = ""): string => {
   const normalizedType = normalizeVehicleType(type);
-  
+
   switch (suffix) {
     case "accusative": // -ı -i -u -ü (belirtme durumu)
       return normalizedType + getTypeSuffix(normalizedType);
@@ -115,17 +115,17 @@ const formatVehicleType = (type: string): string => {
   // Özel formatlamalar
   if (type.toLowerCase() === 'suv') return 'SUV';
   if (type.toLowerCase() === 'mpv') return 'MPV';
-  
+
   return type;
 };
 
 // X (Twitter) Logo komponenti
 const XLogo = () => (
-  <svg 
-    viewBox="0 0 24 24" 
-    width="16" 
-    height="16" 
-    fill="currentColor" 
+  <svg
+    viewBox="0 0 24 24"
+    width="16"
+    height="16"
+    fill="currentColor"
     aria-hidden="true"
   >
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H5.01l4.73 6.243 8.504-6.243z"></path>
@@ -134,21 +134,22 @@ const XLogo = () => (
 
 // Client Component
 export default function VehicleClientContent({ vehicle, initialVehicle }: VehicleClientContentProps) {
+
   // Eğer hem vehicle hem de initialVehicle varsa vehicle'ı tercih et, yoksa initialVehicle kullan
   const vehicleData = vehicle || initialVehicle;
-  
+
   // Fiyat bilgisi için state
   const [price, setPrice] = useState<{ base: number; currency: string } | null>(null);
-  
+
   // Fiyat bilgisini çek
   useEffect(() => {
     const fetchPrice = async () => {
       if (!vehicleData?.id) return;
-      
+
       try {
         const response = await fetch(`/api/vehicles/${vehicleData.id}/price`);
         if (!response.ok) throw new Error('Fiyat bilgisi alınamadı');
-        
+
         const data = await response.json();
         setPrice(data);
       } catch (error) {
@@ -173,17 +174,17 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
       </div>
     );
   }
-  
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const router = useRouter();
   const setFilters = useElectricVehicleStore((state) => state.setFilters);
   const setTemporaryFilters = useElectricVehicleStore((state) => state.setTemporaryFilters);
-  
+
   // Paylaşım URL'sini ve kopyalama durumunu tutan state'ler
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const shareMenuRef = useRef<HTMLDivElement>(null);
-  
+
   // Paylaşım menüsü dışına tıklandığında menüyü kapat
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -191,7 +192,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
         setShowShareOptions(false);
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -213,24 +214,21 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
   // Araç tipi filtrelemesi için fonksiyon
   const handleVehicleTypeClick = (e: React.MouseEvent, vehicleType: string) => {
     e.preventDefault();
-    console.log('Araç tipi butonuna tıklandı:', vehicleType);
-    
+
     // Önce tüm filtreleri sıfırla
     setFilters({});
     setTemporaryFilters({});
-    
+
     // Aracın tipini normalleştir
     const normalizedType = normalizeVehicleType(vehicleType);
-    console.log('Normalize edilmiş tip:', normalizedType);
-    
+
     // Sadece araç tipi filtresini ayarla
     setTimeout(() => {
       setFilters({ vehicleType: normalizedType });
-      console.log('Filtre ayarlandı:', { vehicleType: normalizedType });
-      
+
       // Küçük harflere çevirerek URL'e ekle
       const urlType = normalizedType.toLowerCase();
-      console.log('URL yönlendirmesi:', `/elektrikli-araclar?tip=${urlType}`);
+
       router.push(`/elektrikli-araclar?tip=${urlType}`);
     }, 100);
   };
@@ -238,36 +236,34 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
   // Karşılaştırmaya araç ekleme fonksiyonu
   const handleAddToCompare = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    
+
     try {
       // LocalStorage'da karşılaştırma verilerini kontrol et
       const storedVehicles = localStorage.getItem('compareVehicles');
       let compareVehicles: string[] = [];
-      
+
       if (storedVehicles) {
         compareVehicles = JSON.parse(storedVehicles);
-        
+
         // Eğer araç zaten karşılaştırma listesindeyse tekrar ekleme
         if (compareVehicles.includes(vehicleData.id)) {
-          console.log('Bu araç zaten karşılaştırma listenizde');
           router.push('/karsilastir');
           return;
         }
-        
+
         // Maksimum 3 araç kontrolü (premium sınırını dikkate alarak)
         if (compareVehicles.length >= 3) {
           // İlk aracı çıkar, yenisini ekle (1. araç yerine güncelleme)
           compareVehicles.shift();
         }
       }
-      
+
       // Yeni aracı ekle
       compareVehicles.push(vehicleData.id);
-      
+
       // Güncellenmiş listeyi localStorage'a kaydet
       localStorage.setItem('compareVehicles', JSON.stringify(compareVehicles));
-      console.log(`${vehicleData.brand} ${vehicleData.model} karşılaştırma listenize eklendi`);
-      
+
       // Karşılaştırma sayfasına yönlendir
       router.push('/karsilastir');
     } catch (error) {
@@ -287,7 +283,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
   const handleToggleShareOptions = () => {
     setShowShareOptions(!showShareOptions);
   };
-  
+
   const handleCopyLink = () => {
     // Mevcut URL'yi al
     const url = window.location.href;
@@ -300,14 +296,14 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
         console.error('URL kopyalama hatası:', err);
       });
   };
-  
+
   const handleShare = (platform: string) => {
     const url = encodeURIComponent(window.location.href);
     const title = encodeURIComponent(`${vehicleData.brand} ${vehicleData.model} Elektrikli Araç | elektrikliyiz`);
     const text = encodeURIComponent(`${vehicleData.brand} ${vehicleData.model} elektrikli araç detaylarını keşfet`);
-    
+
     let shareUrl = '';
-    
+
     switch (platform) {
       case 'twitter':
         shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
@@ -327,7 +323,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
           .then(() => {
             setCopySuccess(true);
             setTimeout(() => setCopySuccess(false), 2000);
-            
+
             // Mobil cihazda Instagram uygulamasını açmayı dene
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (isMobile) {
@@ -336,7 +332,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
               );
               if (confirmOpen) {
                 window.location.href = 'instagram://';
-                
+
                 // Eğer Instagram uygulaması açılmazsa 1 saniye sonra web versiyonunu açmayı dene
                 setTimeout(() => {
                   window.open('https://instagram.com', '_blank');
@@ -352,7 +348,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
           });
         return;
     }
-    
+
     // Paylaşım URL'sini yeni pencerede aç
     if (shareUrl) {
       window.open(shareUrl, '_blank', 'width=600,height=400');
@@ -382,7 +378,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
           <div className="border-b border-gray-200 pb-8 mb-10">
             <div className="flex flex-wrap items-center justify-between mb-4">
               <h1 className="text-3xl font-bold text-gray-900">{vehicleData.brand} {vehicleData.model}</h1>
-              
+
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex gap-2">
                   <span className="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-medium">
@@ -409,7 +405,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
               <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
                 {vehicleData.images && vehicleData.images.length > 0 ? (
                   <Image
-                    src={vehicleData.images[currentImageIndex]}
+                    src={vehicleData.images[currentImageIndex]?.url}
                     alt={`${vehicleData.brand} ${vehicleData.model}`}
                     fill
                     className="object-cover"
@@ -445,7 +441,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                   </>
                 )}
               </div>
-              
+
               {/* Görsel İndikatörler */}
               {vehicleData.images && vehicleData.images.length > 1 && (
                 <div className="flex justify-center mt-4 gap-2">
@@ -453,9 +449,8 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`w-3 h-3 rounded-full ${
-                        index === currentImageIndex ? 'bg-[#660566]' : 'bg-gray-300'
-                      }`}
+                      className={`w-3 h-3 rounded-full ${index === currentImageIndex ? 'bg-[#660566]' : 'bg-gray-300'
+                        }`}
                       aria-label={`Görsel ${index + 1}`}
                     />
                   ))}
@@ -499,23 +494,23 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
 
               {/* Butonlar */}
               <div className="flex flex-col gap-3 mt-6">
-                <button 
+                <button
                   onClick={handleAddToCompare}
                   className="w-full bg-[#660566] hover:bg-[#4d044d] text-white text-center py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                 >
                   Karşılaştırmaya Ekle
                 </button>
-                <a 
+                <a
                   href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
                   onClick={(e) => handleVehicleTypeClick(e, vehicleData.type)}
                   className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                 >
                   Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} İncele
                 </a>
-                
+
                 {/* Paylaşım Butonu */}
                 <div className="relative" ref={shareMenuRef}>
-                  <button 
+                  <button
                     onClick={handleToggleShareOptions}
                     className="w-full bg-white border border-[#660566] hover:bg-[#660566]/5 text-[#660566] text-center py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 flex justify-center items-center gap-2"
                     aria-label="Araç detaylarını paylaş"
@@ -523,12 +518,12 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                     <FaShareAlt className="text-[#660566]" />
                     <span>Paylaş</span>
                   </button>
-                  
+
                   {showShareOptions && (
                     <div className="absolute left-0 right-0 mt-2 p-3 bg-white rounded-xl shadow-lg border border-gray-200 z-20 w-full whitespace-nowrap animate-fade-in">
                       <div className="text-sm text-gray-500 mb-2 font-medium">Bu aracı paylaş</div>
                       <div className="flex flex-col gap-3">
-                        <button 
+                        <button
                           onClick={() => handleShare('twitter')}
                           className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg w-full transition-colors text-left hover:scale-[1.01] active:scale-[0.99]"
                         >
@@ -537,28 +532,28 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                           </span>
                           <span>X'de Paylaş</span>
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleShare('facebook')}
                           className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg w-full transition-colors text-left hover:scale-[1.01] active:scale-[0.99]"
                         >
                           <FaFacebook className="text-[#4267B2]" />
                           <span>Facebook'ta Paylaş</span>
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleShare('whatsapp')}
                           className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg w-full transition-colors text-left hover:scale-[1.01] active:scale-[0.99]"
                         >
                           <FaWhatsapp className="text-[#25D366]" />
                           <span>WhatsApp'ta Paylaş</span>
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleShare('linkedin')}
                           className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg w-full transition-colors text-left hover:scale-[1.01] active:scale-[0.99]"
                         >
                           <FaLinkedin className="text-[#0077B5]" />
                           <span>LinkedIn'de Paylaş</span>
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleShare('instagram')}
                           className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg w-full transition-colors text-left hover:scale-[1.01] active:scale-[0.99]"
                         >
@@ -566,7 +561,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                           <span>Instagram Story'de Paylaş</span>
                         </button>
                         <div className="border-t border-gray-200 my-2"></div>
-                        <button 
+                        <button
                           onClick={handleCopyLink}
                           className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg w-full transition-colors text-left hover:scale-[1.01] active:scale-[0.99]"
                         >
@@ -743,14 +738,14 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                 <p className="text-gray-600">Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type))} araçları inceleyebilir ve karşılaştırabilirsiniz.</p>
               </div>
               <div className="flex gap-4">
-                <a 
+                <a
                   href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
                   onClick={(e) => handleVehicleTypeClick(e, vehicleData.type)}
                   className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none"
                 >
                   Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "simple_plural")}
                 </a>
-                <a 
+                <a
                   href="/elektrikli-araclar"
                   onClick={handleAllVehiclesClick}
                   className="bg-[#660566] hover:bg-[#4d044d] text-white py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none"

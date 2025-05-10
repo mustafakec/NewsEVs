@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import type ElectricVehicle from '@/models/ElectricVehicle';
 import { supabase, SupabaseElectricVehicle } from '@/lib/supabase';
 import vehiclesData from '@/data/electric-vehicles.json';
+import { ElectricVehicle } from '@/models/ElectricVehicle';
 
 export interface UseVehiclesReturn {
   data: ElectricVehicle[] | undefined;
@@ -18,36 +18,62 @@ export async function fetchVehicles(): Promise<ElectricVehicle[]> {
     // Supabase'den verileri çek
     const { data, error } = await supabase
       .from('electric_vehicles')
-      .select('*');
-    
+      .select(`*,
+        features(*),
+        environmental_impacts!inner(*),
+        turkey_statuses!inner(*),
+        performances!inner(*),
+        charging_times!inner(*),
+        dimensions!inner(*),
+        comforts!inner(*),
+        efficiencies!inner(*),
+        images!inner(*),
+        prices!inner!inner(*),
+        warranties!inner(*)
+        `);
+
+
     if (error) {
-      console.error('Supabase veri çekme hatası:', error);
       throw error;
     }
-    
+
     if (!data || data.length === 0) {
-      console.warn('Supabase\'den veri çekilemedi, yerel veriyi kullanıyorum.');
-      return vehiclesData as ElectricVehicle[];
+      return vehiclesData as unknown as ElectricVehicle[];
     }
-    
+
     // Supabase verilerini uygulama modeline dönüştür - camelCase ve diğer dönüşümler için
     // Bu örnek için tip zorlama (as) kullanıyoruz, gerçek uygulamada daha ayrıntılı bir eşleme gerekebilir
+
     return data.map(vehicle => {
+
       // Alan isimlerini camelCase'e dönüştürme
       const result = {
         ...vehicle,
         batteryCapacity: vehicle.battery_capacity,
-        extraFeatures: vehicle.extra_features,
+        extraFeatures: vehicle.features,
         environmentalImpact: vehicle.environmental_impact,
-        turkeyStatus: vehicle.turkey_status
+        turkeyStatus: vehicle.turkey_status,
+        performance: vehicle.performances ? {
+          power: vehicle.performances.power, // Motor Gücü (HP)
+          torque: vehicle.performances.torque, // Tork (Nm)
+          driveType: vehicle.performances.drive_type, // Sürüş Sistemi
+          topSpeed: vehicle.performances.top_speed, // Azami Hız (km/s)
+          acceleration: vehicle.performances.acceleration // 0-100 km/s (saniye)
+        } : undefined,
+        chargingTime: vehicle.charging_times,
+        efficiency: vehicle.efficiencies,
+        comfort: vehicle.comforts,
+        price: vehicle.prices,
+        images: vehicle.images,
+        warranty: vehicle.warranties,
       } as unknown as ElectricVehicle;
-      
+
       return result;
     });
   } catch (error) {
     console.warn('Veri alınamadı, yerel veriyi kullanıyorum:', error);
     // Herhangi bir hata durumunda yerel veriyi kullan
-    return vehiclesData as ElectricVehicle[];
+    return vehiclesData as unknown as ElectricVehicle[];
   }
 }
 

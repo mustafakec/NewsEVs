@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, ChangeEvent } from 'react';
 import { useElectricVehicleStore, CurrencyType } from '@/viewmodels/useElectricVehicles';
 import { useVehicles } from '@/hooks/useVehicles';
-import type ElectricVehicle from '@/models/ElectricVehicle';
+import type { ElectricVehicle } from '@/models/ElectricVehicle';
 import { useUserStore } from '@/stores/useUserStore';
 import { log } from 'console';
 import { useSearchParams } from 'next/navigation';
@@ -66,30 +66,30 @@ const NoAutocompleteStyles = () => (
 );
 
 // Accordion bileşeni (açılır/kapanır başlık)
-const FilterAccordion = ({ 
-  title, 
-  children, 
-  isOpen, 
-  onToggle 
-}: { 
-  title: string, 
-  children: React.ReactNode, 
-  isOpen: boolean, 
-  onToggle: () => void 
+const FilterAccordion = ({
+  title,
+  children,
+  isOpen,
+  onToggle
+}: {
+  title: string,
+  children: React.ReactNode,
+  isOpen: boolean,
+  onToggle: () => void
 }) => {
   return (
     <div className="border-b border-gray-200">
-      <div 
+      <div
         className="flex items-center justify-between p-4 cursor-pointer"
         onClick={onToggle}
       >
         <h3 className="font-medium text-gray-800">{title}</h3>
         <button className="text-gray-400 hover:text-gray-600 focus:outline-none transition-transform duration-200">
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            className={`h-5 w-5 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`} 
-            fill="none" 
-            viewBox="0 0 24 24" 
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className={`h-5 w-5 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
+            fill="none"
+            viewBox="0 0 24 24"
             stroke="currentColor"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -124,49 +124,49 @@ const MinMaxInput = ({
   // Lokal state yönetimi (autocomplete sorununu çözmek için)
   const [minInputValue, setMinInputValue] = useState('');
   const [maxInputValue, setMaxInputValue] = useState('');
-  
+
   // Binlik ayırıcı nokta ile formatlama fonksiyonu
   const formatWithThousandsSeparator = (value: string): string => {
     if (!formatThousands) return value;
-    
+
     // Noktaları temizle, sadece sayıları al
     const cleanValue = value.replace(/\D/g, '');
-    
+
     // Boş string ise boş string döndür
     if (cleanValue === '') return '';
-    
+
     // Sayıyı parseInt ile çevir
     const number = parseInt(cleanValue, 10);
-    
+
     // Binlik ayraç kullanarak formatlı string oluştur
     return number.toLocaleString('tr-TR');
   };
-  
+
   // Formatlı stringi sayıya çevirme fonksiyonu
   const parseFormattedValue = (value: string): string => {
     if (!formatThousands) return value;
-    
+
     // Tüm nokta ve virgülleri kaldır, sadece sayıları al
     return value.replace(/\D/g, '');
   };
-  
+
   // Props değiştiğinde state'i güncelle
   useEffect(() => {
     if (minValue !== undefined) {
       setMinInputValue(formatThousands ? formatWithThousandsSeparator(String(minValue)) : String(minValue));
     }
   }, [minValue, formatThousands]);
-  
+
   useEffect(() => {
     if (maxValue !== undefined) {
       setMaxInputValue(formatThousands ? formatWithThousandsSeparator(String(maxValue)) : String(maxValue));
     }
   }, [maxValue, formatThousands]);
-  
+
   // Min değerini sadece lokalde güncelle
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
-    
+
     if (formatThousands) {
       // Noktaları temizle, sonra formatlı hale getir
       const cleanValue = rawValue.replace(/\D/g, '');
@@ -177,11 +177,11 @@ const MinMaxInput = ({
       setMinInputValue(value);
     }
   };
-  
+
   // Max değerini sadece lokalde güncelle
   const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
-    
+
     if (formatThousands) {
       // Noktaları temizle, sonra formatlı hale getir
       const cleanValue = rawValue.replace(/\D/g, '');
@@ -196,36 +196,36 @@ const MinMaxInput = ({
   // Input alanından çıkıldığında (blur) değeri aktar
   const handleMinBlur = () => {
     const parsedValue = parseFormattedValue(minInputValue);
-    
+
     if (parsedValue !== String(minValue)) {
       onChangeMin(parsedValue);
     }
   };
-  
+
   // Input alanından çıkıldığında (blur) değeri aktar
   const handleMaxBlur = () => {
     const parsedValue = parseFormattedValue(maxInputValue);
-    
+
     if (parsedValue !== String(maxValue)) {
       onChangeMax(parsedValue);
     }
   };
-  
+
   // Enter tuşuna basıldığında form gönderimi
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, isMin: boolean) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      
-      const parsedValue = isMin 
-        ? parseFormattedValue(minInputValue) 
+
+      const parsedValue = isMin
+        ? parseFormattedValue(minInputValue)
         : parseFormattedValue(maxInputValue);
-      
+
       if (isMin && parsedValue !== String(minValue)) {
         onChangeMin(parsedValue);
       } else if (!isMin && parsedValue !== String(maxValue)) {
         onChangeMax(parsedValue);
       }
-      
+
       // Input odağını kaldır
       (e.target as HTMLInputElement).blur();
     }
@@ -241,7 +241,7 @@ const MinMaxInput = ({
         <input
           id={minId}
           name={minId}
-          type="text" 
+          type="text"
           inputMode="numeric"
           placeholder="Min"
           value={minInputValue}
@@ -312,11 +312,10 @@ const ButtonOptions = ({
         <button
           key={option.value}
           type="button"
-          className={`py-2 px-2 rounded-lg text-sm font-medium border transition-colors duration-150 ${
-            selectedOption === option.value
-              ? 'bg-purple-100 border-purple-300 text-purple-800'
-              : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-          }`}
+          className={`py-2 px-2 rounded-lg text-sm font-medium border transition-colors duration-150 ${selectedOption === option.value
+            ? 'bg-purple-100 border-purple-300 text-purple-800'
+            : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+            }`}
           onClick={() => onChange(option.value === selectedOption ? '' : option.value)}
         >
           {option.label}
@@ -349,14 +348,13 @@ const CurrencySelector = ({
           <button
             key={currency.value}
             onClick={() => onChange(currency.value)}
-            className={`px-2 py-2 text-sm font-medium rounded-lg transition-colors flex items-center justify-center ${
-              selectedCurrency === currency.value
-                ? 'bg-[#660566] text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className={`px-2 py-2 text-sm font-medium rounded-lg transition-colors flex items-center justify-center ${selectedCurrency === currency.value
+              ? 'bg-[#660566] text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
           >
             {currency.symbol} {currency.label}
-        </button>
+          </button>
         ))}
       </div>
     </div>
@@ -378,7 +376,7 @@ const SearchableDropdown = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   // Dropdown dışına tıklandığında kapat
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -386,7 +384,7 @@ const SearchableDropdown = ({
         setIsOpen(false);
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -394,17 +392,17 @@ const SearchableDropdown = ({
   }, []);
 
   // Filtrelenmiş seçenekler
-  const filteredOptions = options.filter(option => 
+  const filteredOptions = options.filter(option =>
     option.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+
   // Seçenek seçildiğinde
   const handleSelect = (value: string) => {
     onChange(value === selectedValue ? undefined : value);
     setIsOpen(false);
     setSearchTerm('');
   };
-  
+
   return (
     <div className="relative w-full" ref={dropdownRef}>
       {/* Seçim kutusu */}
@@ -420,12 +418,12 @@ const SearchableDropdown = ({
         <span className={`truncate ${!selectedValue ? 'text-gray-400' : 'text-gray-700'}`}>
           {selectedValue || placeholder}
         </span>
-        <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`} 
-             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
+          fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      
+
       {/* Dropdown menü */}
       {isOpen && (
         <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-hidden flex flex-col">
@@ -443,7 +441,7 @@ const SearchableDropdown = ({
               onClick={(e) => e.stopPropagation()}
             />
           </div>
-          
+
           {/* Seçenekler listesi */}
           <div className="overflow-y-auto max-h-60 py-1">
             {filteredOptions.length > 0 ? (
@@ -451,11 +449,10 @@ const SearchableDropdown = ({
                 <button
                   key={option}
                   type="button"
-                  className={`w-full text-left px-3 py-2 text-sm transition-colors ${
-                    selectedValue === option
-                      ? 'bg-purple-50 text-purple-800'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className={`w-full text-left px-3 py-2 text-sm transition-colors ${selectedValue === option
+                    ? 'bg-purple-50 text-purple-800'
+                    : 'text-gray-700 hover:bg-gray-50'
+                    }`}
                   onClick={() => handleSelect(option)}
                   aria-selected={selectedValue === option}
                 >
@@ -468,7 +465,7 @@ const SearchableDropdown = ({
               </div>
             )}
           </div>
-          
+
           {/* Tümünü seç butonu */}
           <div className="p-2 border-t border-gray-100 sticky bottom-0 bg-white">
             <button
@@ -527,13 +524,13 @@ const fetchVehicleTypes = async () => {
 
 // Ana Filtre Bileşeni
 const VehicleFilters = () => {
-  const { 
+  const {
     temporaryFilters,
-    setTemporaryFilters, 
+    setTemporaryFilters,
     applyFilters,
-    filters 
+    filters
   } = useElectricVehicleStore();
-  
+
   const [filterPanels, setFilterPanels] = useState({
     brand: true,
     price: false,
@@ -679,9 +676,8 @@ const VehicleFilters = () => {
           >
             <h3 className="font-medium">Markalar</h3>
             <svg
-              className={`w-5 h-5 transition-transform ${
-                filterPanels.brand ? 'transform rotate-180' : ''
-              }`}
+              className={`w-5 h-5 transition-transform ${filterPanels.brand ? 'transform rotate-180' : ''
+                }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -693,7 +689,7 @@ const VehicleFilters = () => {
                 d="M19 9l-7 7-7-7"
               />
             </svg>
-        </div>
+          </div>
 
           {filterPanels.brand && (
             <div className="mt-2 space-y-1 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-100 pr-1">
@@ -702,11 +698,10 @@ const VehicleFilters = () => {
                   <button
                     type="button"
                     onClick={() => handleBrandChange(brand)}
-                    className={`w-full text-left px-2 py-1 rounded text-sm ${
-                      temporaryFilters.brand === brand
-                        ? 'bg-purple-100 text-[#660566] font-medium'
-                        : 'hover:bg-gray-50'
-                    }`}
+                    className={`w-full text-left px-2 py-1 rounded text-sm ${temporaryFilters.brand === brand
+                      ? 'bg-purple-100 text-[#660566] font-medium'
+                      : 'hover:bg-gray-50'
+                      }`}
                   >
                     {brand}
                   </button>
@@ -720,21 +715,20 @@ const VehicleFilters = () => {
         <div>
           <h3 className="font-medium mb-2">Araç Tipi</h3>
           <div className="flex flex-wrap gap-2">
-          {vehicleTypes.map((type) => (
-            <button
-              key={type}
+            {vehicleTypes.map((type) => (
+              <button
+                key={type}
                 type="button"
                 onClick={() => handleVehicleTypeChange(type)}
-                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                temporaryFilters.vehicleType === type
+                className={`px-3 py-1 rounded-full text-xs font-medium ${temporaryFilters.vehicleType === type
                   ? 'bg-[#660566] text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {type}
-            </button>
-          ))}
-            </div>
+                  }`}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Fiyat Aralığı */}
@@ -745,9 +739,8 @@ const VehicleFilters = () => {
           >
             <h3 className="font-medium">Fiyat Aralığı</h3>
             <svg
-              className={`w-5 h-5 transition-transform ${
-                filterPanels.price ? 'transform rotate-180' : ''
-              }`}
+              className={`w-5 h-5 transition-transform ${filterPanels.price ? 'transform rotate-180' : ''
+                }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -807,9 +800,8 @@ const VehicleFilters = () => {
           >
             <h3 className="font-medium">Batarya Kapasitesi</h3>
             <svg
-              className={`w-5 h-5 transition-transform ${
-                filterPanels.battery ? 'transform rotate-180' : ''
-              }`}
+              className={`w-5 h-5 transition-transform ${filterPanels.battery ? 'transform rotate-180' : ''
+                }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -869,9 +861,8 @@ const VehicleFilters = () => {
           >
             <h3 className="font-medium">Menzil</h3>
             <svg
-              className={`w-5 h-5 transition-transform ${
-                filterPanels.range ? 'transform rotate-180' : ''
-              }`}
+              className={`w-5 h-5 transition-transform ${filterPanels.range ? 'transform rotate-180' : ''
+                }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -883,7 +874,7 @@ const VehicleFilters = () => {
                 d="M19 9l-7 7-7-7"
               />
             </svg>
-              </div>
+          </div>
 
           {filterPanels.range && (
             <div className="mt-2 grid grid-cols-2 gap-2">
@@ -902,7 +893,7 @@ const VehicleFilters = () => {
                   className="w-full border border-gray-300 rounded p-1.5 text-sm"
                   placeholder="Min"
                 />
-            </div>
+              </div>
               <div>
                 <label
                   htmlFor="maxRange"
@@ -931,9 +922,8 @@ const VehicleFilters = () => {
           >
             <h3 className="font-medium">Diğer Özellikler</h3>
             <svg
-              className={`w-5 h-5 transition-transform ${
-                filterPanels.specs ? 'transform rotate-180' : ''
-              }`}
+              className={`w-5 h-5 transition-transform ${filterPanels.specs ? 'transform rotate-180' : ''
+                }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -945,8 +935,8 @@ const VehicleFilters = () => {
                 d="M19 9l-7 7-7-7"
               />
             </svg>
-            </div>
-            
+          </div>
+
           {filterPanels.specs && (
             <div className="mt-2 space-y-2">
               {/* Isı Pompası */}
@@ -955,36 +945,36 @@ const VehicleFilters = () => {
                   type="checkbox"
                   id="heatPumpYes"
                   checked={temporaryFilters.heatPump === 'yes'}
-                  onChange={(e) => handleCheckboxFilterChange('heatPump', e.target.checked ? 'yes' : undefined)}
+                  onChange={(e) => handleCheckboxFilterChange('heatPump', e?.target?.checked ? 'yes' : false)}
                   className="w-4 h-4 text-[#660566] rounded border-gray-300 focus:ring-[#660566]"
                 />
-                <label 
-                  htmlFor="heatPumpYes" 
+                <label
+                  htmlFor="heatPumpYes"
                   className="ml-2 text-sm text-gray-700"
                 >
                   Isı Pompası Var
                 </label>
-          </div>
-          
+              </div>
+
               {/* V2L */}
               <div className="flex items-center">
                 <input
                   type="checkbox"
                   id="v2lYes"
                   checked={temporaryFilters.v2l === 'yes'}
-                  onChange={(e) => handleCheckboxFilterChange('v2l', e.target.checked ? 'yes' : undefined)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => handleCheckboxFilterChange('v2l', e.currentTarget.checked ? 'yes' : false)}
                   className="w-4 h-4 text-[#660566] rounded border-gray-300 focus:ring-[#660566]"
                 />
-                <label 
-                  htmlFor="v2lYes" 
+                <label
+                  htmlFor="v2lYes"
                   className="ml-2 text-sm text-gray-700"
                 >
                   V2L Var
                 </label>
-        </div>
+              </div>
             </div>
           )}
-      </div>
+        </div>
 
         {/* Türkiye Durumu */}
         <div>
@@ -994,9 +984,8 @@ const VehicleFilters = () => {
           >
             <h3 className="font-medium">Türkiye Durumu</h3>
             <svg
-              className={`w-5 h-5 transition-transform ${
-                filterPanels.turkeyStatus ? 'transform rotate-180' : ''
-              }`}
+              className={`w-5 h-5 transition-transform ${filterPanels.turkeyStatus ? 'transform rotate-180' : ''
+                }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -1008,7 +997,7 @@ const VehicleFilters = () => {
                 d="M19 9l-7 7-7-7"
               />
             </svg>
-        </div>
+          </div>
 
           {filterPanels.turkeyStatus && (
             <div className="mt-2 space-y-2">
@@ -1018,16 +1007,16 @@ const VehicleFilters = () => {
                   type="checkbox"
                   id="turkeyAvailable"
                   checked={temporaryFilters.turkeyStatus === 'available'}
-                  onChange={(e) => handleCheckboxFilterChange('turkeyStatus', e.target.checked ? 'available' : undefined)}
+                  onChange={(e) => handleCheckboxFilterChange('turkeyStatus', e?.target?.checked ? 'available' : false)}
                   className="w-4 h-4 text-[#660566] rounded border-gray-300 focus:ring-[#660566]"
                 />
-                <label 
-                  htmlFor="turkeyAvailable" 
+                <label
+                  htmlFor="turkeyAvailable"
                   className="ml-2 text-sm text-gray-700"
                 >
                   Türkiye'de Satışta
                 </label>
-      </div>
+              </div>
 
               {/* Yakında Türkiye'de */}
               <div className="flex items-center">
@@ -1038,15 +1027,15 @@ const VehicleFilters = () => {
                   onChange={(e) => handleCheckboxFilterChange('comingSoon', e.target.checked)}
                   className="w-4 h-4 text-[#660566] rounded border-gray-300 focus:ring-[#660566]"
                 />
-                <label 
-                  htmlFor="comingSoon" 
+                <label
+                  htmlFor="comingSoon"
                   className="ml-2 text-sm text-gray-700"
                 >
                   Yakında Türkiye'de
                 </label>
-          </div>
-        </div>
-      )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Filtreleri Uygula Butonu */}

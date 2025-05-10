@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVehicles } from '@/hooks/useVehicles';
-import type ElectricVehicle from '@/models/ElectricVehicle';
+import type { ElectricVehicle } from '@/models/ElectricVehicle';
 import { toSlug } from '@/utils/vehicleUtils';
 
 const EnhancedSearchBar = () => {
@@ -21,12 +21,12 @@ const EnhancedSearchBar = () => {
   // Filtrelenmiş önerileri hesapla
   const filteredSuggestions = searchTerm.length > 1
     ? vehicles
-        .filter(vehicle => 
-          vehicle.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          vehicle.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        .slice(0, 5)
+      .filter(vehicle =>
+        vehicle.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        vehicle.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .slice(0, 5)
     : [];
 
   // Son aramaları localStorage'dan yükle
@@ -40,12 +40,12 @@ const EnhancedSearchBar = () => {
   // Son aramayı kaydet
   const saveSearch = (term: string) => {
     if (!term.trim()) return;
-    
+
     const updatedSearches = [
       term,
       ...recentSearches.filter(s => s !== term)
     ].slice(0, 5);
-    
+
     setRecentSearches(updatedSearches);
     localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
   };
@@ -64,73 +64,68 @@ const EnhancedSearchBar = () => {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (!searchTerm.trim()) return;
-    
+
     // Son aramayı kaydet
     saveSearch(searchTerm);
-    
+
     // Tam eşleşme kontrolü
     if (vehicles && vehicles.length > 0 && searchTerm.length > 2) {
       const searchLower = searchTerm.toLowerCase().trim();
-      
+
       // Tam eşleşme kontrolü (marka + model)
-      const exactMatch = vehicles.find(vehicle => 
+      const exactMatch = vehicles.find(vehicle =>
         `${vehicle.brand} ${vehicle.model}`.toLowerCase() === searchLower
       );
-      
+
       // Marka kontrolü
-      const brandMatch = vehicles.find(vehicle => 
+      const brandMatch = vehicles.find(vehicle =>
         vehicle.brand.toLowerCase() === searchLower
       );
-      
+
       // Model kontrolü
-      const modelMatch = vehicles.find(vehicle => 
+      const modelMatch = vehicles.find(vehicle =>
         vehicle.model.toLowerCase() === searchLower
       );
-      
+
       // İçeren kontrolü - sadece marka ve model
-      const containsMatches = vehicles.filter(vehicle => 
+      const containsMatches = vehicles.filter(vehicle =>
         `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchLower) ||
         vehicle.brand.toLowerCase().includes(searchLower) ||
         vehicle.model.toLowerCase().includes(searchLower)
       );
-      
+
       // Tam eşleşme varsa direkt araç detay sayfasına yönlendir
       if (exactMatch) {
-        console.log(`Tam eşleşme bulundu: ${exactMatch.brand} ${exactMatch.model}`);
         const slug = toSlug(`${exactMatch.brand}-${exactMatch.model}`);
         router.push(`/elektrikli-araclar/${slug}`);
         return;
       }
-      
+
       // Sadece bir marka eşleşmesi varsa ve o markaya ait tek bir araç varsa
       if (brandMatch && vehicles.filter(v => v.brand.toLowerCase() === searchLower).length === 1) {
-        console.log(`Marka eşleşmesi bulundu: ${brandMatch.brand} ${brandMatch.model}`);
         const slug = toSlug(`${brandMatch.brand}-${brandMatch.model}`);
         router.push(`/elektrikli-araclar/${slug}`);
         return;
       }
-      
+
       // Model ile tam eşleşme varsa ve birden fazla değilse
       if (modelMatch && vehicles.filter(v => v.model.toLowerCase() === searchLower).length === 1) {
-        console.log(`Model eşleşmesi bulundu: ${modelMatch.brand} ${modelMatch.model}`);
         const slug = toSlug(`${modelMatch.brand}-${modelMatch.model}`);
         router.push(`/elektrikli-araclar/${slug}`);
         return;
       }
-      
+
       // İçeren şeklinde tek bir eşleşme varsa
       if (containsMatches.length === 1) {
-        console.log(`"İçerir" eşleşmesi bulundu: ${containsMatches[0].brand} ${containsMatches[0].model}`);
         const slug = toSlug(`${containsMatches[0].brand}-${containsMatches[0].model}`);
         router.push(`/elektrikli-araclar/${slug}`);
         return;
       }
     }
-    
+
     // Eşleşme yoksa veya birden fazla sonuç varsa, arama sayfasına yönlendir
-    console.log(`Tam eşleşme bulunamadı, arama sayfasına yönlendiriliyor: ${searchTerm}`);
     router.push(`/elektrikli-araclar?search=${encodeURIComponent(searchTerm)}`);
   };
 
@@ -138,19 +133,17 @@ const EnhancedSearchBar = () => {
     try {
       // Son aramayı kaydet
       saveSearch(`${vehicle.brand} ${vehicle.model}`);
-      
+
       // Araç adını URL uyumlu slug formatına dönüştür
       const slug = toSlug(`${vehicle.brand}-${vehicle.model}`);
-      
-      console.log(`Araç yönlendirme: ${vehicle.brand} ${vehicle.model} -> ${slug}`);
-      
+
+
       // Yönlendirme işlemi
       router.push(`/elektrikli-araclar/${slug}`);
-      
+
       // UI güncelleme
       setShowSuggestions(false);
     } catch (error) {
-      console.error('Araç detay sayfasına yönlendirme hatası:', error);
       // Hata durumunda alternatif yönlendirme
       router.push('/elektrikli-araclar');
     }
@@ -159,71 +152,66 @@ const EnhancedSearchBar = () => {
   const handlePopularClick = (term: string) => {
     // Önce arama terimini set et
     setSearchTerm(term);
-    
+
     // Son aramayı kaydet
     saveSearch(term);
-    
+
     // Tam eşleşme kontrolü
     if (vehicles && vehicles.length > 0 && term.length > 2) {
       const searchLower = term.toLowerCase().trim();
-      
+
       // Tam eşleşme kontrolü (marka + model)
-      const exactMatch = vehicles.find(vehicle => 
+      const exactMatch = vehicles.find(vehicle =>
         `${vehicle.brand} ${vehicle.model}`.toLowerCase() === searchLower
       );
-      
+
       // Marka kontrolü
-      const brandMatch = vehicles.find(vehicle => 
+      const brandMatch = vehicles.find(vehicle =>
         vehicle.brand.toLowerCase() === searchLower
       );
-      
+
       // Model kontrolü
-      const modelMatch = vehicles.find(vehicle => 
+      const modelMatch = vehicles.find(vehicle =>
         vehicle.model.toLowerCase() === searchLower
       );
-      
+
       // İçeren kontrolü - sadece marka ve model
-      const containsMatches = vehicles.filter(vehicle => 
+      const containsMatches = vehicles.filter(vehicle =>
         `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchLower) ||
         vehicle.brand.toLowerCase().includes(searchLower) ||
         vehicle.model.toLowerCase().includes(searchLower)
       );
-      
+
       // Tam eşleşme varsa direkt araç detay sayfasına yönlendir
       if (exactMatch) {
-        console.log(`Popüler terim tam eşleşme bulundu: ${exactMatch.brand} ${exactMatch.model}`);
         const slug = toSlug(`${exactMatch.brand}-${exactMatch.model}`);
         router.push(`/elektrikli-araclar/${slug}`);
         return;
       }
-      
+
       // Sadece bir marka eşleşmesi varsa ve o markaya ait tek bir araç varsa
       if (brandMatch && vehicles.filter(v => v.brand.toLowerCase() === searchLower).length === 1) {
-        console.log(`Popüler terim marka eşleşmesi bulundu: ${brandMatch.brand} ${brandMatch.model}`);
         const slug = toSlug(`${brandMatch.brand}-${brandMatch.model}`);
         router.push(`/elektrikli-araclar/${slug}`);
         return;
       }
-      
+
       // Model ile tam eşleşme varsa ve birden fazla değilse
       if (modelMatch && vehicles.filter(v => v.model.toLowerCase() === searchLower).length === 1) {
-        console.log(`Popüler terim model eşleşmesi bulundu: ${modelMatch.brand} ${modelMatch.model}`);
         const slug = toSlug(`${modelMatch.brand}-${modelMatch.model}`);
         router.push(`/elektrikli-araclar/${slug}`);
         return;
       }
-      
+
       // İçeren şeklinde tek bir eşleşme varsa
       if (containsMatches.length === 1) {
-        console.log(`Popüler terim "içerir" eşleşmesi bulundu: ${containsMatches[0].brand} ${containsMatches[0].model}`);
         const slug = toSlug(`${containsMatches[0].brand}-${containsMatches[0].model}`);
         router.push(`/elektrikli-araclar/${slug}`);
         return;
       }
     }
-    
+
     // Eşleşme yoksa veya birden fazla sonuç varsa, arama sayfasına yönlendir
-    console.log(`Popüler terim için tam eşleşme bulunamadı, arama sayfasına yönlendiriliyor: ${term}`);
     router.push(`/elektrikli-araclar?search=${encodeURIComponent(term)}`);
   };
 
@@ -235,7 +223,7 @@ const EnhancedSearchBar = () => {
   return (
     <div className="relative max-w-3xl mx-auto" ref={searchContainerRef}>
       {/* Ana Arama Kutusu */}
-      <div 
+      <div
         className={`
           relative bg-white rounded-2xl shadow-lg transition-all duration-300
           ${isFocused ? 'ring-4 ring-purple-500/20 shadow-purple-500/10 scale-[1.02]' : 'hover:shadow-xl'}
@@ -250,9 +238,8 @@ const EnhancedSearchBar = () => {
                   rotate: isFocused ? [0, 15, 0] : 0
                 }}
                 transition={{ duration: 0.3 }}
-                className={`w-6 h-6 transition-colors duration-200 ${
-                  isFocused ? 'text-purple-600' : 'text-gray-400'
-                }`}
+                className={`w-6 h-6 transition-colors duration-200 ${isFocused ? 'text-purple-600' : 'text-gray-400'
+                  }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -265,7 +252,7 @@ const EnhancedSearchBar = () => {
                 />
               </motion.svg>
             </div>
-            
+
             <input
               ref={inputRef}
               type="text"
@@ -278,7 +265,7 @@ const EnhancedSearchBar = () => {
               aria-label="Elektrikli araç ara"
               tabIndex={0}
             />
-            
+
             <div className="absolute right-3">
               <motion.button
                 whileHover={{ scale: 1.03 }}
@@ -347,7 +334,7 @@ const EnhancedSearchBar = () => {
                 </div>
               </div>
             )}
-            
+
             {/* Son Aramalar */}
             {recentSearches.length > 0 && (
               <div className="p-2 border-t border-gray-100">
@@ -358,7 +345,7 @@ const EnhancedSearchBar = () => {
                     </svg>
                     <span>Son Aramalar</span>
                   </div>
-                  <button 
+                  <button
                     onClick={() => {
                       setRecentSearches([]);
                       localStorage.removeItem('recentSearches');
@@ -375,68 +362,63 @@ const EnhancedSearchBar = () => {
                       onClick={() => {
                         // Arama terimini ayarla
                         setSearchTerm(search);
-                        
+
                         // Akıllı yönlendirme mantığı
                         if (vehicles && vehicles.length > 0 && search.length > 2) {
                           const searchLower = search.toLowerCase().trim();
-                          
+
                           // Tam eşleşme kontrolü (marka + model)
-                          const exactMatch = vehicles.find(vehicle => 
+                          const exactMatch = vehicles.find(vehicle =>
                             `${vehicle.brand} ${vehicle.model}`.toLowerCase() === searchLower
                           );
-                          
+
                           // Marka kontrolü
-                          const brandMatch = vehicles.find(vehicle => 
+                          const brandMatch = vehicles.find(vehicle =>
                             vehicle.brand.toLowerCase() === searchLower
                           );
-                          
+
                           // Model kontrolü
-                          const modelMatch = vehicles.find(vehicle => 
+                          const modelMatch = vehicles.find(vehicle =>
                             vehicle.model.toLowerCase() === searchLower
                           );
-                          
+
                           // İçeren kontrolü
-                          const containsMatches = vehicles.filter(vehicle => 
+                          const containsMatches = vehicles.filter(vehicle =>
                             `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchLower) ||
                             vehicle.brand.toLowerCase().includes(searchLower) ||
                             vehicle.model.toLowerCase().includes(searchLower)
                           );
-                          
+
                           // Tam eşleşme varsa direkt araç detay sayfasına yönlendir
                           if (exactMatch) {
-                            console.log(`Son arama tam eşleşme bulundu: ${exactMatch.brand} ${exactMatch.model}`);
                             const slug = toSlug(`${exactMatch.brand}-${exactMatch.model}`);
                             router.push(`/elektrikli-araclar/${slug}`);
                             return;
                           }
-                          
+
                           // Sadece bir marka eşleşmesi varsa ve o markaya ait tek bir araç varsa
                           if (brandMatch && vehicles.filter(v => v.brand.toLowerCase() === searchLower).length === 1) {
-                            console.log(`Son arama marka eşleşmesi bulundu: ${brandMatch.brand} ${brandMatch.model}`);
                             const slug = toSlug(`${brandMatch.brand}-${brandMatch.model}`);
                             router.push(`/elektrikli-araclar/${slug}`);
                             return;
                           }
-                          
+
                           // Model ile tam eşleşme varsa ve birden fazla değilse
                           if (modelMatch && vehicles.filter(v => v.model.toLowerCase() === searchLower).length === 1) {
-                            console.log(`Son arama model eşleşmesi bulundu: ${modelMatch.brand} ${modelMatch.model}`);
                             const slug = toSlug(`${modelMatch.brand}-${modelMatch.model}`);
                             router.push(`/elektrikli-araclar/${slug}`);
                             return;
                           }
-                          
+
                           // İçeren şeklinde tek bir eşleşme varsa
                           if (containsMatches.length === 1) {
-                            console.log(`Son arama "içerir" eşleşmesi bulundu: ${containsMatches[0].brand} ${containsMatches[0].model}`);
                             const slug = toSlug(`${containsMatches[0].brand}-${containsMatches[0].model}`);
                             router.push(`/elektrikli-araclar/${slug}`);
                             return;
                           }
                         }
-                        
+
                         // Eşleşme yoksa veya birden fazla sonuç varsa, arama sayfasına yönlendir
-                        console.log(`Son arama için tam eşleşme bulunamadı, arama sayfasına yönlendiriliyor: ${search}`);
                         router.push(`/elektrikli-araclar?search=${encodeURIComponent(search)}`);
                       }}
                       className="w-full text-left px-4 py-2.5 hover:bg-purple-50 rounded-lg flex items-center gap-3 transition-colors duration-150 border border-transparent hover:border-purple-100"

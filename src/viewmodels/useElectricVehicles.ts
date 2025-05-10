@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { useQuery } from '@tanstack/react-query';
-import ElectricVehicle from '@/models/ElectricVehicle';
+import { ElectricVehicle } from '@/models/ElectricVehicle';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -10,7 +10,7 @@ import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 export const normalizeVehicleType = (type: string): string => {
   // Önce gelen değeri büyük-küçük harf duyarsız hale getir
   const lowerType = type.toLowerCase().trim();
-  
+
   // Basit bir eşleşme tablosu oluştur
   const typeMapping: Record<string, string> = {
     'suv': 'SUV',
@@ -34,7 +34,7 @@ export const normalizeVehicleType = (type: string): string => {
     'otobüs': 'Otobüs',
     'bus': 'Otobüs',
   };
-  
+
   // Eşleşme varsa standart değeri döndür, yoksa orijinal değeri kullan
   return typeMapping[lowerType] || type;
 };
@@ -66,24 +66,36 @@ async function fetchVehiclesFromSupabase(filters: Filters = {}): Promise<Electri
     // Temel sorgu
     let query = supabase
       .from('electric_vehicles')
-      .select('*');
-    
+      .select(`*,
+        features(*),
+        environmental_impacts!inner(*),
+        turkey_statuses!inner(*),
+        performances!inner(*),
+        charging_times!inner(*),
+        dimensions!inner(*),
+        comforts!inner(*),
+        efficiencies!inner(*),
+        images!inner(*),
+        prices!inner!inner(*),
+        warranties!inner(*)
+        `);
+
     // Filtreler uygulanıyor
     query = applyFiltersToQuery(query, filters);
-    
+
     // Sorguyu çalıştır
     const { data, error } = await query;
-    
+
     if (error) {
       console.error('Supabase veri çekme hatası:', error);
       throw error;
     }
-    
+
     if (!data || data.length === 0) {
       console.warn('Supabase\'den veri çekilemedi veya filtrelere uygun sonuç yok.');
       return [];
     }
-    
+
     // Supabase'den gelen veriyi ElectricVehicle formatına dönüştür
     const vehicles: ElectricVehicle[] = data.map(vehicle => ({
       id: vehicle.id,
@@ -93,25 +105,30 @@ async function fetchVehiclesFromSupabase(filters: Filters = {}): Promise<Electri
       type: vehicle.type,
       range: vehicle.range,
       batteryCapacity: vehicle.battery_capacity,
-      chargingTime: vehicle.charging_time as any,
-      performance: vehicle.performance as any,
+      chargingTime: vehicle.charging_times as any,
+      performance: vehicle.performances ? {
+        power: vehicle.performances.power, // Motor Gücü (HP)
+        torque: vehicle.performances.torque, // Tork (Nm)
+        driveType: vehicle.performances.drive_type, // Sürüş Sistemi
+        topSpeed: vehicle.performances.top_speed, // Azami Hız (km/s)
+        acceleration: vehicle.performances.acceleration // 0-100 km/s (saniye)
+      } : undefined,
       dimensions: vehicle.dimensions as any,
       efficiency: vehicle.efficiency as any,
       comfort: vehicle.comfort as any,
       price: vehicle.price as any,
       images: vehicle.images,
       features: vehicle.features,
-      extraFeatures: vehicle.extra_features || undefined,
+      extraFeatures: vehicle.features || undefined,
       warranty: vehicle.warranty as any,
       environmentalImpact: vehicle.environmental_impact as any,
       heatPump: vehicle.heat_pump,
       v2l: vehicle.v2l,
       turkeyStatus: vehicle.turkey_status as any
     }));
-    
+
     return vehicles;
   } catch (error) {
-    console.error('Araç verileri çekilirken hata oluştu:', error);
     return [];
   }
 }
@@ -122,21 +139,21 @@ function applyFiltersToQuery(query: any, filters: Filters) {
   if (filters.brand) {
     query = query.ilike('brand', `%${filters.brand}%`);
   }
-  
+
   // Araç tipi filtresi
   if (filters.vehicleType) {
     const normalizedType = normalizeVehicleType(filters.vehicleType);
     query = query.eq('type', normalizedType);
   }
-  
+
   // Fiyat filtreleri
   if (filters.minPrice) {
-    query = query.gte('price->base', filters.minPrice);
+    query = query.gte('prices.base', filters.minPrice);
   }
   if (filters.maxPrice) {
-    query = query.lte('price->base', filters.maxPrice);
+    query = query.lte('prices.base', filters.maxPrice);
   }
-  
+
   // Batarya kapasitesi filtreleri
   if (filters.minBatteryCapacity) {
     query = query.gte('battery_capacity', filters.minBatteryCapacity);
@@ -144,7 +161,7 @@ function applyFiltersToQuery(query: any, filters: Filters) {
   if (filters.maxBatteryCapacity) {
     query = query.lte('battery_capacity', filters.maxBatteryCapacity);
   }
-  
+
   // Menzil filtreleri
   if (filters.minRange) {
     query = query.gte('range', filters.minRange);
@@ -152,48 +169,48 @@ function applyFiltersToQuery(query: any, filters: Filters) {
   if (filters.maxRange) {
     query = query.lte('range', filters.maxRange);
   }
-  
+
   // Tüketim filtreleri
   if (filters.minConsumption) {
-    query = query.gte('efficiency->consumption', filters.minConsumption);
+    query = query.gte('efficiencies.consumption', filters.minConsumption);
   }
   if (filters.maxConsumption) {
-    query = query.lte('efficiency->consumption', filters.maxConsumption);
+    query = query.lte('efficiencies.consumption', filters.maxConsumption);
   }
-  
+
   // Şarj hızı filtreleri
   if (filters.minChargeSpeed) {
-    query = query.gte('charging_time->fastCharging->power', filters.minChargeSpeed);
+    query = query.gte('charging_times.fastCharging->power', filters.minChargeSpeed);
   }
   if (filters.maxChargeSpeed) {
-    query = query.lte('charging_time->fastCharging->power', filters.maxChargeSpeed);
+    query = query.lte('charging_times.fastCharging->power', filters.maxChargeSpeed);
   }
-  
+
   // Isı pompası filtresi
   if (filters.heatPump) {
     query = query.eq('heat_pump', filters.heatPump);
   }
-  
+
   // V2L filtresi
   if (filters.v2l) {
     query = query.eq('v2l', filters.v2l);
   }
-  
+
   // Türkiye durumu filtresi
   if (filters.turkeyStatus) {
-    query = query.eq('turkey_status->available', filters.turkeyStatus === 'available');
+    query = query.eq('turkey_statuses.available', filters.turkeyStatus === 'available');
   }
-  
+
   // Yakında geliyor filtresi
   if (filters.comingSoon !== undefined) {
     if (filters.comingSoon) {
-      query = query.eq('turkey_status->comingSoon', true);
+      query = query.eq('turkey_statuses.comingSoon', true);
     } else {
       // comingSoon=false ise, comingSoon=true olan araçları hariç tut
-      query = query.or('turkey_status->comingSoon.is.null,turkey_status->comingSoon.eq.false');
+      query = query.or('turkey_statuses.comingSoon.is.null,turkey_statuses.comingSoon.eq.false');
     }
   }
-  
+
   // Arama terimi filtresi
   if (filters.searchTerm) {
     const searchLower = filters.searchTerm.toLowerCase();
@@ -201,7 +218,7 @@ function applyFiltersToQuery(query: any, filters: Filters) {
       `brand.ilike.%${searchLower}%,model.ilike.%${searchLower}%,type.ilike.%${searchLower}%`
     );
   }
-  
+
   return query;
 }
 
@@ -243,7 +260,7 @@ export const useElectricVehicleStore = create<ElectricVehicleStore>((set) => ({
 // React Query hook - Supabase'den filtreli verileri çeker
 export const useElectricVehicles = () => {
   const filters = useElectricVehicleStore((state) => state.filters);
-  
+
   return useQuery({
     queryKey: ['electricVehicles', filters],
     queryFn: () => fetchVehiclesFromSupabase(filters),
@@ -257,19 +274,19 @@ export const useFilteredVehicles = () => {
   const searchParams = useSearchParams();
   const filters = useElectricVehicleStore((state) => state.filters);
   const setFilters = useElectricVehicleStore((state) => state.setFilters);
-  
+
   const urlVehicleType = searchParams.get('tip');
   const searchTerm = searchParams.get('search');
-  
+
   // URL'den gelen araç tipi filtresini state'e uygula
   useEffect(() => {
     if (urlVehicleType) {
-      setFilters({ 
-        vehicleType: normalizeVehicleType(urlVehicleType) 
+      setFilters({
+        vehicleType: normalizeVehicleType(urlVehicleType)
       });
     }
   }, [urlVehicleType, setFilters]);
-  
+
   // Arama terimi varsa, filtrelere ekle
   useEffect(() => {
     if (searchTerm) {
@@ -281,7 +298,7 @@ export const useFilteredVehicles = () => {
   const isComingSoonActive = useMemo(() => {
     return filters.comingSoon === true;
   }, [filters.comingSoon]);
-  
+
   return {
     vehicles,
     isLoading,

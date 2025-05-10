@@ -100,7 +100,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
       <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
         <Image
           src={vehicle.images && vehicle.images.length > 0
-            ? vehicle.images[0]?.url
+            ? vehicle.images[0]
             : '/images/car-placeholder.jpg'}
           alt={`${vehicle.brand} ${vehicle.model}`}
           width={800}

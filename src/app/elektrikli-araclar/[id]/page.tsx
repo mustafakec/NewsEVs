@@ -46,7 +46,7 @@ export async function generateMetadata(
     metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
     openGraph: {
       images: vehicle.images && vehicle.images.length > 0
-        ? [{ url: vehicle.images[0]?.url }]
+        ? [{ url: vehicle.images[0] }]
         : [{ url: '/images/car-placeholder.jpg' }],
     },
   };

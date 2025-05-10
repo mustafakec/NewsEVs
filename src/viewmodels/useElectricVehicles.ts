@@ -97,7 +97,7 @@ async function fetchVehiclesFromSupabase(filters: Filters = {}): Promise<Electri
     }
 
     // Supabase'den gelen veriyi ElectricVehicle formatına dönüştür
-    const vehicles: ElectricVehicle[] = data.map(vehicle => ({
+    const vehicles: ElectricVehicle[] = data.map((vehicle: any) => ({
       id: vehicle.id,
       brand: vehicle.brand,
       model: vehicle.model,
@@ -117,7 +117,7 @@ async function fetchVehiclesFromSupabase(filters: Filters = {}): Promise<Electri
       efficiency: vehicle.efficiency as any,
       comfort: vehicle.comfort as any,
       price: vehicle.price as any,
-      images: vehicle.images,
+      images: vehicle.images?.map((img: any) => img.url),
       features: vehicle.features,
       extraFeatures: vehicle.features || undefined,
       warranty: vehicle.warranty as any,

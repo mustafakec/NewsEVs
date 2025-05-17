@@ -151,24 +151,24 @@ const blogPosts = [
     publishDate: '11 Kasım 2024',
     premium: false,
   },
-  {
-    title: 'Elektrikli Araç Satış Verileri - Q1 2025',
-    description: 'Türkiye ve dünya genelinde elektrikli araç satış verilerinin detaylı analizi.',
-    category: 'Satışlar ve Raporlar',
-    readTime: '12 dk',
-    slug: 'elektrikli-arac-satis-verileri-q1-2025',
-    publishDate: '30 Mart 2025',
-    premium: true,
-  },
-  {
-    title: 'Avrupa Elektrikli Araç Pazar Raporu',
-    description: 'Avrupa elektrikli araç pazarındaki trendler ve Türkiye pazarına etkileri.',
-    category: 'Satışlar ve Raporlar',
-    readTime: '15 dk',
-    slug: 'avrupa-elektrikli-arac-pazar-raporu',
-    publishDate: '15 Mart 2025',
-    premium: true,
-  }
+  // {
+  //   title: 'Elektrikli Araç Satış Verileri - Q1 2025',
+  //   description: 'Türkiye ve dünya genelinde elektrikli araç satış verilerinin detaylı analizi.',
+  //   category: 'Satışlar ve Raporlar',
+  //   readTime: '12 dk',
+  //   slug: 'elektrikli-arac-satis-verileri-q1-2025',
+  //   publishDate: '30 Mart 2025',
+  //   premium: true,
+  // },
+  // {
+  //   title: 'Avrupa Elektrikli Araç Pazar Raporu',
+  //   description: 'Avrupa elektrikli araç pazarındaki trendler ve Türkiye pazarına etkileri.',
+  //   category: 'Satışlar ve Raporlar',
+  //   readTime: '15 dk',
+  //   slug: 'avrupa-elektrikli-arac-pazar-raporu',
+  //   publishDate: '15 Mart 2025',
+  //   premium: true,
+  // }
 ];
 
 const categories = [
@@ -192,12 +192,12 @@ const categories = [
     description: 'Şarj istasyonları ve ev şarjı hakkında bilgiler',
     icon: '🔌',
   },
-  {
-    title: 'Satışlar ve Raporlar',
-    description: 'Elektrikli araç satış verileri ve pazar analizleri',
-    icon: '📊',
-    isPremium: true,
-  },
+  // {
+  //   title: 'Satışlar ve Raporlar',
+  //   description: 'Elektrikli araç satış verileri ve pazar analizleri',
+  //   icon: '📊',
+  //   isPremium: true,
+  // },
 ];
 
 export default function BlogPage() {
@@ -205,7 +205,7 @@ export default function BlogPage() {
   const [isPremiumUser, setIsPremiumUser] = useState<boolean>(false);
   const [showPremiumModal, setShowPremiumModal] = useState<boolean>(false);
   const [premiumCategory, setPremiumCategory] = useState<string>('');
-  
+
   // Gerçek premium modal için state
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState<boolean>(false);
 
@@ -230,7 +230,7 @@ export default function BlogPage() {
         setIsPremiumUser(false);
       }
     };
-    
+
     checkUserPremium();
   }, []);
 
@@ -241,7 +241,7 @@ export default function BlogPage() {
     } else {
       document.body.classList.remove('modal-open');
     }
-    
+
     // Cleanup fonksiyonu
     return () => {
       document.body.classList.remove('modal-open');
@@ -261,7 +261,7 @@ export default function BlogPage() {
 
   // Kategori popup metinleri
   const getPremiumText = (category: string) => {
-    switch(category) {
+    switch (category) {
       case 'Satışlar ve Raporlar':
         return 'Bu içerik sadece premium üyelere özeldir. Premium üyelik ile elektrikli araç satış verileri ve pazar analizlerine erişebilirsiniz.';
       case 'Şarj İpuçları':
@@ -292,7 +292,7 @@ export default function BlogPage() {
         <h2 className="text-2xl font-semibold text-gray-900 mb-6">Kategoriler</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
           {categories.map((category) => (
-            <motion.div 
+            <motion.div
               key={category.title}
               whileHover={{ scale: 1.03 }}
               className={`bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow relative 
@@ -322,7 +322,7 @@ export default function BlogPage() {
       {showPremiumModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative">
-            <button 
+            <button
               onClick={() => setShowPremiumModal(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
             >
@@ -330,12 +330,12 @@ export default function BlogPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            
+
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-[#660566]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8 text-[#660566]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Premium İçerik</h3>
@@ -343,7 +343,7 @@ export default function BlogPage() {
                 {getPremiumText(premiumCategory)}
               </p>
               <div className="space-y-3">
-                <button 
+                <button
                   onClick={() => {
                     // İçerik modalını kapat 
                     setShowPremiumModal(false);
@@ -355,7 +355,7 @@ export default function BlogPage() {
                 >
                   Premium Üye Ol
                 </button>
-                <button 
+                <button
                   onClick={() => setShowPremiumModal(false)}
                   className="w-full text-gray-600 px-4 py-2 rounded-lg font-medium border border-gray-200
                          hover:bg-gray-50 transition-all duration-200"
@@ -369,7 +369,7 @@ export default function BlogPage() {
       )}
 
       {/* Ana Premium Modal */}
-      <PremiumModal 
+      <PremiumModal
         isOpen={isPremiumModalOpen}
         onClose={() => setIsPremiumModalOpen(false)}
       />
@@ -398,14 +398,14 @@ export default function BlogPage() {
               transition={{ duration: 0.3 }}
               className="flex flex-col"
             >
-              <Link href={post.premium && !isPremiumUser ? '#' : `/blog/${post.slug}`} 
-                    className="group"
-                    onClick={(e) => {
-                      if (post.premium && !isPremiumUser) {
-                        e.preventDefault();
-                        openPremiumModal(post.category);
-                      }
-                    }}
+              <Link href={post.premium && !isPremiumUser ? '#' : `/blog/${post.slug}`}
+                className="group"
+                onClick={(e) => {
+                  if (post.premium && !isPremiumUser) {
+                    e.preventDefault();
+                    openPremiumModal(post.category);
+                  }
+                }}
               >
                 <article className="bg-white rounded-xl overflow-hidden shadow-sm 
                                   hover:shadow-md transition-all duration-200 h-full relative">

@@ -54,8 +54,10 @@ export async function generateMetadata(
 
 // Sunucu taraflı veri çekme (SSR)
 async function getVehicleData(id: string): Promise<ElectricVehicle | null> {
+
   try {
     const vehicles = await fetchVehicles();
+
     // 1. Sayısal ID kontrolü (geriye uyumluluk için)
     if (/^\d+$/.test(id)) {
       const vehicle = vehicles.find((v) => v.id === id);
@@ -69,6 +71,7 @@ async function getVehicleData(id: string): Promise<ElectricVehicle | null> {
     let matchedVehicle = vehicles.find((v) => {
       // Araç için slug oluştur
       const vehicleSlug = toSlug(`${v.brand}-${v.model}`);
+
       // Eşleşme kontrolü
       return vehicleSlug === normalizedId;
     });
@@ -88,7 +91,6 @@ async function getVehicleData(id: string): Promise<ElectricVehicle | null> {
         );
       }
     }
-
 
     return matchedVehicle || null;
   } catch (error) {

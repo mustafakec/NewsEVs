@@ -84,7 +84,6 @@ export function useVehicles(): UseVehiclesReturn {
   return useQuery<ElectricVehicle[], Error>({
     queryKey: ['vehicles'],
     queryFn: fetchVehicles,
-    staleTime: 5 * 60 * 1000, // 5 dakika boyunca verileri önbellekte tut
     refetchOnWindowFocus: false, // Pencere odağı değiştiğinde yeniden çekme 
   });
 } 

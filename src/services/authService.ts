@@ -1,3 +1,4 @@
+import { supabase } from '@/lib/supabase';
 import { User } from '@/types/user';
 
 // Örnek kullanıcı veritabanı (gerçek uygulamada bu bir veritabanında olacak)
@@ -33,23 +34,24 @@ const users = [
 ];
 
 export const authService = {
-  login: async (email: string, password: string): Promise<User | null> => {
-    // Simüle edilmiş API gecikmesi
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  login: async (email: string, password: string): Promise<User | null | any> => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    })
 
-    const user = users.find(u => u.email === email && u.password === password);
-    
-    if (!user) {
+    if (!data) {
       throw new Error('Geçersiz email veya şifre');
     }
 
-    // Hassas bilgileri çıkar
-    const { password: _, ...userWithoutPassword } = user;
-    
+    if (error?.message == "Email not confirmed") {
+      throw new Error('Lütfen e-posta adresinizi doğrulayın');
+    }
+
     // Local storage'a kullanıcı bilgilerini kaydet
-    localStorage.setItem('user', JSON.stringify(userWithoutPassword));
-    
-    return userWithoutPassword;
+    localStorage.setItem('user', JSON.stringify(data?.user));
+
+    return data?.user;
   },
 
   logout: async (): Promise<void> => {
@@ -58,7 +60,9 @@ export const authService = {
 
   getCurrentUser: (): User | null => {
     const userStr = localStorage.getItem('user');
+
     if (!userStr) return null;
+
     return JSON.parse(userStr);
   }
 }; 

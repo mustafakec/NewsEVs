@@ -152,7 +152,7 @@ const Header = () => {
               </Link>
 
               {/* Premium butonu - Premium kullanıcılar için gizlenecek */}
-              {!(isLoggedIn && user?.isPremium) && (
+              {/* {!(isLoggedIn && user?.isPremium) && (
                 <motion.button
                   onClick={handlePremiumClick}
                   className="text-xs bg-gradient-to-r from-[#660566] to-[#330233] text-white px-3 py-1.5 rounded-full font-medium
@@ -173,7 +173,7 @@ const Header = () => {
                   <span className="mr-1">⚡</span>
                   Premium
                 </motion.button>
-              )}
+              )} */}
             </nav>
 
             {/* Giriş/Kayıt veya Profil Menüsü */}

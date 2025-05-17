@@ -8,6 +8,8 @@ import { useUserStore } from '@/stores/useUserStore';
 import { useFavoritesStore } from '@/stores/useFavoritesStore';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { authService } from '@/services/authService';
+import { supabase } from '@/lib/supabase';
 
 // Karşılaştırma için tip tanımlamaları
 interface SavedVehicle {
@@ -64,6 +66,8 @@ function ProfileContent() {
     feedback: []
   });
   const [savedComparisons, setSavedComparisons] = useState<Comparison[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -363,22 +367,44 @@ function ProfileContent() {
             <div className="max-w-2xl">
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-6">Şifre Değiştir</h3>
-                <form className="space-y-4" onSubmit={(e) => {
+                <form className="space-y-4" onSubmit={async (e) => {
                   e.preventDefault();
+                  setError(null)
+                  setSuccess(null)
                   const formData = new FormData(e.currentTarget);
                   const currentPassword = formData.get('currentPassword');
                   const newPassword = formData.get('newPassword');
                   const confirmPassword = formData.get('confirmPassword');
 
-                  if (newPassword !== confirmPassword) {
-                    alert('Yeni şifreler eşleşmiyor!');
-                    return;
-                  }
+                  const { error } = await supabase.auth.signInWithPassword({
+                    email: user?.email!,
+                    password: currentPassword?.toString()!
+                  })
 
                   const strength = checkPasswordStrength(newPassword as string);
+
                   if (strength.score < 3) {
-                    alert('Lütfen daha güçlü bir şifre belirleyin!');
+                    setError('Lütfen daha güçlü bir şifre belirleyin!');
                     return;
+                  } else if (error?.code === "validation_failed") {
+                    setError('Lütfen mevcut şifrenizi kontrol edin!');
+                  } else if (newPassword !== confirmPassword) {
+                    setError('Yeni şifreler eşleşmiyor!');
+                    return;
+                  } else {
+                    const { data, error: resetPasswordError } = await supabase.auth.updateUser({
+                      password: newPassword!
+                    })
+
+                    if (data?.user?.id) {
+                      setSuccess("Şifreniz başarıyla güncellenmiştir.")
+                    }
+
+                    if (resetPasswordError?.code === "same_password") {
+                      setError("Yeni şifreniz eskisi ile aynı olamaz!")
+                    } else if (resetPasswordError) {
+                      setError("İşlem sırasında bir hata oluştu! Lütfen tekrar deneyin.")
+                    }
                   }
 
                   // TODO: API'ye şifre değiştirme isteği gönderilecek
@@ -455,6 +481,16 @@ function ProfileContent() {
                       className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-[#660566] focus:border-[#660566] sm:text-sm"
                     />
                   </div>
+                  {error && (
+                    <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg">
+                      {error}
+                    </div>
+                  )}
+                  {success && (
+                    <div className="mb-4 p-3 bg-green-50 text-green-600 text-sm rounded-lg">
+                      {success}
+                    </div>
+                  )}
                   <div className="flex items-center justify-end pt-4">
                     <button
                       type="submit"
@@ -465,7 +501,7 @@ function ProfileContent() {
                   </div>
                 </form>
 
-                <div className="mt-8 pt-8 border-t border-gray-100">
+                {/* <div className="mt-8 pt-8 border-t border-gray-100">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">İki Faktörlü Doğrulama</h3>
                   <div className="flex items-center justify-between">
                     <div>
@@ -478,7 +514,7 @@ function ProfileContent() {
                       Aktifleştir
                     </button>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -588,23 +624,24 @@ function ProfileContent() {
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-6 text-center">
-                      <div className="w-16 h-16 mx-auto mb-4">
-                        <svg className="w-full h-full text-[#660566]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-                        </svg>
-                      </div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Premium'a Yükseltin</h3>
-                      <p className="text-gray-500 mb-6">Tüm özelliklere erişim kazanın ve premium avantajlarından yararlanın.</p>
-                      <button
-                        onClick={() => window.dispatchEvent(new Event('show-premium-modal'))}
-                        className="w-full px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#660566] to-[#330233] rounded-lg hover:opacity-90 transition-colors"
-                      >
-                        Premium'a Geç
-                      </button>
-                    </div>
-                  </div>
+                  // <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                  //   <div className="p-6 text-center">
+                  //     <div className="w-16 h-16 mx-auto mb-4">
+                  //       <svg className="w-full h-full text-[#660566]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  //         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                  //       </svg>
+                  //     </div>
+                  //     <h3 className="text-lg font-semibold text-gray-900 mb-2">Premium'a Yükseltin</h3>
+                  //     <p className="text-gray-500 mb-6">Tüm özelliklere erişim kazanın ve premium avantajlarından yararlanın.</p>
+                  //     <button
+                  //       onClick={() => window.dispatchEvent(new Event('show-premium-modal'))}
+                  //       className="w-full px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#660566] to-[#330233] rounded-lg hover:opacity-90 transition-colors"
+                  //     >
+                  //       Premium'a Geç
+                  //     </button>
+                  //   </div>
+                  // </div>
+                  null
                 )}
               </div>
 

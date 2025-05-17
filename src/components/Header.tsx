@@ -144,9 +144,9 @@ const Header = () => {
               <Link href="/sarj" className="text-gray-600 hover:text-[#660566] transition-colors">
                 Şarj
               </Link>
-              <Link href="/borsa" className="text-gray-600 hover:text-[#660566] transition-colors">
+              {/* <Link href="/borsa" className="text-gray-600 hover:text-[#660566] transition-colors">
                 Borsa
-              </Link>
+              </Link> */}
               <Link href="/blog" className="text-gray-600 hover:text-[#660566] transition-colors">
                 Blog
               </Link>
@@ -329,12 +329,12 @@ const Header = () => {
                 >
                   Şarj
                 </Link>
-                <Link
+                {/* <Link
                   href="/borsa"
                   className="text-gray-600 hover:text-[#660566] transition-colors"
                 >
                   Borsa
-                </Link>
+                </Link> */}
                 <Link
                   href="/blog"
                   className="text-gray-600 hover:text-[#660566] transition-colors"

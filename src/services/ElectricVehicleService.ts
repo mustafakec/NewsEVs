@@ -52,7 +52,7 @@ export const ElectricVehicleService = {
       type: vehicle.type,
       range: vehicle.range,
       batteryCapacity: vehicle.battery_capacity,
-      heatPump: vehicle.heat_pump,
+      heatPump: vehicle.heat_pump?.toLowerCase(),
       v2l: vehicle.v2l,
       chargingTime: vehicle.charging_times ? {
         ac: vehicle.charging_times.ac,
@@ -156,7 +156,7 @@ export const ElectricVehicleService = {
       type: vehicle.type,
       range: vehicle.range,
       batteryCapacity: vehicle.battery_capacity,
-      heatPump: vehicle.heat_pump,
+      heatPump: vehicle.heat_pump?.toLowerCase(),
       v2l: vehicle.v2l,
       chargingTime: vehicle.charging_times ? {
         ac: vehicle.charging_times.ac,

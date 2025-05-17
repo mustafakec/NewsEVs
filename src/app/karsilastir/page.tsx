@@ -122,7 +122,7 @@ export default function ComparePage() {
 
   const renderVehicleSelector = (index: number) => {
     // 3. slot ve kullanıcı premium değilse premium modal göster
-    const isPremiumSlot = index === 2 && !isPremium;
+    const isPremiumSlot = index === 3 && !isPremium;
     const filteredVehicles = vehicles?.filter(vehicle =>
       vehicle.brand.toLowerCase().includes(searchTerms[index].toLowerCase()) ||
       vehicle.model.toLowerCase().includes(searchTerms[index].toLowerCase())
@@ -287,7 +287,7 @@ export default function ComparePage() {
     return (
       <div className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[0, 1].map((index) => renderVehicleSelector(index))}
+          {[0, 1, 2].map((index) => renderVehicleSelector(index))}
         </div>
 
         {selectedVehicles.filter(Boolean).length >= 2 && (

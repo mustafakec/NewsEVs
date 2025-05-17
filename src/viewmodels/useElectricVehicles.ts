@@ -105,7 +105,14 @@ async function fetchVehiclesFromSupabase(filters: Filters = {}): Promise<Electri
       type: vehicle.type,
       range: vehicle.range,
       batteryCapacity: vehicle.battery_capacity,
-      chargingTime: vehicle.charging_times as any,
+      chargingTime: vehicle.charging_times ? {
+        ac: vehicle.charging_times.ac,
+        dc: vehicle.charging_times.dc,
+        fastCharging: {
+          power: vehicle.charging_times.fast_charging_power,
+          time10to80: vehicle.charging_times.fast_charging_time_10_to_80
+        }
+      } : undefined,
       performance: vehicle.performances ? {
         power: vehicle.performances.power, // Motor Gücü (HP)
         torque: vehicle.performances.torque, // Tork (Nm)
@@ -113,16 +120,35 @@ async function fetchVehiclesFromSupabase(filters: Filters = {}): Promise<Electri
         topSpeed: vehicle.performances.top_speed, // Azami Hız (km/s)
         acceleration: vehicle.performances.acceleration // 0-100 km/s (saniye)
       } : undefined,
-      dimensions: vehicle.dimensions as any,
-      efficiency: vehicle.efficiency as any,
+      dimensions: vehicle.dimensions ? {
+        length: vehicle.dimensions.length,
+        width: vehicle.dimensions.width,
+        height: vehicle.dimensions.height,
+        weight: vehicle.dimensions.weight,
+        cargoCapacity: vehicle.dimensions.cargo_capacity,
+        groundClearance: vehicle.dimensions.ground_clearance
+      } : undefined,
+      efficiency: vehicle.efficiencies ? {
+        consumption: vehicle.efficiencies.consumption,
+        regenerativeBraking: vehicle.efficiencies.regenerative_braking,
+        ecoMode: vehicle.efficiencies.eco_mode,
+        energyRecovery: vehicle.efficiencies.energy_recovery
+      } : undefined,
       comfort: vehicle.comfort as any,
-      price: vehicle.price as any,
+      price: vehicle.prices ? {
+        base: vehicle.prices.base,
+        currency: vehicle.prices.currency,
+        withOptions: vehicle.prices.with_options,
+        leasingMonthly: vehicle.prices.leasing_monthly,
+        leasingDuration: vehicle.prices.leasing_duration,
+        leasingDownPayment: vehicle.prices.leasing_down_payment
+      } : undefined,
       images: vehicle.images?.map((img: any) => img.url),
       features: vehicle.features,
       extraFeatures: vehicle.features || undefined,
       warranty: vehicle.warranty as any,
       environmentalImpact: vehicle.environmental_impact as any,
-      heatPump: vehicle.heat_pump,
+      heatPump: vehicle.heat_pump?.toLowerCase(),
       v2l: vehicle.v2l,
       turkeyStatus: vehicle.turkey_status as any
     }));

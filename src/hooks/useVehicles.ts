@@ -60,12 +60,51 @@ export async function fetchVehicles(): Promise<ElectricVehicle[]> {
           topSpeed: vehicle.performances.top_speed, // Azami Hız (km/s)
           acceleration: vehicle.performances.acceleration // 0-100 km/s (saniye)
         } : undefined,
-        chargingTime: vehicle.charging_times,
-        efficiency: vehicle.efficiencies,
-        comfort: vehicle.comforts,
-        price: vehicle.prices,
+        dimensions: vehicle.dimensions ? {
+          length: vehicle.dimensions.length,
+          width: vehicle.dimensions.width,
+          height: vehicle.dimensions.height,
+          weight: vehicle.dimensions.weight,
+          cargoCapacity: vehicle.dimensions.cargo_capacity,
+          groundClearance: vehicle.dimensions.ground_clearance
+        } : undefined,
+        chargingTime: vehicle.charging_times ? {
+          ac: vehicle.charging_times.ac,
+          dc: vehicle.charging_times.dc,
+          fastCharging: {
+            power: vehicle.charging_times.fast_charging_power,
+            time10to80: vehicle.charging_times.fast_charging_time_10_to_80
+          }
+        } : undefined,
+        efficiency: vehicle.efficiencies ? {
+          consumption: vehicle.efficiencies.consumption,
+          regenerativeBraking: vehicle.efficiencies.regenerative_braking,
+          ecoMode: vehicle.efficiencies.eco_mode,
+          energyRecovery: vehicle.efficiencies.energy_recovery
+        } : undefined,
+        comfort: vehicle.comforts ? {
+          seatingCapacity: vehicle.comforts.seating_capacity,
+          screens: vehicle.comforts.screens,
+          soundSystem: vehicle.comforts.sound_system,
+          autonomousLevel: vehicle.comforts.autonomous_level,
+          parkAssist: vehicle.comforts.park_assist,
+          climateControl: vehicle.comforts.climate_control,
+          heatedSeats: vehicle.comforts.heated_seats,
+          navigation: vehicle.comforts.navigation,
+          parkingSensors: vehicle.comforts.parking_sensors
+        } : undefined,
+        price: vehicle.prices ? {
+          base: vehicle.prices.base,
+          currency: vehicle.prices.currency,
+          withOptions: vehicle.prices.with_options,
+          leasingMonthly: vehicle.prices.leasing_monthly,
+          leasingDuration: vehicle.prices.leasing_duration,
+          leasingDownPayment: vehicle.prices.leasing_down_payment
+        } : undefined,
         images: vehicle.images?.map((img: any) => img.url),
         warranty: vehicle.warranties,
+        heatPump: vehicle.heat_pump?.toLowerCase(),
+        v2l: vehicle.v2l,
       } as unknown as ElectricVehicle;
 
       return result;

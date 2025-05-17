@@ -7,6 +7,7 @@ import { Fragment } from 'react';
 import { useUserStore } from '@/stores/useUserStore';
 import { authService } from '@/services/authService';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -30,21 +31,21 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   const evaluatePasswordStrength = (pass: string): PasswordStrength => {
     // Boş şifre
     if (!pass) return 'weak';
-    
+
     let score = 0;
-    
+
     // Minimum 6 karakter
     if (pass.length >= 6) score += 1;
-    
+
     // Büyük harf içeriyor
     if (/[A-Z]/.test(pass)) score += 1;
-    
+
     // Küçük harf içeriyor
     if (/[a-z]/.test(pass)) score += 1;
-    
+
     // Sayı içeriyor
     if (/[0-9]/.test(pass)) score += 1;
-    
+
     // Skora göre güçlendirme seviyesi belirleme
     if (score <= 2) return 'weak';
     if (score <= 3) return 'medium';
@@ -74,6 +75,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     try {
       if (mode === 'login') {
         const user = await authService.login(email, password);
+
         if (user) {
           setUser(user);
           onClose();
@@ -85,23 +87,31 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           setError('Lütfen daha güçlü bir şifre oluşturun');
           return;
         }
-        
+
         const name = formData.get('name') as string;
-        
-        // Gerçek bir kayıt işlemi burada olacak, şimdilik mock bir başarı mesajı gösterelim
-        setError('Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
-        setTimeout(() => {
-          setMode('login');
-          setPassword('');
-          setError(null);
-        }, 2000);
+
+        const { data, error } = await supabase.auth.signUp({
+          email: email,
+          password: password,
+        })
+
+        if (data?.user?.id) {
+          setError('Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
+          setTimeout(() => {
+            setMode('login');
+            setPassword('');
+            setError(null);
+          }, 2000);
+        } else {
+          setError('Bir hata oluştu');
+        }
       } else if (mode === 'resetPassword') {
         // Şifre sıfırlama işlemi
         if (passwordStrength === 'weak') {
           setError('Lütfen daha güçlü bir şifre oluşturun');
           return;
         }
-        
+
         // Gerçek bir şifre sıfırlama işlemi burada olacak
         setError('Şifre sıfırlama talebi alındı. E-posta adresinize gönderilen bağlantıyı kontrol edin.');
         setTimeout(() => {
@@ -143,7 +153,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel 
+              <Dialog.Panel
                 className="bg-white rounded-xl w-full max-w-[420px] p-6 shadow-xl relative"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -166,8 +176,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                       setError(null);
                     }}
                     className={`flex-1 px-6 py-2 rounded-lg font-medium transition-all duration-200 text-[13px]
-                      ${mode === 'login' 
-                        ? 'bg-gradient-to-r from-[#660566] to-[#330233] text-white shadow-lg hover:shadow-xl' 
+                      ${mode === 'login'
+                        ? 'bg-gradient-to-r from-[#660566] to-[#330233] text-white shadow-lg hover:shadow-xl'
                         : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
                   >
                     Giriş Yap
@@ -179,8 +189,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                       setError(null);
                     }}
                     className={`flex-1 px-6 py-2 rounded-lg font-medium transition-all duration-200 text-[13px]
-                      ${mode === 'register' 
-                        ? 'bg-gradient-to-r from-[#660566] to-[#330233] text-white shadow-lg hover:shadow-xl' 
+                      ${mode === 'register'
+                        ? 'bg-gradient-to-r from-[#660566] to-[#330233] text-white shadow-lg hover:shadow-xl'
                         : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
                   >
                     Kayıt Ol
@@ -213,7 +223,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                       </div>
                     </>
                   )}
-                  
+
                   <div>
                     <label htmlFor="email" className="block text-[11px] font-medium text-gray-700 mb-1">
                       E-posta
@@ -242,24 +252,21 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                       required
                       disabled={isLoading}
                     />
-                    
+
                     {/* Şifre güvenlik seviyesi (kayıt olurken veya şifremi unuttum kısmında) */}
                     {(mode === 'register' || mode === 'resetPassword') && password && (
                       <div className="mt-2">
                         <div className="flex items-center space-x-1 mb-2">
-                          <div className={`h-1 flex-1 rounded-full ${
-                            passwordStrength === 'weak' ? 'bg-red-400' : 
+                          <div className={`h-1 flex-1 rounded-full ${passwordStrength === 'weak' ? 'bg-red-400' :
                             passwordStrength === 'medium' ? 'bg-yellow-400' : 'bg-green-400'
-                          }`}></div>
-                          <div className={`h-1 flex-1 rounded-full ${
-                            passwordStrength === 'weak' ? 'bg-gray-200' : 
+                            }`}></div>
+                          <div className={`h-1 flex-1 rounded-full ${passwordStrength === 'weak' ? 'bg-gray-200' :
                             passwordStrength === 'medium' ? 'bg-yellow-400' : 'bg-green-400'
-                          }`}></div>
-                          <div className={`h-1 flex-1 rounded-full ${
-                            passwordStrength === 'strong' ? 'bg-green-400' : 'bg-gray-200'
-                          }`}></div>
+                            }`}></div>
+                          <div className={`h-1 flex-1 rounded-full ${passwordStrength === 'strong' ? 'bg-green-400' : 'bg-gray-200'
+                            }`}></div>
                         </div>
-                        
+
                         {/* Şifre kriterleri listesi */}
                         <ul className="text-[11px] text-gray-600 space-y-1 mt-2">
                           <li className="flex items-center">
@@ -310,7 +317,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 {/* Şifremi Unuttum veya Hesap Oluştur linkleri */}
                 {mode === 'login' && (
                   <div className="mt-4 text-center text-sm">
-                    <button 
+                    <button
                       onClick={() => {
                         setMode('resetPassword');
                         setPassword('');
@@ -325,7 +332,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
                 {mode === 'resetPassword' && (
                   <div className="mt-4 text-center text-sm">
-                    <button 
+                    <button
                       onClick={() => {
                         setMode('login');
                         setPassword('');

@@ -233,7 +233,7 @@ export default function ComparePage() {
           </div>
         </div>
 
-        {isPremiumSlot && !showPremiumModal && (
+        {/* {isPremiumSlot && !showPremiumModal && (
           <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-[#660566]/10 to-[#330233]/10 rounded-2xl">
             <div className="bg-white/95 p-6 rounded-xl shadow-lg border border-[#660566]/20 backdrop-blur-sm">
               <div className="bg-gradient-to-r from-[#660566] to-[#330233] text-white px-4 py-1 rounded-full text-sm font-medium mb-4 inline-block">
@@ -254,7 +254,7 @@ export default function ComparePage() {
               </button>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     );
   };
@@ -287,7 +287,7 @@ export default function ComparePage() {
     return (
       <div className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[0, 1, 2].map((index) => renderVehicleSelector(index))}
+          {[0, 1].map((index) => renderVehicleSelector(index))}
         </div>
 
         {selectedVehicles.filter(Boolean).length >= 2 && (

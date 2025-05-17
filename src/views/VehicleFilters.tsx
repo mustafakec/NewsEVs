@@ -540,6 +540,8 @@ const VehicleFilters = () => {
     turkeyStatus: false,
   });
 
+  const [brandSearch, setBrandSearch] = useState('');
+
   // Markalar ve araç tipleri için React Query kullanımı
   const { data: brands = [] } = useQuery({
     queryKey: ['vehicleBrands'],
@@ -654,6 +656,10 @@ const VehicleFilters = () => {
     applyFilters();
   };
 
+  const filteredBrands = brands.filter((brand) =>
+    brand.toLowerCase().includes(brandSearch.toLowerCase())
+  );
+
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
       <div className="flex justify-between items-center mb-4">
@@ -693,13 +699,18 @@ const VehicleFilters = () => {
 
           {filterPanels.brand && (
             <div className="mt-2 space-y-1 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-100 pr-1">
-              {brands.map((brand) => (
+              <input type="text"
+                className="border border-gray-300 h-8 w-full rounded-lg outline-none px-3 text-sm"
+                placeholder="Marka ara..."
+                value={brandSearch}
+                onChange={(e) => setBrandSearch(e.target.value)} />
+              {filteredBrands.map((brand) => (
                 <div className="flex items-center" key={brand}>
                   <button
                     type="button"
                     onClick={() => handleBrandChange(brand)}
-                    className={`w-full text-left px-2 py-1 rounded text-sm ${temporaryFilters.brand === brand
-                      ? 'bg-purple-100 text-[#660566] font-medium'
+                    className={`w-full text-left py-1 rounded text-sm ${temporaryFilters.brand === brand
+                      ? 'bg-purple-100 text-[#660566] font-medium px-2'
                       : 'hover:bg-gray-50'
                       }`}
                   >

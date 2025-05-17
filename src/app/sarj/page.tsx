@@ -903,7 +903,7 @@ export default function SarjPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
-          <div className="text-center mb-12">
+          {/* <div className="text-center mb-12">
             <h1 className="text-4xl font-bold bg-clip-text text-transparent 
                         bg-gradient-to-r from-[#660566] via-[#330233] to-black mb-4">
               Şarj Haritası
@@ -911,10 +911,10 @@ export default function SarjPage() {
             <p className="text-lg text-gray-600">
               Size en yakın şarj istasyonlarını bulun.
             </p>
-          </div>
+          </div> */}
 
           {/* Harita */}
-          <div className="mb-12">
+          {/* <div className="mb-12">
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               {isLoading ? (
                 <div className="w-full h-[600px] flex items-center justify-center bg-gray-50">
@@ -985,7 +985,6 @@ export default function SarjPage() {
                     )}
                   </div>
 
-                  {/* Rota giriş kutuları */}
                   {showRouteInputs && (
                     <div className="absolute top-4 left-4 z-10 bg-white p-4 rounded-lg shadow-md w-72">
                       <h3 className="text-sm font-semibold text-gray-900 mb-2">Rota Oluştur</h3>
@@ -1027,7 +1026,6 @@ export default function SarjPage() {
                 </div>
               )}
             </div>
-            {/* Harita Bilgilendirme Metni */}
             <div className="mt-6 flex justify-center">
               <div className="text-center text-xs text-gray-400 max-w-2xl px-4 py-1.5">
                 <svg className="w-3.5 h-3.5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1036,7 +1034,7 @@ export default function SarjPage() {
                 <span>Veriler yoğunluk durumuna bağlı olarak gecikebilir. Şarj istasyonlarının yoğunluk/bakım/arıza gibi durumları değişiklik gösterebilir. Google'ın güncelleme takvimine göre veriler güncellenir.</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Güncel Şarj Ücretleri ve Şarj Maliyeti Hesaplayıcı */}
           <div className="mb-12">
@@ -1112,8 +1110,8 @@ export default function SarjPage() {
               </div>
 
               {/* SAĞ TARAF: Şarj Maliyeti Hesaplayıcı */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden relative">
-                {/* Premium özellik olduğunu belirten badge */}
+
+              {/* <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden relative">
                 <div className="absolute top-4 right-4 z-20">
                   <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-bold leading-none text-white bg-gradient-to-r from-[#660566] to-[#330233] rounded-full">
                     Premium
@@ -1125,7 +1123,6 @@ export default function SarjPage() {
                   <p className="text-gray-700 text-sm mb-0">Aracınızın şarj maliyetini hesaplayın.</p>
                 </div>
 
-                {/* Premium içerik overlay */}
                 {!isPremiumUser && (
                   <div className="absolute inset-x-0 top-[104px] bottom-0 z-10 flex items-center justify-center bg-white">
                     <div className="p-6 max-w-md text-center">
@@ -1144,7 +1141,6 @@ export default function SarjPage() {
                       <div className="space-y-3">
                         <button
                           onClick={() => {
-                            // Header'daki Premium modal'ı açmak için özel event yayınla
                             const event = new Event('show-premium-modal');
                             window.dispatchEvent(event);
                           }}
@@ -1273,7 +1269,8 @@ export default function SarjPage() {
                     </div>
                   )}
                 </div>
-              </div>
+              </div> */}
+
             </div>
           </div>
 

@@ -16,7 +16,7 @@ interface VehicleClientContentProps {
 }
 
 // Formatlar
-const formatCurrency = (price: number, currency: string = "₺") => {
+export const formatCurrency = (price: number, currency: string = "₺") => {
   // TRY yerine TL göster
   const displayCurrency = currency === "TRY" ? "TL" : currency;
   return new Intl.NumberFormat('tr-TR').format(price) + " " + displayCurrency;

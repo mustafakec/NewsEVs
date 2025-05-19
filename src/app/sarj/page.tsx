@@ -1111,19 +1111,19 @@ export default function SarjPage() {
 
               {/* SAĞ TARAF: Şarj Maliyeti Hesaplayıcı */}
 
-              {/* <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden relative">
-                <div className="absolute top-4 right-4 z-20">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden relative">
+                {/* <div className="absolute top-4 right-4 z-20">
                   <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-bold leading-none text-white bg-gradient-to-r from-[#660566] to-[#330233] rounded-full">
                     Premium
                   </span>
-                </div>
+                </div> */}
 
                 <div className="bg-gradient-to-r from-[#660566]/10 via-purple-50 to-[#660566]/5 p-6 border-b border-gray-100">
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">Şarj Maliyeti Hesaplayıcı</h3>
                   <p className="text-gray-700 text-sm mb-0">Aracınızın şarj maliyetini hesaplayın.</p>
                 </div>
 
-                {!isPremiumUser && (
+                {/* {!isPremiumUser && (
                   <div className="absolute inset-x-0 top-[104px] bottom-0 z-10 flex items-center justify-center bg-white">
                     <div className="p-6 max-w-md text-center">
                       <div className="w-16 h-16 bg-[#660566]/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1152,7 +1152,7 @@ export default function SarjPage() {
                       </div>
                     </div>
                   </div>
-                )}
+                )} */}
 
                 <div className="p-6">
                   <div className="space-y-4">
@@ -1269,7 +1269,7 @@ export default function SarjPage() {
                     </div>
                   )}
                 </div>
-              </div> */}
+              </div>
 
             </div>
           </div>

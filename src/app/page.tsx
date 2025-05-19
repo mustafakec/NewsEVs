@@ -192,16 +192,14 @@ export default function HomePage() {
                   <div className="flex items-center gap-0.5">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                     <span className="text-base">₺</span>
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Şarj Haritası ve Ücretler </h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Şarj İstasyonu Ücretleri </h3>
                 <p className="text-gray-600">
-                  Şarj istasyonu haritasıyla size en yakın şarj noktalarını bulun ve güncel şarj istasyonu ücretlerini öğrenin.
+                Şarj istasyonlarındaki güncel ücretleri öğrenin, bütçenize uygun seçenekleri kolayca görün.
                 </p>
               </div>
 
@@ -213,12 +211,12 @@ export default function HomePage() {
                              group-hover:scale-110 transition-transform duration-200">
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                      d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Borsa Takibi</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Şarj Maliyeti Hesaplayıcı</h3>
                 <p className="text-gray-600">
-                  Dünya genelinde elektrikli araç üreticilerinin borsa verilerini yakından takip edin.
+                Elektrikli aracınızın şarjının ne kadar tutacağını kolayca hesaplayabilirsiniz. Hızlı ve pratik şekilde, aracınızın enerji ihtiyacına göre maliyeti öğrenin.
                 </p>
               </div>
 

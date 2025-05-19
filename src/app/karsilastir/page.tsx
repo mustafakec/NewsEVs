@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useElectricVehicles } from '@/viewmodels/useElectricVehicles';
 import type { ElectricVehicle } from '@/models/ElectricVehicle';
 import { useUserStore } from '@/stores/useUserStore';
+import { formatCurrency } from '@/components/VehicleClientContent';
 
 export default function ComparePage() {
   const { data: vehicles, isLoading } = useElectricVehicles();
@@ -309,12 +310,19 @@ export default function ComparePage() {
                 { key: 'dimensions.weight', label: 'Ağırlık', unit: 'kg' },
                 { key: 'dimensions.cargoCapacity', label: 'Bagaj Hacmi', unit: 'L' },
                 { key: 'efficiency.consumption', label: 'Tüketim', unit: 'kWh/100km' },
-                { key: 'price.base', label: 'Başlangıç Fiyatı', unit: 'TL' },
+                { key: 'price.base', label: 'Başlangıç Fiyatı', unit: '' },
               ].map(({ key, label, unit }) => (
                 <div key={key} className="grid grid-cols-4 gap-4 py-4 border-t border-gray-100">
                   <div className="font-medium text-gray-900">{label}</div>
                   {selectedVehicles.map((vehicle, index) => {
-                    const value = vehicle ? getValue(vehicle, key) : '-';
+                    let value = vehicle ? getValue(vehicle, key) : '-';
+
+                    if (key == "price.base" && vehicle) {
+                      const price = getValue(vehicle, "price.base")
+                      const currency = getValue(vehicle, "price.currency");
+
+                      value = vehicle ? formatCurrency(price, currency) : "-";
+                    }
                     return (
                       <div key={index} className="text-gray-600">
                         {value} {value !== '-' ? unit : ''}

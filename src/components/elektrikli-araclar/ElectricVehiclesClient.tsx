@@ -220,11 +220,26 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
   const { user } = useUserStore();
   const isPremium = user?.isPremium || false;
 
+  // Pagination için state'ler
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9; // Her sayfada gösterilecek araç sayısı
+
+  // Sayfalama için hesaplamalar
+  const totalPages = Math.ceil((vehicles?.length || 0) / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentVehicles = vehicles?.slice(startIndex, endIndex);
+
+  // Sayfa değiştirme fonksiyonu
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Sayfa değiştiğinde en üste scroll
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Premium Üye Ol butonuna tıklandığında ana Premium modalı açacak fonksiyon
   const handlePremiumClick = () => {
-    // Önce comingSoon filtresini kapat
     setFilters({ comingSoon: false });
-    // Ana Premium modalını aç
     openPremiumModal();
   };
 
@@ -281,13 +296,71 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
   return (
     <div className="relative">
       <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {vehicles.map((vehicle: ElectricVehicle) => (
+        {currentVehicles?.map((vehicle: ElectricVehicle) => (
           <VehicleCard
             key={vehicle.id}
             vehicle={vehicle}
           />
         ))}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-8 flex justify-center items-center gap-2">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-2 rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-180"
+            aria-label="Önceki sayfa"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          {[...Array(totalPages)].map((_, index) => {
+            const pageNumber = index + 1;
+            // Aktif sayfa ve yanındaki sayfaları göster
+            if (
+              pageNumber === 1 ||
+              pageNumber === totalPages ||
+              (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+            ) {
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => handlePageChange(pageNumber)}
+                  className={`px-4 py-2 rounded-md border ${
+                    currentPage === pageNumber
+                      ? 'bg-[#660566] text-white border-[#660566]'
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  } transition-all duration-180`}
+                  aria-label={`Sayfa ${pageNumber}`}
+                >
+                  {pageNumber}
+                </button>
+              );
+            } else if (
+              pageNumber === currentPage - 2 ||
+              pageNumber === currentPage + 2
+            ) {
+              return <span key={pageNumber} className="px-2">...</span>;
+            }
+            return null;
+          })}
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-3 py-2 rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-180"
+            aria-label="Sonraki sayfa"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {/* Premium overlay - sadece içerik alanına uygulanıyor */}
       {isComingSoonActive && !isPremium && (

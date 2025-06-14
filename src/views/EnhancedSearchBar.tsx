@@ -443,7 +443,7 @@ const EnhancedSearchBar = () => {
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <span className="text-gray-500 font-medium text-sm">Popüler:</span>
         <div className="flex flex-wrap gap-2">
-          {['Tesla', 'BMW', 'Porsche', 'Volkswagen', 'Hyundai', 'Mercedes-Benz', 'Audi'].map((term) => (
+          {['Tesla', 'BMW', 'Togg','BYD', 'Volkswagen', 'Hyundai', 'Mercedes-Benz', 'Audi'].map((term) => (
             <motion.button
               key={term}
               whileHover={{ y: -2, scale: 1.03 }}

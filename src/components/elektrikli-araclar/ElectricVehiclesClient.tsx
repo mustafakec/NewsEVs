@@ -171,8 +171,9 @@ function PageContent({ onPremiumModalOpen }: { onPremiumModalOpen: () => void })
     <>
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold bg-clip-text text-transparent 
-                     bg-gradient-to-r from-[#660566] via-[#330233] to-black">
+                     bg-gradient-to-r from-[#660566] via-[#330233] to-black inline-flex items-center gap-2">
           {pageTitle}
+          
         </h1>
         <p className="text-gray-600 mt-2">
           {pageDescription}

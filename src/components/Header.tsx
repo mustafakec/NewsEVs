@@ -129,6 +129,7 @@ const Header = () => {
             <Link href="/" className="flex items-center gap-2">
               <Image src="/logo.png" alt="elektrikliyiz Logo" width={32} height={32} priority quality={100} className="object-contain" />
               <span className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-[#660566] to-[#330233]">elektrikliyiz</span>
+              <span className="text-sm font-normal text-gray-400">v1</span>
             </Link>
 
             {/* Ana Menü */}

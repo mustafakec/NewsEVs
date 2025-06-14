@@ -13,6 +13,7 @@ const Footer = () => {
             <Link href="/" className="flex items-center gap-2">
               <Image src="/logo.png" alt="elektrikliyiz Logo" width={32} height={32} quality={100} className="object-contain" />
               <span className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-[#660566] to-[#330233]">elektrikliyiz</span>
+              
             </Link>
             <p className="text-gray-600 text-sm">
               Elektrikli araç dünyasını keşfedin, en güncel gelişmeleri yakından takip edin.

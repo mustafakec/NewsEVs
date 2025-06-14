@@ -47,6 +47,7 @@ export type SupabaseElectricVehicle = {
       power: number;
       time10to80: number;
     };
+    acTime: number;
   };
   performance: {
     acceleration: number;

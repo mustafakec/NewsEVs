@@ -1,14 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    unoptimized: false,
+    domains: ['www.mercedes-benzsouthwest.co.uk'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '**',
-      },
+        pathname: '/**',
+      }
     ],
-    domains: ['localhost'],
     dangerouslyAllowSVG: true,
   },
   experimental: {
@@ -38,4 +38,4 @@ const nextConfig = {
   }
 }
 
-module.exports = nextConfig 
+module.exports = nextConfig

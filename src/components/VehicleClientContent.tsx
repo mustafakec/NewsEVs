@@ -175,6 +175,14 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
     );
   }
 
+  console.log('=== VEHICLE CLIENT CONTENT DEBUG ===');
+  console.log('Vehicle Data:', vehicleData);
+  console.log('Turkey Status:', vehicleData.turkeyStatuses);
+  console.log('Available:', vehicleData.turkeyStatuses?.available);
+  console.log('Available Type:', typeof vehicleData.turkeyStatuses?.available);
+  console.log('Raw Turkey Status:', vehicleData.turkeyStatuses);
+  console.log('===========================');
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const router = useRouter();
   const setFilters = useElectricVehicleStore((state) => state.setFilters);
@@ -387,11 +395,11 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                   <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">
                     {vehicleData.year}
                   </span>
-                  {vehicleData.turkeyStatus?.available && (
+                  {vehicleData.turkeyStatuses && vehicleData.turkeyStatuses.available === true && (
                     <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
                       🇹🇷 Türkiye'de Satışta
                     </span>
-                  )}
+                  )}    
                 </div>
                 <FavoriteButton vehicle={vehicleData} />
               </div>
@@ -635,7 +643,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">AC Şarj Süresi</span>
-                  <span className="font-medium">{vehicleData.chargingTime?.ac || 'Belirtilmemiş'} {vehicleData.chargingTime?.ac ? 'saat' : ''}</span>
+                  <span className="font-medium">{vehicleData.chargingTime?.acTime || 'Belirtilmemiş'} {vehicleData.chargingTime?.acTime ? 'saat' : ''}</span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Ortalama Tüketim</span>
@@ -711,7 +719,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                 </div>
 
                 {/* Özellikler Listesi */}
-                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+                {/* <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
                   {vehicleData.features?.map((feature: { name: string; isExtra: boolean }, index: number) => (
                     <li key={`feature-${index}`} className="flex items-center text-gray-700">
                       <svg className="w-5 h-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -725,7 +733,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                       )}
                     </li>
                   ))}
-                </ul>
+                </ul> */}
               </div>
             </div>
           </div>

@@ -36,7 +36,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   }, [vehicle?.id]);
 
   // isPremium kontrolünü sadece stil sınıfları için kullanacağız
-  const isPremium = vehicle.turkeyStatus?.comingSoon;
+  
 
   // Marka ve modelden URL oluştur - özel karakterleri ve boşlukları doğru şekilde işle
   const getVehicleUrl = (vehicle: ElectricVehicle): string => {
@@ -93,8 +93,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   return (
     <div
       onClick={handleCardClick}
-      className={`bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-200
-                  hover:shadow-lg group cursor-pointer relative ${isPremium ? 'premium-vehicle' : ''}`}
+     
     >
       {/* Resim Alanı */}
       <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
@@ -138,10 +137,10 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
         {/* Özellikler */}
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <p className="text-xs text-gray-500 mb-1">Motor Gücü</p>
+            <p className="text-xs text-gray-500 mb-1">Menzil</p>
             <p className="font-medium text-sm">
-              {vehicle.performance?.power
-                ? `${vehicle.performance.power} HP`
+              {vehicle.range
+                ? `${vehicle.range} km`
                 : 'Belirtilmemiş'}
             </p>
           </div>
@@ -178,7 +177,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
         </div>
 
         {/* Özellikler Listesi */}
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <div className="flex flex-wrap gap-2">
             {vehicle.features?.map((feature: { name: string; isExtra: boolean }, index: number) => (
               <span
@@ -192,7 +191,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
               </span>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Alt Butonlar */}
         <div className="flex items-center justify-between mt-4">

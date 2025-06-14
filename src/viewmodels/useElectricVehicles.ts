@@ -110,8 +110,9 @@ async function fetchVehiclesFromSupabase(filters: Filters = {}): Promise<Electri
         dc: vehicle.charging_times.dc,
         fastCharging: {
           power: vehicle.charging_times.fast_charging_power,
-          time10to80: vehicle.charging_times.fast_charging_time_10_to_80
-        }
+          time10to80: vehicle.charging_times.fast_charging_time_10_to_80,
+        },
+        acTime: vehicle.charging_times.ac_time,
       } : undefined,
       performance: vehicle.performances ? {
         power: vehicle.performances.power, // Motor Gücü (HP)

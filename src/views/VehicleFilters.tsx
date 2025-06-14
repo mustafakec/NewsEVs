@@ -1030,7 +1030,7 @@ const VehicleFilters = () => {
               </div>
 
               {/* Yakında Türkiye'de */}
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <input
                   type="checkbox"
                   id="comingSoon"
@@ -1044,7 +1044,7 @@ const VehicleFilters = () => {
                 >
                   Yakında Türkiye'de
                 </label>
-              </div>
+              </div> */}
             </div>
           )}
         </div>

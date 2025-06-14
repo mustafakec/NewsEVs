@@ -15,6 +15,7 @@ export interface ElectricVehicle {
       power: number; // kW cinsinden maksimum şarj gücü
       time10to80: number; // 10%'dan 80%'e şarj süresi (dakika)
     };
+    acTime: number; // AC şarj süresi (saat)
   };
 
   performance?: {
@@ -81,7 +82,7 @@ export interface ElectricVehicle {
   };
 
   // Türkiye'deki satış durumu
-  turkeyStatus?: {
+  turkeyStatuses?: {
     available: boolean; // Türkiye'de satışta mı?
     comingSoon: boolean; // Yakında Türkiye'de satışa sunulacak mı?
     estimatedArrival?: string; // Tahmini geliş tarihi

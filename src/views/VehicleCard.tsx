@@ -93,7 +93,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   return (
     <div
       onClick={handleCardClick}
-     
+      className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden cursor-pointer group hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300"
     >
       {/* Resim Alanı */}
       <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
@@ -109,7 +109,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
       </div>
 
       {/* Bilgi Alanı */}
-      <div className="p-4">
+      <div className="p-4 group-hover:bg-gray-50 transition-colors duration-300">
         {/* Başlık ve Fiyat Bilgisi */}
         <div className="flex justify-between items-start mb-3">
           <div>

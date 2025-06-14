@@ -123,7 +123,7 @@ const Header = () => {
   return (
     <>
       <header className="bg-white border-b border-gray-100 sticky top-0 z-[100] h-16 w-full">
-        <div className="container mx-auto h-full">
+        {/* <div className="container mx-auto h-full">/ */}
           <div className="flex items-center justify-between h-full px-4">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
@@ -254,58 +254,9 @@ const Header = () => {
               )}
             </div>
 
-            {/* Mobil Menü Butonu */}
-            <div className="md:hidden flex items-center gap-2">
-              {/* Mobil Premium Butonu - Premium kullanıcılar için gizlenecek */}
-              {!(isLoggedIn && user?.isPremium) && (
-                <motion.button
-                  onClick={handlePremiumClick}
-                  className="text-xs bg-gradient-to-r from-[#660566] to-[#330233] text-white px-2 py-1 rounded-full font-medium
-                         hover:opacity-90 transition-all duration-200 flex items-center shadow-sm"
-                  animate={{
-                    scale: isVisible ? 1 : 0.95,
-                    opacity: isVisible ? 1 : 0.9,
-                  }}
-                  transition={{
-                    duration: 0.3,
-                    ease: "easeInOut",
-                  }}
-                >
-                  <span className="mr-0.5">⚡</span>
-                  Premium
-                </motion.button>
-              )}
-
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <svg
-                  className="w-6 h-6 text-gray-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  {isMenuOpen ? (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  ) : (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  )}
-                </svg>
-              </button>
-            </div>
-          </div>
-
+          
+          
+          
           {/* Mobil Menü */}
           {isMenuOpen && (
             <div className="md:hidden border-t border-gray-100 py-4 px-4">

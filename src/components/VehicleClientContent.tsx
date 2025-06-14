@@ -660,23 +660,33 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
               <div className="divide-y divide-gray-100">
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Ağırlık</span>
-                  <span className="font-medium">{vehicleData.dimensions?.weight || 'Belirtilmemiş'} {vehicleData.dimensions?.weight ? 'kg' : ''}</span>
+                  <span className="font-medium">
+                    {vehicleData.dimensions?.weight ? `${vehicleData.dimensions.weight.toLocaleString('tr-TR')} kg` : 'Belirtilmemiş'}
+                  </span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Uzunluk</span>
-                  <span className="font-medium">{vehicleData.dimensions?.length || 'Belirtilmemiş'} {vehicleData.dimensions?.length ? 'mm' : ''}</span>
+                  <span className="font-medium">
+                    {vehicleData.dimensions?.length ? `${vehicleData.dimensions.length.toLocaleString('tr-TR')} mm` : 'Belirtilmemiş'}
+                  </span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Genişlik</span>
-                  <span className="font-medium">{vehicleData.dimensions?.width || 'Belirtilmemiş'} {vehicleData.dimensions?.width ? 'mm' : ''}</span>
+                  <span className="font-medium">
+                    {vehicleData.dimensions?.width ? `${vehicleData.dimensions.width.toLocaleString('tr-TR')} mm` : 'Belirtilmemiş'}
+                  </span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Yükseklik</span>
-                  <span className="font-medium">{vehicleData.dimensions?.height || 'Belirtilmemiş'} {vehicleData.dimensions?.height ? 'mm' : ''}</span>
+                  <span className="font-medium">
+                    {vehicleData.dimensions?.height ? `${vehicleData.dimensions.height.toLocaleString('tr-TR')} mm` : 'Belirtilmemiş'}
+                  </span>
                 </div>
                 <div className="px-4 py-3 flex justify-between">
                   <span className="text-gray-600">Bagaj Hacmi</span>
-                  <span className="font-medium">{vehicleData.dimensions?.cargoCapacity || '-'} {vehicleData.dimensions?.cargoCapacity ? 'litre' : ''}</span>
+                  <span className="font-medium">
+                    {vehicleData.dimensions?.cargoCapacity ? `${vehicleData.dimensions.cargoCapacity.toLocaleString('tr-TR')} litre` : 'Belirtilmemiş'}
+                  </span>
                 </div>
               </div>
             </div>

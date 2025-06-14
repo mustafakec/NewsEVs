@@ -72,7 +72,7 @@ async function fetchVehiclesFromSupabase(filters: Filters = {}): Promise<Electri
         turkey_statuses!inner(*),
         performances!inner(*),
         charging_times!inner(*),
-        dimensions!inner(*),
+        dimensions!left(*),
         comforts!inner(*),
         efficiencies!inner(*),
         images!inner(*),

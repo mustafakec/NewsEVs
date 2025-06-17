@@ -106,6 +106,16 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
           height={450}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
+        
+        {/* Türkiye'de satışta etiketi */}
+        {(vehicle.turkeyStatuses?.available ) && (
+          <div className="absolute top-0 right-0 bg-black/20 backdrop-blur-xl text-white text-xs font-medium px-3 py-1.5 rounded-bl-xl shadow-[0_4px_16px_rgba(0,0,0,0.25)] border border-white/30 transform hover:scale-105 transition-all duration-300 hover:bg-black/30">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm">🇹🇷</span>
+              <span className="tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)] font-medium">Türkiye'de Satışta</span>
+            </div>
+          </div>
+        )} 
       </div>
 
       {/* Bilgi Alanı */}
@@ -116,9 +126,6 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
             <h3 className="text-lg font-medium text-gray-900">
               {vehicle.brand} {vehicle.model}
             </h3>
-            <p className="text-sm text-gray-500">
-              {vehicle.year}
-            </p>
           </div>
           <div className="text-right">
             <p className="font-semibold text-lg text-gray-900">

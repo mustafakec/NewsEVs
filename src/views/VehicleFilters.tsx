@@ -62,6 +62,20 @@ const NoAutocompleteStyles = () => (
       width: 0;
       margin: 0;
     }
+
+    /* Checkbox tick rengini mor yapma */
+    input[type="checkbox"]:checked {
+      background-color: #660566 !important;
+      border-color: #660566 !important;
+    }
+    
+    input[type="checkbox"]:checked::before {
+      color: white !important;
+    }
+    
+    input[type="checkbox"]:checked::after {
+      color: white !important;
+    }
   `}</style>
 );
 
@@ -1019,7 +1033,8 @@ const VehicleFilters = () => {
                   id="turkeyAvailable"
                   checked={temporaryFilters.turkeyStatus === 'available'}
                   onChange={(e) => handleCheckboxFilterChange('turkeyStatus', e?.target?.checked ? 'available' : false)}
-                  className="w-4 h-4 text-[#660566] rounded border-gray-300 focus:ring-[#660566]"
+                  className="w-4 h-4 accent-[#660566] rounded border-gray-300"
+                  style={{ accentColor: '#660566' }}
                 />
                 <label
                   htmlFor="turkeyAvailable"

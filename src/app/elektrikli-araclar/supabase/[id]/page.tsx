@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   }
   
   return {
-    title: `${vehicle.brand} ${vehicle.model} | Elektrikliyiz`,
+    title: `${vehicle.brand} ${vehicle.model} Fiyatı, Özellikleri ve Karşılaştırma | elektrikliyiz`,
     description: `${vehicle.brand} ${vehicle.model} elektrikli aracın detaylı incelemesi, özellikleri ve performans değerleri.`,
     metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
   };

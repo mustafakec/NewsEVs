@@ -151,7 +151,11 @@ async function fetchVehiclesFromSupabase(filters: Filters = {}): Promise<Electri
       environmentalImpact: vehicle.environmental_impact as any,
       heatPump: vehicle.heat_pump?.toLowerCase(),
       v2l: vehicle.v2l,
-      turkeyStatus: vehicle.turkey_status as any
+      turkeyStatuses: vehicle.turkey_statuses ? {
+        available: vehicle.turkey_statuses.available,
+        comingSoon: vehicle.turkey_statuses.coming_soon,
+        estimatedArrival: vehicle.turkey_statuses.estimated_arrival
+      } : undefined
     }));
 
     return vehicles;

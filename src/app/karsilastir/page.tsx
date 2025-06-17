@@ -43,6 +43,17 @@ export default function ComparePage() {
     setSearchTerms(newSearchTerms);
   };
 
+  const handleVehicleRemove = (index: number) => {
+    const newSelectedVehicles = [...selectedVehicles];
+    newSelectedVehicles[index] = null;
+    setSelectedVehicles(newSelectedVehicles);
+
+    // Arama terimini de temizle
+    const newSearchTerms = [...searchTerms];
+    newSearchTerms[index] = '';
+    setSearchTerms(newSearchTerms);
+  };
+
   const handleSearchChange = (value: string, index: number) => {
     const newSearchTerms = [...searchTerms];
     newSearchTerms[index] = value;
@@ -208,7 +219,10 @@ export default function ComparePage() {
                         }}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-all duration-200"
                       >
-                        {vehicle.brand} {vehicle.model}
+                        <div className="flex justify-between items-center">
+                          <span>{vehicle.brand} {vehicle.model}</span>
+                          <span className="text-sm text-gray-500">({vehicle.year})</span>
+                        </div>
                       </div>
                     ))
                   ) : (
@@ -220,6 +234,29 @@ export default function ComparePage() {
 
             {selectedVehicles[index] && (
               <div className="space-y-2 mt-4">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900">
+                      {selectedVehicles[index]?.brand} {selectedVehicles[index]?.model}
+                    </h4>
+                  </div>
+                  <button
+                    onClick={() => handleVehicleRemove(index)}
+                    className="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                    aria-label="Aracı kaldır"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
                 <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
                   {selectedVehicles[index]?.images?.[0] && (
                     <img

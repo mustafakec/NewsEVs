@@ -41,7 +41,7 @@ export async function generateMetadata(
 
   // Dinamik meta verilerini oluştur
   return {
-    title: `${vehicle.brand} ${vehicle.model} | Elektrikliyiz`,
+    title: `${vehicle.brand} ${vehicle.model} Fiyatı, Özellikleri ve Karşılaştırma | elektrikliyiz`,
     description: `${vehicle.brand} ${vehicle.model} hakkında teknik özellikler, performans verileri, fiyat bilgisi ve daha fazlasını keşfedin.`,
     metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
     openGraph: {

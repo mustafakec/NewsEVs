@@ -52,7 +52,11 @@ export async function fetchVehicles(): Promise<ElectricVehicle[]> {
         batteryCapacity: vehicle.battery_capacity,
         extraFeatures: vehicle.features,
         environmentalImpact: vehicle.environmental_impact,
-        turkeyStatus: vehicle.turkey_status,
+        turkeyStatuses: vehicle.turkey_statuses ? {
+          available: vehicle.turkey_statuses.available,
+          comingSoon: vehicle.turkey_statuses.coming_soon,
+          estimatedArrival: vehicle.turkey_statuses.estimated_arrival
+        } : undefined,
         performance: vehicle.performances ? {
           power: vehicle.performances.power, // Motor Gücü (HP)
           torque: vehicle.performances.torque, // Tork (Nm)

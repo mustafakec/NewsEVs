@@ -18,9 +18,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: {
     template: '%s | Elektrikliyiz',
-    default: 'Elektrikliyiz - Elektrikli Araç Topluluğu',
+    default: 'Elektrikliyiz – Elektrikli Otomobil ve Elektrikli Araç Modelleri, Fiyatlar, Özellikler ve Karşılaştırmalar',
   },
-  description: 'Türkiye\'deki elektrikli araç sahipleri ve meraklıları için topluluk. Araç incelemeleri, elektrikli araçlar hakkında bilgiler ve karşılaştırmalar.',
+  description: 'Elektrikli otomobil ve elektrikli araç modellerine dair tüm bilgiler burada! Fiyatlar, teknik özellikler, menzil karşılaştırmaları ve en güncel elektrikli araç rehberi elektrikliyiz.com’da.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
 };
 

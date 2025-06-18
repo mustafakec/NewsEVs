@@ -4,10 +4,11 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
-import  Providers  from './providers';
+import Providers from './providers';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieConsent from '@/components/CookieConsent';
+import Script from 'next/script'; // 🔥 Adsense ve Analytics için
 
 const inter = Inter({
   subsets: ['latin'],
@@ -32,6 +33,28 @@ export default function RootLayout({
   return (
     <html lang="tr" className={inter.variable}>
       <body className="min-h-screen flex flex-col bg-gray-50">
+        {/* ✅ Google Adsense Script */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7739465360112931"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+
+        {/* ✅ Google Analytics Script */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-P7PN1BEVEG"
+          strategy="afterInteractive"
+        />
+        <Script id="ga-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-P7PN1BEVEG');
+          `}
+        </Script>
+
         <Providers>
           <ToastContainer position="top-right" autoClose={4000} closeOnClick pauseOnHover />
           <Header />
@@ -44,4 +67,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-} 
+}

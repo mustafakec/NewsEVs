@@ -7,11 +7,12 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run generate-sitemap && next build",
     "start": "next start",
     "lint": "next lint",
     "export": "next build && next export",
-    "debug": "NODE_OPTIONS='--inspect' next dev"
+    "debug": "NODE_OPTIONS='--inspect' next dev",
+    "generate-sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.8",
@@ -27,6 +28,7 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "cheerio": "1.0.0-rc.12",
     "critters": "^0.0.23",
+    "dotenv": "^16.5.0",
     "echarts": "^5.6.0",
     "echarts-for-react": "^3.0.2",
     "framer-motion": "^12.4.10",

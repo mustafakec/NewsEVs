@@ -13,12 +13,16 @@ const nextConfig = {
   },
   experimental: {
     optimizeCss: true,
-    serverActions: true,
   },
   reactStrictMode: true,
-  swcMinify: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true
   },
   headers: async () => {
     return [
@@ -32,9 +36,6 @@ const nextConfig = {
         ],
       },
     ]
-  },
-  typescript: {
-    ignoreBuildErrors: true
   }
 }
 

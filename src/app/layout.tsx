@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect } from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -8,7 +10,7 @@ import Providers from './providers';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieConsent from '@/components/CookieConsent';
-import Script from 'next/script'; // Adsense ve Analytics için
+import Script from 'next/script'; // Sadece Analytics için
 
 const inter = Inter({
   subsets: ['latin'],
@@ -32,17 +34,18 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  useEffect(() => {
+    // ✅ Adsense script manuel eklendi — CSP sorunlarına takılmaz
+    const script = document.createElement('script');
+    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7739465360112931';
+    script.async = true;
+    script.crossOrigin = 'anonymous';
+    document.body.appendChild(script);
+  }, []);
+
   return (
     <html lang="tr" className={inter.variable}>
-      <head>
-        {/* ✅ Google Adsense Script */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7739465360112931"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-
+      <body className="min-h-screen flex flex-col bg-gray-50">
         {/* ✅ Google Analytics Script */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-P7PN1BEVEG"
@@ -56,9 +59,7 @@ export default function RootLayout({
             gtag('config', 'G-P7PN1BEVEG');
           `}
         </Script>
-      </head>
 
-      <body className="min-h-screen flex flex-col bg-gray-50">
         <Providers>
           <ToastContainer position="top-right" autoClose={4000} closeOnClick pauseOnHover />
           <Header />

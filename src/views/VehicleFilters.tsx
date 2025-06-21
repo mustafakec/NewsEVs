@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback, ChangeEvent, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback, ChangeEvent } from 'react';
 import { useElectricVehicleStore, CurrencyType } from '@/viewmodels/useElectricVehicles';
 import { useVehicles } from '@/hooks/useVehicles';
 import type { ElectricVehicle } from '@/models/ElectricVehicle';
@@ -537,7 +537,7 @@ const fetchVehicleTypes = async () => {
 };
 
 // Ana Filtre Bileşeni
-function VehicleFiltersContent() {
+const VehicleFilters = () => {
   const {
     temporaryFilters,
     setTemporaryFilters,
@@ -1074,25 +1074,17 @@ function VehicleFiltersContent() {
       </form>
     </div>
   );
-}
+};
 
-// Suspense ile sarılmış ana component
-export default function VehicleFilters() {
-  return (
-    <Suspense fallback={<VehicleFiltersLoading />}>
-      <VehicleFiltersContent />
-    </Suspense>
-  );
-}
+/* CSS Animasyon stilini ekle */
+<style jsx global>{`
+  @keyframes shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+  }
+  .animate-shine {
+    animation: shine 1.5s infinite;
+  }
+`}</style>
 
-// Loading component
-function VehicleFiltersLoading() {
-  return (
-    <div className="border border-gray-200 rounded-xl p-6 shadow-sm animate-pulse">
-      <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
-      {[...Array(5)].map((_, i) => (
-        <div key={i} className="h-4 bg-gray-200 rounded w-3/4 mt-3"></div>
-      ))}
-    </div>
-  );
-} 
+export default VehicleFilters; 

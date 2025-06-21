@@ -117,15 +117,18 @@ function PageContent({ onPremiumModalOpen }: { onPremiumModalOpen: () => void })
 
   // Sayfa ilk yüklendiğinde ve URL parametreleri değiştiğinde çalışır
   useEffect(() => {
-
+    console.log('=== URL PARAMETER DEBUG ===');
+    console.log('Original vehicleType from URL:', vehicleType);
+    console.log('All search params:', Object.fromEntries(searchParams.entries()));
+    
     // Önce tüm filtreleri temizle
     setFilters({});
 
     // URL'de tip parametresi varsa, sadece o filtreyi uygula
     if (vehicleType) {
-
       // Tipi normalize et
       const normalizedType = normalizeVehicleType(vehicleType);
+      console.log('Normalized vehicleType:', normalizedType);
 
       // Sadece araç tipi filtresini ayarla
       setFilters({ vehicleType: normalizedType });

@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import CookieConsent from '@/components/CookieConsent';
 import Script from "next/script";
 import AdHorizontal from "@/components/AdHorizontal";
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -34,6 +35,23 @@ export default function RootLayout({
   return (
     <html lang="tr" className={inter.variable}>
       <head>
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-P7PN1BEVEG"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-P7PN1BEVEG', {
+              page_title: document.title,
+              page_location: window.location.href,
+            });
+          `}
+        </Script>
+        
         {/* Google AdSense - normal script tag kullanıyoruz */}
         <script
           async
@@ -43,6 +61,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-gray-50">
         <Providers>
+          <GoogleAnalytics />
           <ToastContainer position="top-right" autoClose={4000} closeOnClick pauseOnHover />
           <Header />
           <AdHorizontal />

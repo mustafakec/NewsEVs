@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { useQuery } from '@tanstack/react-query';
 import { ElectricVehicle } from '@/models/ElectricVehicle';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 
@@ -302,12 +302,21 @@ export const useElectricVehicles = () => {
 
 export const useFilteredVehicles = () => {
   const { data: vehicles = [], isLoading, error } = useElectricVehicles();
-  const searchParams = useSearchParams();
   const filters = useElectricVehicleStore((state) => state.filters);
   const setFilters = useElectricVehicleStore((state) => state.setFilters);
 
-  const urlVehicleType = searchParams.get('tip');
-  const searchTerm = searchParams.get('search');
+  // useSearchParams'ı client-side'da güvenli şekilde kullan
+  const [urlVehicleType, setUrlVehicleType] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
+
+  // Client-side'da URL parametrelerini al
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      setUrlVehicleType(urlParams.get('tip'));
+      setSearchTerm(urlParams.get('search'));
+    }
+  }, []);
 
   // URL'den gelen araç tipi filtresini state'e uygula
   useEffect(() => {

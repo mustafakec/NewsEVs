@@ -1,8 +1,9 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useGoogleAnalytics } from '@/hooks/useGoogleAnalytics';
 
-export default function AnalyticsTestPage() {
+function AnalyticsTestContent() {
   const { trackEvent } = useGoogleAnalytics();
 
   const handleTestClick = () => {
@@ -47,5 +48,13 @@ export default function AnalyticsTestPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AnalyticsTestPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AnalyticsTestContent />
+    </Suspense>
   );
 } 

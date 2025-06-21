@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 declare global {
   interface Window {
@@ -9,11 +9,10 @@ declare global {
 
 export const useGoogleAnalytics = () => {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.gtag) {
-      const url = pathname + searchParams.toString();
+      const url = pathname + window.location.search;
       
       window.gtag('config', 'G-P7PN1BEVEG', {
         page_path: url,
@@ -21,7 +20,7 @@ export const useGoogleAnalytics = () => {
         page_location: window.location.href,
       });
     }
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   const trackEvent = (action: string, category: string, label?: string, value?: number) => {
     if (typeof window !== 'undefined' && window.gtag) {

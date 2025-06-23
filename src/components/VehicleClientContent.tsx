@@ -8,6 +8,7 @@ import { FaChevronLeft, FaChevronRight, FaCheckCircle, FaShareAlt, FaCopy, FaTwi
 import { useElectricVehicleStore } from '@/viewmodels/useElectricVehicles';
 import FavoriteButton from '@/components/FavoriteButton';
 import { ElectricVehicle } from '@/models/ElectricVehicle';
+import RewardedVideoAd from '@/components/RewardedVideoAd';
 
 // Props için arayüz
 interface VehicleClientContentProps {
@@ -143,6 +144,8 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
 
   // Fiyat bilgisi için state
   const [price, setPrice] = useState<{ base: number; currency: string } | null>(null);
+  const [showRewardedAd, setShowRewardedAd] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
 
   // Fiyat bilgisini çek
   useEffect(() => {
@@ -366,6 +369,40 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
     }
   };
 
+  // İncele butonuna tıklandığında rewarded video reklam göster
+  const handleInceleClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
+    e.preventDefault();
+    
+    // Hem mobil hem masaüstünde rewarded video reklam göster
+    setPendingNavigation(url);
+    setShowRewardedAd(true);
+  };
+
+  // Rewarded video reklam tamamlandığında
+  const handleAdComplete = () => {
+    setShowRewardedAd(false);
+    if (pendingNavigation) {
+      router.push(pendingNavigation);
+      setPendingNavigation(null);
+    }
+  };
+
+  // Rewarded video reklam hatası durumunda
+  const handleAdError = () => {
+    setShowRewardedAd(false);
+    // Reklam hatası durumunda direkt yönlendirme yap
+    if (pendingNavigation) {
+      router.push(pendingNavigation);
+      setPendingNavigation(null);
+    }
+  };
+
+  // Rewarded video reklam kapatıldığında
+  const handleAdClose = () => {
+    setShowRewardedAd(false);
+    setPendingNavigation(null);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
@@ -513,7 +550,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                 </button>
                 <a
                   href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
-                  onClick={(e) => handleVehicleTypeClick(e, vehicleData.type)}
+                  onClick={(e) => handleInceleClick(e, `/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`)}
                   className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                 >
                   Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} İncele
@@ -761,10 +798,10 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
               <div className="flex gap-4">
                 <a
                   href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
-                  onClick={(e) => handleVehicleTypeClick(e, vehicleData.type)}
+                  onClick={(e) => handleInceleClick(e, `/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`)}
                   className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none"
                 >
-                  Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "simple_plural")}
+                  Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} İncele
                 </a>
                 <a
                   href="/elektrikli-araclar"
@@ -778,6 +815,15 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
           </div>
         </div>
       </div>
+      {/* Rewarded Video Reklam Modal */}
+      {showRewardedAd && (
+        <RewardedVideoAd
+          isVisible={showRewardedAd}
+          onAdComplete={handleAdComplete}
+          onAdError={handleAdError}
+          onAdClose={handleAdClose}
+        />
+      )}
     </div>
   );
 }

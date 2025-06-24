@@ -8,7 +8,6 @@ import { FaChevronLeft, FaChevronRight, FaCheckCircle, FaShareAlt, FaCopy, FaTwi
 import { useElectricVehicleStore } from '@/viewmodels/useElectricVehicles';
 import FavoriteButton from '@/components/FavoriteButton';
 import { ElectricVehicle } from '@/models/ElectricVehicle';
-import RewardedVideoAd from '@/components/RewardedVideoAd';
 
 // Props için arayüz
 interface VehicleClientContentProps {
@@ -144,8 +143,6 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
 
   // Fiyat bilgisi için state
   const [price, setPrice] = useState<{ base: number; currency: string } | null>(null);
-  const [showRewardedAd, setShowRewardedAd] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
 
   // Fiyat bilgisini çek
   useEffect(() => {
@@ -372,39 +369,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
   // İncele butonunda Rewarded Video Reklam gösterilmeyecek
   const handleInceleClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
     e.preventDefault();
-    
-    // Hem mobil hem masaüstünde rewarded video reklam göster
-    setPendingNavigation(url);
-    setShowRewardedAd(true);
-  };
-
-  // Rewarded video reklam tamamlandığında
-  const handleAdComplete = () => {
-    setShowRewardedAd(false);
-    if (pendingNavigation) {
-      router.push(pendingNavigation);
-      setPendingNavigation(null);
-    }
-  };
-
-  // Rewarded video reklam hatası durumunda
-  const handleAdError = () => {
-    setShowRewardedAd(false);
-    // Reklam hatası durumunda direkt yönlendirme yap
-    if (pendingNavigation) {
-      router.push(pendingNavigation);
-      setPendingNavigation(null);
-    }
-  };
-
-  // Rewarded video reklam kapatıldığında
-  const handleAdClose = () => {
-    setShowRewardedAd(false);
-    // Kapat butonuna basıldığında hemen detay sayfasına yönlendir
-    if (pendingNavigation) {
-      router.push(pendingNavigation);
-      setPendingNavigation(null);
-    }
+    router.push(url);
   };
 
   return (
@@ -817,15 +782,6 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
           </div>
         </div>
       </div>
-      {/* Rewarded Video Reklam Modal */}
-      {showRewardedAd && (
-        <RewardedVideoAd
-          isVisible={showRewardedAd}
-          onAdComplete={handleAdComplete}
-          onAdError={handleAdError}
-          onAdClose={handleAdClose}
-        />
-      )}
     </div>
   );
 }

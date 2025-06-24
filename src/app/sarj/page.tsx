@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
 import { useUserStore } from '@/stores/useUserStore';
-import RewardedVideoAd from '@/components/RewardedVideoAd';
 
 declare global {
   interface Window {
@@ -356,9 +355,6 @@ export default function SarjPage() {
   const { user, isLoggedIn } = useUserStore();
   const isPremiumUser = isLoggedIn && (user?.isPremium || user?.email === "test@test.com");
 
-  const [showRewardedAd, setShowRewardedAd] = useState(false);
-  const [pendingCalculation, setPendingCalculation] = useState(false);
-
   const getUserLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -703,27 +699,6 @@ export default function SarjPage() {
         ? `${Math.floor(superChargerHours)} saat ${Math.round((superChargerHours % 1) * 60)} dakika`
         : `${Math.round(superChargerHours * 60)} dakika`,
     });
-  };
-
-  // Rewarded Ad tamamlandığında hesaplama yap
-  const handleAdComplete = () => {
-    setShowRewardedAd(false);
-    setPendingCalculation(false);
-    calculateChargingCost();
-  };
-
-  // Rewarded Ad hata veya kapatıldığında da hesaplama yap
-  const handleAdErrorOrClose = () => {
-    setShowRewardedAd(false);
-    setPendingCalculation(false);
-    calculateChargingCost();
-  };
-
-  // Hesapla butonuna tıklanınca önce reklam aç
-  const handleCalculateWithAd = (e: React.FormEvent) => {
-    e.preventDefault();
-    setShowRewardedAd(true);
-    setPendingCalculation(true);
   };
 
   // Rota oluşturma butonu tıklandığında gösterilen modal 
@@ -1254,7 +1229,7 @@ export default function SarjPage() {
 
                     <div className="mt-2">
                       <button
-                        onClick={handleCalculateWithAd}
+                        onClick={calculateChargingCost}
                         className="w-full bg-gradient-to-r from-[#660566] to-[#330233] text-white 
                                rounded-lg px-4 py-2 font-medium hover:opacity-90 
                                transition-all duration-200"
@@ -1350,16 +1325,6 @@ export default function SarjPage() {
                 </div>
               </div>
             </div>
-          )}
-
-          {/* Rewarded Video Ad Modal */}
-          {showRewardedAd && (
-            <RewardedVideoAd
-              isVisible={showRewardedAd}
-              onAdComplete={handleAdComplete}
-              onAdError={handleAdErrorOrClose}
-              onAdClose={handleAdErrorOrClose}
-            />
           )}
         </div>
       </div>

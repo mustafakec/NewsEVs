@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ElectricVehicle } from '@/models/ElectricVehicle';
 import { toSlug } from '@/utils/vehicleUtils';
-import RewardedVideoAd from '@/components/RewardedVideoAd';
 
 interface VehicleCardProps {
   vehicle: ElectricVehicle;
@@ -16,8 +15,6 @@ interface VehicleCardProps {
 const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   const router = useRouter();
   const [price, setPrice] = useState<{ base: number; currency: string } | null>(null);
-  const [showRewardedAd, setShowRewardedAd] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
 
   // Fiyat bilgisini çek
   useEffect(() => {
@@ -54,44 +51,12 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
     router.push(url);
   };
 
-  // İncele butonuna tıklandığında rewarded video reklam göster
+  // İncele butonuna tıklandığında direkt yönlendirme yapsın
   const handleInceleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    // Hem mobil hem masaüstünde rewarded video reklam göster
     const url = getVehicleUrl(vehicle);
-    setPendingNavigation(url);
-    setShowRewardedAd(true);
-  };
-
-  // Rewarded video reklam tamamlandığında
-  const handleAdComplete = () => {
-    setShowRewardedAd(false);
-    if (pendingNavigation) {
-      router.push(pendingNavigation);
-      setPendingNavigation(null);
-    }
-  };
-
-  // Rewarded video reklam hatası durumunda
-  const handleAdError = () => {
-    setShowRewardedAd(false);
-    // Reklam hatası durumunda direkt yönlendirme yap
-    if (pendingNavigation) {
-      router.push(pendingNavigation);
-      setPendingNavigation(null);
-    }
-  };
-
-  // Rewarded video reklam kapatıldığında
-  const handleAdClose = () => {
-    setShowRewardedAd(false);
-    // Kapat butonuna basıldığında hemen detay sayfasına yönlendir
-    if (pendingNavigation) {
-      router.push(pendingNavigation);
-      setPendingNavigation(null);
-    }
+    router.push(url);
   };
 
   // Karşılaştırmaya araç ekleme fonksiyonu
@@ -264,14 +229,6 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
           </div>
         </div>
       </div>
-
-      {/* Rewarded Video Reklam Modal */}
-      <RewardedVideoAd
-        isVisible={showRewardedAd}
-        onAdComplete={handleAdComplete}
-        onAdError={handleAdError}
-        onAdClose={handleAdClose}
-      />
     </>
   );
 });

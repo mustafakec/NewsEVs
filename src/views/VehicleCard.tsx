@@ -87,7 +87,11 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   // Rewarded video reklam kapatıldığında
   const handleAdClose = () => {
     setShowRewardedAd(false);
-    setPendingNavigation(null);
+    // Kapat butonuna basıldığında hemen detay sayfasına yönlendir
+    if (pendingNavigation) {
+      router.push(pendingNavigation);
+      setPendingNavigation(null);
+    }
   };
 
   // Karşılaştırmaya araç ekleme fonksiyonu

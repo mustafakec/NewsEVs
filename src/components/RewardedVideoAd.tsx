@@ -259,7 +259,7 @@ const RewardedVideoAd: React.FC<RewardedVideoAdProps> = ({
               onClick={onAdClose}
               className="flex-1 px-3 py-2 sm:px-4 sm:py-3 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm sm:text-base"
             >
-              İptal
+              Kapat
             </button>
             {isAdLoaded && !isAdPlaying && (
               <button

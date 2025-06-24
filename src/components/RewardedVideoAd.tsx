@@ -259,7 +259,7 @@ const RewardedVideoAd: React.FC<RewardedVideoAdProps> = ({
               onClick={onAdClose}
               className="flex-1 px-3 py-2 sm:px-4 sm:py-3 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm sm:text-base"
             >
-              Kapat
+              Reklamı Geç
             </button>
             {isAdLoaded && !isAdPlaying && (
               <button
@@ -283,7 +283,7 @@ const RewardedVideoAd: React.FC<RewardedVideoAdProps> = ({
           {/* Info */}
           <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-blue-50 rounded-lg">
             <p className="text-xs text-blue-700">
-              💡 Reklamı tamamladıktan sonra araç detaylarına otomatik olarak yönlendirileceksiniz.
+              💡 Bu bölüm şu anda test aşamasındadır. Reklamı Geç diyerek araç sayfasına ulaşabilirsiniz.
             </p>
           </div>
 

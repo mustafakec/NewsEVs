@@ -33,6 +33,15 @@ export const normalizeVehicleType = (type: string): string => {
     'minibüs': 'Otobüs',
     'otobüs': 'Otobüs',
     'bus': 'Otobüs',
+    // Motosiklet varyasyonları
+    'motosiklet': 'Motosiklet',
+    'motor': 'Motosiklet',
+    'motorcycle': 'Motosiklet',
+    'moto': 'Motosiklet',
+    // Scooter varyasyonları
+    'scooter': 'Scooter',
+    'elektrikli scooter': 'Scooter',
+    'e-scooter': 'Scooter',
   };
 
   // Eşleşme varsa standart değeri döndür, yoksa orijinal değeri kullan

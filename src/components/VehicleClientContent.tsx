@@ -369,7 +369,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
     }
   };
 
-  // İncele butonuna tıklandığında rewarded video reklam göster
+  // İncele butonunda Rewarded Video Reklam gösterilmeyecek
   const handleInceleClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
     e.preventDefault();
     
@@ -554,7 +554,6 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                 </button>
                 <a
                   href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
-                  onClick={(e) => handleInceleClick(e, `/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`)}
                   className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                 >
                   Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} İncele
@@ -802,8 +801,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
               <div className="flex gap-4">
                 <a
                   href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
-                  onClick={(e) => handleInceleClick(e, `/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`)}
-                  className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none"
+                  className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                 >
                   Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} İncele
                 </a>

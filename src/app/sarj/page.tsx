@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
 import { useUserStore } from '@/stores/useUserStore';
+import RewardedVideoAd from '@/components/RewardedVideoAd';
 
 declare global {
   interface Window {
@@ -355,6 +356,9 @@ export default function SarjPage() {
   const { user, isLoggedIn } = useUserStore();
   const isPremiumUser = isLoggedIn && (user?.isPremium || user?.email === "test@test.com");
 
+  const [showRewardedAd, setShowRewardedAd] = useState(false);
+  const [pendingCalculation, setPendingCalculation] = useState(false);
+
   const getUserLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -680,7 +684,7 @@ export default function SarjPage() {
     // Detaylı şarj maliyeti hesaplamalarını ekleyelim
     const acChargingHours = energyToAdd / 11; // 11 kW AC şarj için
     const dcChargingHours = energyToAdd / 50; // 50 kW DC şarj için
-    const superChargerHours = energyToAdd / 250; // 250 kW DC süper şarj için
+    const superChargerHours = energyToAdd / 250;
 
     setCalculationResult({
       energyToAdd,
@@ -699,6 +703,27 @@ export default function SarjPage() {
         ? `${Math.floor(superChargerHours)} saat ${Math.round((superChargerHours % 1) * 60)} dakika`
         : `${Math.round(superChargerHours * 60)} dakika`,
     });
+  };
+
+  // Rewarded Ad tamamlandığında hesaplama yap
+  const handleAdComplete = () => {
+    setShowRewardedAd(false);
+    setPendingCalculation(false);
+    calculateChargingCost();
+  };
+
+  // Rewarded Ad hata veya kapatıldığında da hesaplama yap
+  const handleAdErrorOrClose = () => {
+    setShowRewardedAd(false);
+    setPendingCalculation(false);
+    calculateChargingCost();
+  };
+
+  // Hesapla butonuna tıklanınca önce reklam aç
+  const handleCalculateWithAd = (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowRewardedAd(true);
+    setPendingCalculation(true);
   };
 
   // Rota oluşturma butonu tıklandığında gösterilen modal 
@@ -1229,13 +1254,11 @@ export default function SarjPage() {
 
                     <div className="mt-2">
                       <button
-                        onClick={calculateChargingCost}
-                        className="w-full bg-gradient-to-r from-[#660566] to-[#330233] text-white px-6 py-3 rounded-lg font-medium
-                               hover:opacity-90 transition-all duration-200 flex items-center justify-center"
+                        onClick={handleCalculateWithAd}
+                        className="w-full bg-gradient-to-r from-[#660566] to-[#330233] text-white 
+                               rounded-lg px-4 py-2 font-medium hover:opacity-90 
+                               transition-all duration-200"
                       >
-                        <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
                         Hesapla
                       </button>
                     </div>
@@ -1327,6 +1350,16 @@ export default function SarjPage() {
                 </div>
               </div>
             </div>
+          )}
+
+          {/* Rewarded Video Ad Modal */}
+          {showRewardedAd && (
+            <RewardedVideoAd
+              isVisible={showRewardedAd}
+              onAdComplete={handleAdComplete}
+              onAdError={handleAdErrorOrClose}
+              onAdClose={handleAdErrorOrClose}
+            />
           )}
         </div>
       </div>

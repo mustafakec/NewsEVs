@@ -36,6 +36,17 @@ const nextConfig = {
         ],
       },
     ]
+  },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.swf$/,
+      use: [
+        {
+          loader: 'ignore-loader'
+        }
+      ]
+    });
+    return config;
   }
 }
 

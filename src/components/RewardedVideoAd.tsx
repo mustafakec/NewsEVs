@@ -27,12 +27,14 @@ const RewardedVideoAd: React.FC<RewardedVideoAdProps> = ({
   const [adSlot, setAdSlot] = useState<any>(null);
   const [loadingText, setLoadingText] = useState('Reklam yükleniyor...');
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Mobil cihaz kontrolü
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
   useEffect(() => {
-    // Google AdSense script'ini yükle
+    if (!isVisible || isInitialized) return;
+
     const loadGoogleAdSense = () => {
       if (window.googletag) {
         initializeAd();
@@ -44,110 +46,111 @@ const RewardedVideoAd: React.FC<RewardedVideoAdProps> = ({
       script.async = true;
       script.crossOrigin = 'anonymous';
       script.onload = initializeAd;
+      script.onerror = () => {
+        console.error('Failed to load Google AdSense script');
+        onAdError();
+      };
       document.head.appendChild(script);
     };
 
     const initializeAd = () => {
-      window.googletag = window.googletag || { cmd: [] };
-      
-      window.googletag.cmd.push(() => {
-        // Rewarded video ad slot'unu tanımla
-        const slot = window.googletag.defineOutOfPageSlot(
-          '/23307685224/incele_reward_01',
-          window.googletag.enums.OutOfPageFormat.REWARDED
-        );
+      try {
+        window.googletag = window.googletag || { cmd: [] };
+        
+        window.googletag.cmd.push(() => {
+          // Rewarded video ad slot'unu tanımla
+          const slot = window.googletag.defineOutOfPageSlot(
+            '/23307685224/incele_reward_01',
+            window.googletag.enums.OutOfPageFormat.REWARDED
+          );
 
-        if (slot) {
-          setAdSlot(slot);
-          
-          // Event listener'ları ekle
-          window.googletag.pubads().addEventListener('slotRenderEnded', (event: any) => {
-            if (event.slot === slot) {
-              setIsAdLoaded(true);
-              setLoadingText('Reklam hazır! İzlemek için tıklayın.');
+          if (slot) {
+            setAdSlot(slot);
+            setIsInitialized(true);
+            
+            // Event listener'ları ekle
+            window.googletag.pubads().addEventListener('slotRenderEnded', (event: any) => {
+              if (event.slot === slot) {
+                setIsAdLoaded(true);
+                setLoadingText('Reklam hazır! İzlemek için tıklayın.');
+              }
+            });
+
+            window.googletag.pubads().addEventListener('rewardedSlotReady', (event: any) => {
+              if (event.slot === slot) {
+                // Rewarded video hazır, oynat
+                window.googletag.pubads().show(event.slot);
+                setIsAdPlaying(true);
+                setLoadingText('Reklam oynatılıyor...');
+              }
+            });
+
+            window.googletag.pubads().addEventListener('rewardedSlotClosed', (event: any) => {
+              if (event.slot === slot) {
+                setIsAdPlaying(false);
+                onAdClose();
+              }
+            });
+
+            window.googletag.pubads().addEventListener('rewardedSlotGranted', (event: any) => {
+              if (event.slot === slot) {
+                // Kullanıcı reklamı tamamladı, ödül ver
+                setLoadingText('Reklam tamamlandı! Yönlendiriliyorsunuz...');
+                setTimeout(() => {
+                  onAdComplete();
+                }, 1000);
+              }
+            });
+
+            window.googletag.pubads().addEventListener('slotRequested', (event: any) => {
+              if (event.slot === slot) {
+                console.log('Rewarded video ad requested');
+                setLoadingText('Reklam isteniyor...');
+              }
+            });
+
+            window.googletag.pubads().addEventListener('slotResponseReceived', (event: any) => {
+              if (event.slot === slot) {
+                console.log('Rewarded video ad response received');
+                setLoadingText('Reklam yükleniyor...');
+              }
+            });
+
+            // AdSense servislerini etkinleştir (sadece bir kez)
+            if (!window.googletag.pubads().isInitialized()) {
+              window.googletag.pubads().enableSingleRequest();
+              window.googletag.pubads().collapseEmptyDivs();
+              window.googletag.enableServices();
             }
-          });
 
-          window.googletag.pubads().addEventListener('rewardedSlotReady', (event: any) => {
-            if (event.slot === slot) {
-              // Rewarded video hazır, oynat
-              window.googletag.pubads().show(event.slot);
-              setIsAdPlaying(true);
-              setLoadingText('Reklam oynatılıyor...');
-            }
-          });
-
-          window.googletag.pubads().addEventListener('rewardedSlotClosed', (event: any) => {
-            if (event.slot === slot) {
-              setIsAdPlaying(false);
-              onAdClose();
-            }
-          });
-
-          window.googletag.pubads().addEventListener('rewardedSlotGranted', (event: any) => {
-            if (event.slot === slot) {
-              // Kullanıcı reklamı tamamladı, ödül ver
-              setLoadingText('Reklam tamamlandı! Yönlendiriliyorsunuz...');
-              setTimeout(() => {
-                onAdComplete();
-              }, 1000);
-            }
-          });
-
-          window.googletag.pubads().addEventListener('slotRequested', (event: any) => {
-            if (event.slot === slot) {
-              console.log('Rewarded video ad requested');
-              setLoadingText('Reklam isteniyor...');
-            }
-          });
-
-          window.googletag.pubads().addEventListener('slotResponseReceived', (event: any) => {
-            if (event.slot === slot) {
-              console.log('Rewarded video ad response received');
-              setLoadingText('Reklam yükleniyor...');
-            }
-          });
-
-          window.googletag.pubads().addEventListener('slotError', (event: any) => {
-            if (event.slot === slot) {
-              console.error('Rewarded video ad error:', event);
-              setLoadingText('Reklam yüklenemedi. Yönlendiriliyorsunuz...');
-              setTimeout(() => {
-                onAdError();
-              }, 2000);
-            }
-          });
-
-          // AdSense servislerini etkinleştir
-          window.googletag.pubads().enableSingleRequest();
-          window.googletag.pubads().collapseEmptyDivs();
-          window.googletag.enableServices();
-        }
-      });
+            // Reklamı yükle
+            window.googletag.pubads().refresh([slot]);
+          } else {
+            console.error('Failed to create ad slot');
+            onAdError();
+          }
+        });
+      } catch (error) {
+        console.error('Error initializing ad:', error);
+        onAdError();
+      }
     };
 
-    if (isVisible) {
-      loadGoogleAdSense();
-    }
+    loadGoogleAdSense();
 
     return () => {
       // Cleanup
       if (adSlot) {
-        window.googletag?.cmd.push(() => {
-          window.googletag.destroySlots([adSlot]);
-        });
+        try {
+          window.googletag?.cmd.push(() => {
+            window.googletag.destroySlots([adSlot]);
+          });
+        } catch (error) {
+          console.error('Error during cleanup:', error);
+        }
       }
     };
-  }, [isVisible, onAdComplete, onAdError, onAdClose, adSlot]);
-
-  useEffect(() => {
-    if (isVisible && adSlot && !isAdPlaying) {
-      // Reklamı yükle ve göster
-      window.googletag?.cmd.push(() => {
-        window.googletag.pubads().refresh([adSlot]);
-      });
-    }
-  }, [isVisible, adSlot, isAdPlaying]);
+  }, [isVisible, onAdComplete, onAdError, onAdClose, adSlot, isInitialized]);
 
   // Loading progress animasyonu
   useEffect(() => {
@@ -162,6 +165,18 @@ const RewardedVideoAd: React.FC<RewardedVideoAdProps> = ({
       return () => clearInterval(interval);
     }
   }, [isVisible, isAdLoaded, isAdPlaying]);
+
+  // Timeout kontrolü - 15 saniye sonra hata ver
+  useEffect(() => {
+    if (isVisible && !isAdLoaded && !isAdPlaying) {
+      const timeout = setTimeout(() => {
+        console.log('Ad loading timeout - redirecting user');
+        onAdError();
+      }, 15000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [isVisible, isAdLoaded, isAdPlaying, onAdError]);
 
   if (!isVisible) {
     return null;
@@ -179,11 +194,11 @@ const RewardedVideoAd: React.FC<RewardedVideoAdProps> = ({
               </svg>
             </div>
             <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
-              {isAdPlaying ? 'Reklam' : 'Reklam'}
+              {isAdPlaying ? 'Reklam İzleniyor' : 'Reklam'}
             </h3>
             <p className="text-gray-600 text-xs sm:text-sm">
               {isAdPlaying 
-                ? ''
+                ? 'Reklamı tamamlayın ve detayları görün'
                 : ''
               }
             </p>
@@ -249,9 +264,14 @@ const RewardedVideoAd: React.FC<RewardedVideoAdProps> = ({
             {isAdLoaded && !isAdPlaying && (
               <button
                 onClick={() => {
-                  window.googletag?.cmd.push(() => {
-                    window.googletag.pubads().show(adSlot);
-                  });
+                  try {
+                    window.googletag?.cmd.push(() => {
+                      window.googletag.pubads().show(adSlot);
+                    });
+                  } catch (error) {
+                    console.error('Error showing ad:', error);
+                    onAdError();
+                  }
                 }}
                 className="flex-1 px-3 py-2 sm:px-4 sm:py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm sm:text-base"
               >

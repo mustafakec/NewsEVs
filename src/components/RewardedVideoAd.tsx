@@ -41,6 +41,12 @@ const RewardedVideoAd: React.FC<RewardedVideoAdProps> = ({
     let isMounted = true;
     let playerInstance: any = null;
 
+    // videojs'i global window'a ata
+    if (typeof window !== 'undefined') {
+      // @ts-ignore
+      window.videojs = videojs;
+    }
+
     import('videojs-vast-vpaid').then(() => {
       if (!isMounted) return;
       playerInstance = videojs(videoNode.current!, {

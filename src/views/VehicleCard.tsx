@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ElectricVehicle } from '@/models/ElectricVehicle';
 import { toSlug } from '@/utils/vehicleUtils';
+import { cloudinaryUtils } from '@/lib/cloudinary';
+import { useVehicleCardImage } from '@/hooks/useCloudinaryImage';
 
 interface VehicleCardProps {
   vehicle: ElectricVehicle;
@@ -15,25 +17,28 @@ interface VehicleCardProps {
 const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   const router = useRouter();
   const [price, setPrice] = useState<{ base: number; currency: string } | null>(null);
+  
+  // Cloudinary optimizasyonu
+  const { optimizedUrl } = useVehicleCardImage(vehicle.images?.[0]);
 
   // Fiyat bilgisini çek
   useEffect(() => {
     const fetchPrice = async () => {
-      if (!vehicle?.id) return;
-
       try {
         const response = await fetch(`/api/vehicles/${vehicle.id}/price`);
-        if (!response.ok) throw new Error('Fiyat bilgisi alınamadı');
-
-        const data = await response.json();
-        setPrice(data);
+        if (response.ok) {
+          const priceData = await response.json();
+          setPrice(priceData);
+        }
       } catch (error) {
-        console.error('Fiyat bilgisi çekilirken hata oluştu:', error);
+        console.error('Fiyat bilgisi çekilirken hata:', error);
       }
     };
 
-    fetchPrice();
-  }, [vehicle?.id]);
+    if (vehicle.id) {
+      fetchPrice();
+    }
+  }, [vehicle.id]);
 
   // isPremium kontrolünü sadece stil sınıfları için kullanacağız
   
@@ -107,13 +112,13 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
         {/* Resim Alanı */}
         <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
           <Image
-            src={vehicle.images && vehicle.images.length > 0
-              ? vehicle.images[0]
-              : '/images/car-placeholder.jpg'}
+            src={optimizedUrl}
             alt={`${vehicle.brand} ${vehicle.model}`}
             width={800}
             height={450}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            priority={false}
+            loading="lazy"
           />
           
           {/* Türkiye'de satışta etiketi */}

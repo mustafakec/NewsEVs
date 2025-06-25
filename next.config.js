@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['www.mercedes-benzsouthwest.co.uk'],
+    domains: ['www.mercedes-benzsouthwest.co.uk', 'res.cloudinary.com'],
     remotePatterns: [
       {
         protocol: 'https',

@@ -8,6 +8,7 @@ import { FaChevronLeft, FaChevronRight, FaCheckCircle, FaShareAlt, FaCopy, FaTwi
 import { useElectricVehicleStore } from '@/viewmodels/useElectricVehicles';
 import FavoriteButton from '@/components/FavoriteButton';
 import { ElectricVehicle } from '@/models/ElectricVehicle';
+import { cloudinaryUtils } from '@/lib/cloudinary';
 
 // Props için arayüz
 interface VehicleClientContentProps {
@@ -137,64 +138,37 @@ const XLogo = () => (
 
 // Client Component
 export default function VehicleClientContent({ vehicle, initialVehicle }: VehicleClientContentProps) {
+  // Hooks'ları component'in en üstünde tanımla
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showShareOptions, setShowShareOptions] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const shareMenuRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const setFilters = useElectricVehicleStore((state) => state.setFilters);
+  const setTemporaryFilters = useElectricVehicleStore((state) => state.setTemporaryFilters);
 
-  // Eğer hem vehicle hem de initialVehicle varsa vehicle'ı tercih et, yoksa initialVehicle kullan
-  const vehicleData = vehicle || initialVehicle;
-
-  // Fiyat bilgisi için state
+  // Araç verilerini state'e ata
+  const [vehicleData, setVehicleData] = useState<ElectricVehicle>(initialVehicle || vehicle!);
   const [price, setPrice] = useState<{ base: number; currency: string } | null>(null);
 
   // Fiyat bilgisini çek
   useEffect(() => {
     const fetchPrice = async () => {
-      if (!vehicleData?.id) return;
-
       try {
         const response = await fetch(`/api/vehicles/${vehicleData.id}/price`);
-        if (!response.ok) throw new Error('Fiyat bilgisi alınamadı');
-
-        const data = await response.json();
-        setPrice(data);
+        if (response.ok) {
+          const priceData = await response.json();
+          setPrice(priceData);
+        }
       } catch (error) {
-        console.error('Fiyat bilgisi çekilirken hata oluştu:', error);
+        console.error('Fiyat bilgisi çekilirken hata:', error);
       }
     };
 
-    fetchPrice();
-  }, [vehicleData?.id]);
-
-  // Eğer hiçbir araç verisi yoksa hata göster
-  if (!vehicleData) {
-    return (
-      <div className="p-8 text-center">
-        <div className="text-red-500 mb-4">
-          <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-        </div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Araç bilgileri yüklenemedi</h2>
-        <p className="text-gray-600">Araç verileri eksik veya hatalı. Lütfen daha sonra tekrar deneyin.</p>
-      </div>
-    );
-  }
-
-  console.log('=== VEHICLE CLIENT CONTENT DEBUG ===');
-  console.log('Vehicle Data:', vehicleData);
-  console.log('Turkey Status:', vehicleData.turkeyStatuses);
-  console.log('Available:', vehicleData.turkeyStatuses?.available);
-  console.log('Available Type:', typeof vehicleData.turkeyStatuses?.available);
-  console.log('Raw Turkey Status:', vehicleData.turkeyStatuses);
-  console.log('===========================');
-
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const router = useRouter();
-  const setFilters = useElectricVehicleStore((state) => state.setFilters);
-  const setTemporaryFilters = useElectricVehicleStore((state) => state.setTemporaryFilters);
-
-  // Paylaşım URL'sini ve kopyalama durumunu tutan state'ler
-  const [showShareOptions, setShowShareOptions] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
-  const shareMenuRef = useRef<HTMLDivElement>(null);
+    if (vehicleData.id) {
+      fetchPrice();
+    }
+  }, [vehicleData.id]);
 
   // Paylaşım menüsü dışına tıklandığında menüyü kapat
   useEffect(() => {
@@ -209,6 +183,26 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Debug bilgileri
+  console.log('=== VEHICLE CLIENT CONTENT DEBUG ===');
+  console.log('Vehicle Data:', vehicleData);
+  console.log('Available:', vehicleData.turkeyStatuses?.available);
+  console.log('Available Type:', typeof vehicleData.turkeyStatuses?.available);
+  console.log('Raw Turkey Status:', vehicleData.turkeyStatuses);
+  console.log('===========================');
+
+  // Eğer hiçbir araç verisi yoksa hata göster
+  if (!vehicleData) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Araç Bulunamadı</h1>
+          <p className="text-gray-600">Aradığınız elektrikli araç bulunamadı.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Önceki görsel
   const handlePrevImage = () => {
@@ -372,6 +366,22 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
     router.push(url);
   };
 
+  // Görsel URL'ini optimize et
+  const getOptimizedImageUrl = (imageUrl: string | undefined) => {
+    if (!imageUrl) return '/images/car-placeholder.jpg';
+    
+    // Cloudinary URL'i ise optimize et
+    if (imageUrl.includes('cloudinary.com')) {
+      return cloudinaryUtils.optimizeImage(imageUrl, {
+        width: 1200,
+        height: 900,
+        quality: 'auto:good'
+      });
+    }
+    
+    return imageUrl;
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
@@ -422,7 +432,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
               <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
                 {vehicleData.images && vehicleData.images.length > 0 ? (
                   <Image
-                    src={vehicleData.images[currentImageIndex]}
+                    src={getOptimizedImageUrl(vehicleData.images[currentImageIndex])}
                     alt={`${vehicleData.brand} ${vehicleData.model}`}
                     fill
                     className="object-cover"

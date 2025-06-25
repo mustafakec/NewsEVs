@@ -12,9 +12,11 @@
     "lint": "next lint",
     "export": "next build && next export",
     "debug": "NODE_OPTIONS='--inspect' next dev",
-    "generate-sitemap": "node scripts/generate-sitemap.js"
+    "generate-sitemap": "node scripts/generate-sitemap.js",
+    "migrate-images": "node scripts/migrate-images-to-cloudinary.js"
   },
   "dependencies": {
+    "@cloudinary/url-gen": "^1.21.0",
     "@googlemaps/js-api-loader": "^1.16.8",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
@@ -27,6 +29,7 @@
     "chart.js": "^4.4.7",
     "chartjs-adapter-date-fns": "^3.0.0",
     "cheerio": "1.0.0-rc.12",
+    "cloudinary": "^2.7.0",
     "critters": "^0.0.23",
     "dotenv": "^16.5.0",
     "echarts": "^5.6.0",

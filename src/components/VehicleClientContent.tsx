@@ -375,11 +375,17 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
       return cloudinaryUtils.optimizeImage(imageUrl, {
         width: 1200,
         height: 900,
-        quality: 'auto:good'
+        quality: 'auto:good',
+        format: 'auto'
       });
     }
     
     return imageUrl;
+  };
+
+  // Cloudinary URL'i kontrol et
+  const isCloudinaryUrl = (imageUrl: string | undefined) => {
+    return imageUrl?.includes('cloudinary.com') || false;
   };
 
   return (
@@ -437,6 +443,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                     fill
                     className="object-cover"
                     priority
+                    unoptimized={isCloudinaryUrl(vehicleData.images[currentImageIndex])}
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-gray-100">

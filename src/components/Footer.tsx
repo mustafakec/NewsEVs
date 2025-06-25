@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { cloudinaryUtils } from '@/lib/cloudinary';
 
 const Footer = () => {
   return (
@@ -11,7 +12,15 @@ const Footer = () => {
           {/* Logo ve Açıklama */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2">
-              <Image src="/logo.png" alt="elektrikliyiz Logo" width={32} height={32} quality={100} className="object-contain" />
+              <Image 
+                src={cloudinaryUtils.getPublicImageUrl('logo.png')} 
+                alt="elektrikliyiz Logo" 
+                width={32} 
+                height={32} 
+                quality={100} 
+                className="object-contain"
+                unoptimized={true}
+              />
               <span className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-[#660566] to-[#330233]">elektrikliyiz</span>
               
             </Link>

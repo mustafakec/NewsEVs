@@ -8,6 +8,7 @@ import { useUserStore } from '@/stores/useUserStore';
 import { authService } from '@/services/authService';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { cloudinaryUtils } from '@/lib/cloudinary';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -160,7 +161,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 {/* Header */}
                 <div className="text-center mb-5">
                   <div className="flex justify-center mb-3">
-                    <Image src="/electric.png" alt="Elektrikliyiz Logo" width={42} height={42} className="animate-float" />
+                    <Image 
+                      src={cloudinaryUtils.getPublicImageUrl('electric.png')} 
+                      alt="Elektrikliyiz Logo" 
+                      width={42} 
+                      height={42} 
+                      className="animate-float"
+                      unoptimized={true}
+                    />
                   </div>
                   <Dialog.Title className="text-[22px] font-bold text-gray-900">
                     {mode === 'login' ? 'Hesabınıza Giriş Yapın' : 'Yeni Hesap Oluşturun'}

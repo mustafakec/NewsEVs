@@ -21,6 +21,9 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   // Cloudinary optimizasyonu
   const { optimizedUrl } = useVehicleCardImage(vehicle.images?.[0]);
 
+  // Cloudinary URL'i kontrol et
+  const isCloudinaryUrl = vehicle.images?.[0]?.includes('cloudinary.com') || false;
+
   // Fiyat bilgisini çek
   useEffect(() => {
     const fetchPrice = async () => {
@@ -119,6 +122,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             priority={false}
             loading="lazy"
+            unoptimized={isCloudinaryUrl}
           />
           
           {/* Türkiye'de satışta etiketi */}

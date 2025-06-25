@@ -9,6 +9,7 @@ import PremiumModal from './PremiumModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useElectricVehicleStore } from '@/viewmodels/useElectricVehicles';
 import { useUserStore } from '@/stores/useUserStore';
+import { cloudinaryUtils } from '@/lib/cloudinary';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -148,7 +149,16 @@ const Header = () => {
         <div className="max-w-7xl mx-auto w-full h-full flex items-center justify-between px-4">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="elektrikliyiz Logo" width={32} height={32} priority quality={100} className="object-contain" />
+            <Image 
+              src={cloudinaryUtils.getPublicImageUrl('logo.png')} 
+              alt="elektrikliyiz Logo" 
+              width={32} 
+              height={32} 
+              priority 
+              quality={100} 
+              className="object-contain"
+              unoptimized={true}
+            />
             <span className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-[#660566] to-[#330233]">elektrikliyiz</span>
             <span className="text-sm font-normal text-gray-400">v1</span>
           </Link>
@@ -315,7 +325,14 @@ const Header = () => {
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-100">
                   <div className="flex items-center gap-2">
-                    <Image src="/logo.png" alt="elektrikliyiz Logo" width={24} height={24} className="object-contain" />
+                    <Image 
+                      src={cloudinaryUtils.getPublicImageUrl('logo.png')} 
+                      alt="elektrikliyiz Logo" 
+                      width={24} 
+                      height={24} 
+                      className="object-contain"
+                      unoptimized={true}
+                    />
                     <span className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-[#660566] to-[#330233]">elektrikliyiz</span>
                   </div>
                   <button

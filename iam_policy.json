@@ -1,0 +1,44 @@
+{
+  "bindings": [
+    {
+      "members": [
+        "serviceAccount:supabase-sync@sheet-sb-464214.iam.gserviceaccount.com",
+        "user:info@elektrikliyiz.com"
+      ],
+      "role": "projects/sheet-sb-464214/roles/CustomOrganizationPolicyAdmini"
+    },
+    {
+      "members": [
+        "user:info@elektrikliyiz.com"
+      ],
+      "role": "projects/sheet-sb-464214/roles/CustomServiceAccountKeyAdmin"
+    },
+    {
+      "members": [
+        "serviceAccount:supabase-sync@sheet-sb-464214.iam.gserviceaccount.com",
+        "user:info@elektrikliyiz.com"
+      ],
+      "role": "roles/iam.serviceAccountKeyAdmin"
+    },
+    {
+      "members": [
+        "user:info@elektrikliyiz.com"
+      ],
+      "role": "roles/owner"
+    },
+    {
+      "members": [
+        "serviceAccount:supabase-sync@sheet-sb-464214.iam.gserviceaccount.com"
+      ],
+      "role": "roles/resourcemanager.organizationAdmin"
+    },
+    {
+      "members": [
+        "user:info@elektrikliyiz.com"
+      ],
+      "role": "roles/serviceusage.apiKeysAdmin"
+    }
+  ],
+  "etag": "BwY4kenPE_M=",
+  "version": 1
+}

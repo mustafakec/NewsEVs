@@ -546,12 +546,12 @@ const VehicleFilters = () => {
   } = useElectricVehicleStore();
 
   const [filterPanels, setFilterPanels] = useState({
-    brand: true,
+    brand: false,
     price: false,
     battery: false,
     range: false,
     specs: false,
-    turkeyStatus: false,
+    turkeyStatuses: false,
   });
 
   const [brandSearch, setBrandSearch] = useState('');
@@ -631,8 +631,8 @@ const VehicleFilters = () => {
       case 'v2l':
         setTemporaryFilters({ v2l: value ? 'yes' : undefined });
         break;
-      case 'turkeyStatus':
-        setTemporaryFilters({ turkeyStatus: value ? 'available' : undefined });
+      case 'turkeyStatuses':
+        setTemporaryFilters({ turkeyStatuses: value ? 'available' : undefined });
         break;
       case 'comingSoon':
         setTemporaryFilters({ comingSoon: value === true });
@@ -663,7 +663,7 @@ const VehicleFilters = () => {
       maxChargeSpeed: undefined,
       heatPump: undefined,
       v2l: undefined,
-      turkeyStatus: undefined,
+      turkeyStatuses: undefined,
       comingSoon: undefined,
     });
     // Anında uygula
@@ -1005,11 +1005,11 @@ const VehicleFilters = () => {
         <div>
           <div
             className="flex justify-between items-center mb-2 cursor-pointer"
-            onClick={() => toggleFilterPanel('turkeyStatus')}
+            onClick={() => toggleFilterPanel('turkeyStatuses')}
           >
             <h3 className="font-medium">Türkiye Durumu</h3>
             <svg
-              className={`w-5 h-5 transition-transform ${filterPanels.turkeyStatus ? 'transform rotate-180' : ''
+              className={`w-5 h-5 transition-transform ${filterPanels.turkeyStatuses ? 'transform rotate-180' : ''
                 }`}
               fill="none"
               viewBox="0 0 24 24"
@@ -1024,15 +1024,15 @@ const VehicleFilters = () => {
             </svg>
           </div>
 
-          {filterPanels.turkeyStatus && (
+          {filterPanels.turkeyStatuses && (
             <div className="mt-2 space-y-2">
               {/* Türkiye'de Satışta */}
               <div className="flex items-center">
                 <input
                   type="checkbox"
                   id="turkeyAvailable"
-                  checked={temporaryFilters.turkeyStatus === 'available'}
-                  onChange={(e) => handleCheckboxFilterChange('turkeyStatus', e?.target?.checked ? 'available' : false)}
+                  checked={temporaryFilters.turkeyStatuses === 'available'}
+                  onChange={(e) => handleCheckboxFilterChange('turkeyStatuses', e?.target?.checked ? 'available' : false)}
                   className="w-4 h-4 accent-[#660566] rounded border-gray-300"
                   style={{ accentColor: '#660566' }}
                 />

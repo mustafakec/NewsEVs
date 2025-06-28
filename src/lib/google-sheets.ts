@@ -1,0 +1,686 @@
+import { google } from 'googleapis';
+import { JWT } from 'google-auth-library';
+
+// Google Sheets API yapılandırması
+const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
+
+// Google Service Account bilgileri
+const GOOGLE_SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || 'supabase-sync@sheet-sb-464214.iam.gserviceaccount.com';
+const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
+
+// Sheet ID'leri
+const SHEET_IDS = {
+  electric_vehicles: '1S-uScup7RnP0U5KYqVXtyy3I4Kpp4XrhxrpJOM_AD8I',
+  charging_times: '1csLVfoSM2GLq_8uXFQdRuDJQccXHdoRmwKIUxm4iOSQ',
+  performances: '18z9sGvc-UyGA7leQo4VtpLD-gMC1v1ZZIN-mfdn4A4A',
+  dimensions: '1_4tVPtVcjsx5cnHli7w_xaeLqgDJ8CS1OonJOJ-Scd4',
+  efficiencies: '1Pkpmp4R0PncKkM-m6RGAoT4CzQSaVWNR1PV2c1dExKg',
+  comforts: '12uljuqeCpG8QTWXsiSILlnq_5MHu4He20hCx5-WJFYE',
+  features: '1D2_-KSv9Gy7u-_99D57I_KG2KILWEXKHG2rqlNjxqFk',
+  prices: '1P9bLuVXS8xMtq0VJfwp8EsklTEeZVBJeu8skoIZY4UE',
+  turkey_statutes: '1sKjfaCHsa75SSkSChFFzmpa2dfF8oTQu021KCH23VoE',
+  images: '12pcSBV6cKon0ciTL4yKINHSHw8xav8OO0XMY3kWhUyA',
+  environmental_impacts: '16wmYF-VOCGmU3ckwaKsT9LvwoZ3T_2ScjiNhW2gKomc',
+  warranties: '1obFECRDBwYxalbuB8cuHXZtk_gVBSE2yBWuzxdWGTVA'
+};
+
+if (!GOOGLE_SERVICE_ACCOUNT_EMAIL || !GOOGLE_PRIVATE_KEY) {
+  console.error('Google Sheets API yapılandırma değişkenleri eksik');
+}
+
+// JWT istemcisi oluştur
+const auth = new JWT({
+  email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
+  key: GOOGLE_PRIVATE_KEY,
+  scopes: SCOPES,
+});
+
+// Google Sheets API istemcisi
+const sheets = google.sheets({ version: 'v4', auth });
+
+// Google Sheets'ten veri çekme fonksiyonu
+export const getSheetData = async (sheetId: string, range: string = 'A:Z') => {
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: sheetId,
+      range,
+    });
+
+    return response.data.values;
+  } catch (error) {
+    console.error(`Google Sheets veri çekme hatası (${sheetId}):`, error);
+    throw error;
+  }
+};
+
+// Ana elektrikli araç verilerini çek
+export const getElectricVehiclesFromSheet = async () => {
+  try {
+    const data = await getSheetData(SHEET_IDS.electric_vehicles);
+    
+    if (!data || data.length < 2) {
+      return [];
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+
+    return rows.map((row, index) => {
+      const vehicle: any = {};
+      
+      headers.forEach((header: string, colIndex: number) => {
+        const value = row[colIndex] || '';
+        
+        switch (header.toLowerCase()) {
+          case 'id':
+            vehicle.id = value;
+            break;
+          case 'brand':
+          case 'marka':
+            vehicle.brand = value;
+            break;
+          case 'model':
+            vehicle.model = value;
+            break;
+          case 'year':
+          case 'yıl':
+            vehicle.year = parseInt(value) || 2024;
+            break;
+          case 'type':
+          case 'tip':
+            vehicle.type = value;
+            break;
+          case 'range':
+          case 'menzil':
+            vehicle.range = parseInt(value) || 0;
+            break;
+          case 'battery_capacity':
+          case 'batarya_kapasitesi':
+            vehicle.battery_capacity = parseInt(value) || 0;
+            break;
+          case 'heat_pump':
+          case 'ısı_pompası':
+            vehicle.heat_pump = value.toLowerCase() as 'yes' | 'no' | 'optional';
+            break;
+          case 'v2l':
+            vehicle.v2l = value.toLowerCase() as 'yes' | 'no' | 'optional';
+            break;
+          default:
+            try {
+              if (value && (value.startsWith('{') || value.startsWith('['))) {
+                vehicle[header.toLowerCase()] = JSON.parse(value);
+              } else {
+                vehicle[header.toLowerCase()] = value;
+              }
+            } catch {
+              vehicle[header.toLowerCase()] = value;
+            }
+        }
+      });
+
+      return vehicle;
+    });
+  } catch (error) {
+    console.error('Elektrikli araç verilerini çekerken hata:', error);
+    return [];
+  }
+};
+
+// Şarj süreleri verilerini çek
+export const getChargingTimesFromSheet = async () => {
+  try {
+    const data = await getSheetData(SHEET_IDS.charging_times);
+    
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+    const chargingTimes: any = {};
+
+    rows.forEach((row) => {
+      const vehicleId = row[0]; // İlk sütun araç ID'si
+      if (!vehicleId) return;
+
+      const chargingData: any = {};
+      headers.slice(1).forEach((header: string, colIndex: number) => {
+        const value = row[colIndex + 1] || '';
+        
+        try {
+          if (value && (value.startsWith('{') || value.startsWith('['))) {
+            chargingData[header.toLowerCase()] = JSON.parse(value);
+          } else {
+            chargingData[header.toLowerCase()] = value;
+          }
+        } catch {
+          chargingData[header.toLowerCase()] = value;
+        }
+      });
+
+      chargingTimes[vehicleId] = chargingData;
+    });
+
+    return chargingTimes;
+  } catch (error) {
+    console.error('Şarj süreleri verilerini çekerken hata:', error);
+    return {};
+  }
+};
+
+// Performans verilerini çek
+export const getPerformancesFromSheet = async () => {
+  try {
+    const data = await getSheetData(SHEET_IDS.performances);
+    
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+    const performances: any = {};
+
+    rows.forEach((row) => {
+      const vehicleId = row[0];
+      if (!vehicleId) return;
+
+      const performanceData: any = {};
+      headers.slice(1).forEach((header: string, colIndex: number) => {
+        const value = row[colIndex + 1] || '';
+        
+        try {
+          if (value && (value.startsWith('{') || value.startsWith('['))) {
+            performanceData[header.toLowerCase()] = JSON.parse(value);
+          } else {
+            performanceData[header.toLowerCase()] = value;
+          }
+        } catch {
+          performanceData[header.toLowerCase()] = value;
+        }
+      });
+
+      performances[vehicleId] = performanceData;
+    });
+
+    return performances;
+  } catch (error) {
+    console.error('Performans verilerini çekerken hata:', error);
+    return {};
+  }
+};
+
+// Boyut verilerini çek
+export const getDimensionsFromSheet = async () => {
+  try {
+    const data = await getSheetData(SHEET_IDS.dimensions);
+    
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+    const dimensions: any = {};
+
+    rows.forEach((row) => {
+      const vehicleId = row[0];
+      if (!vehicleId) return;
+
+      const dimensionData: any = {};
+      headers.slice(1).forEach((header: string, colIndex: number) => {
+        const value = row[colIndex + 1] || '';
+        
+        try {
+          if (value && (value.startsWith('{') || value.startsWith('['))) {
+            dimensionData[header.toLowerCase()] = JSON.parse(value);
+          } else {
+            dimensionData[header.toLowerCase()] = value;
+          }
+        } catch {
+          dimensionData[header.toLowerCase()] = value;
+        }
+      });
+
+      dimensions[vehicleId] = dimensionData;
+    });
+
+    return dimensions;
+  } catch (error) {
+    console.error('Boyut verilerini çekerken hata:', error);
+    return {};
+  }
+};
+
+// Verimlilik verilerini çek
+export const getEfficienciesFromSheet = async () => {
+  try {
+    const data = await getSheetData(SHEET_IDS.efficiencies);
+    
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+    const efficiencies: any = {};
+
+    rows.forEach((row) => {
+      const vehicleId = row[0];
+      if (!vehicleId) return;
+
+      const efficiencyData: any = {};
+      headers.slice(1).forEach((header: string, colIndex: number) => {
+        const value = row[colIndex + 1] || '';
+        
+        try {
+          if (value && (value.startsWith('{') || value.startsWith('['))) {
+            efficiencyData[header.toLowerCase()] = JSON.parse(value);
+          } else {
+            efficiencyData[header.toLowerCase()] = value;
+          }
+        } catch {
+          efficiencyData[header.toLowerCase()] = value;
+        }
+      });
+
+      efficiencies[vehicleId] = efficiencyData;
+    });
+
+    return efficiencies;
+  } catch (error) {
+    console.error('Verimlilik verilerini çekerken hata:', error);
+    return {};
+  }
+};
+
+// Konfor verilerini çek
+export const getComfortsFromSheet = async () => {
+  try {
+    const data = await getSheetData(SHEET_IDS.comforts);
+    
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+    const comforts: any = {};
+
+    rows.forEach((row) => {
+      const vehicleId = row[0];
+      if (!vehicleId) return;
+
+      const comfortData: any = {};
+      headers.slice(1).forEach((header: string, colIndex: number) => {
+        const value = row[colIndex + 1] || '';
+        
+        try {
+          if (value && (value.startsWith('{') || value.startsWith('['))) {
+            comfortData[header.toLowerCase()] = JSON.parse(value);
+          } else {
+            comfortData[header.toLowerCase()] = value;
+          }
+        } catch {
+          comfortData[header.toLowerCase()] = value;
+        }
+      });
+
+      comforts[vehicleId] = comfortData;
+    });
+
+    return comforts;
+  } catch (error) {
+    console.error('Konfor verilerini çekerken hata:', error);
+    return {};
+  }
+};
+
+// Özellikler verilerini çek
+export const getFeaturesFromSheet = async () => {
+  try {
+    const data = await getSheetData(SHEET_IDS.features);
+    
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+    const features: any = {};
+
+    rows.forEach((row) => {
+      const vehicleId = row[0];
+      if (!vehicleId) return;
+
+      const featureData: any = {};
+      headers.slice(1).forEach((header: string, colIndex: number) => {
+        const value = row[colIndex + 1] || '';
+        
+        if (header.toLowerCase() === 'features' || header.toLowerCase() === 'özellikler') {
+          featureData.features = value ? value.split(',').map((f: string) => f.trim()) : [];
+        } else if (header.toLowerCase() === 'extra_features' || header.toLowerCase() === 'ek_özellikler') {
+          featureData.extra_features = value ? value.split(',').map((f: string) => f.trim()) : [];
+        } else {
+          featureData[header.toLowerCase()] = value;
+        }
+      });
+
+      features[vehicleId] = featureData;
+    });
+
+    return features;
+  } catch (error) {
+    console.error('Özellikler verilerini çekerken hata:', error);
+    return {};
+  }
+};
+
+// Fiyat verilerini çek
+export const getPricesFromSheet = async () => {
+  try {
+    const data = await getSheetData(SHEET_IDS.prices);
+    
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+    const prices: any = {};
+
+    rows.forEach((row) => {
+      const vehicleId = row[0];
+      if (!vehicleId) return;
+
+      const priceData: any = {};
+      headers.slice(1).forEach((header: string, colIndex: number) => {
+        const value = row[colIndex + 1] || '';
+        
+        try {
+          if (value && (value.startsWith('{') || value.startsWith('['))) {
+            priceData[header.toLowerCase()] = JSON.parse(value);
+          } else {
+            priceData[header.toLowerCase()] = value;
+          }
+        } catch {
+          priceData[header.toLowerCase()] = value;
+        }
+      });
+
+      prices[vehicleId] = priceData;
+    });
+
+    return prices;
+  } catch (error) {
+    console.error('Fiyat verilerini çekerken hata:', error);
+    return {};
+  }
+};
+
+// Türkiye durumu verilerini çek
+export const getTurkeyStatusesFromSheet = async () => {
+  try {
+    const data = await getSheetData(SHEET_IDS.turkey_statutes);
+    
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+    const turkeyStatuses: any = {};
+
+    rows.forEach((row) => {
+      const vehicleId = row[0];
+      if (!vehicleId) return;
+
+      const statusData: any = {};
+      headers.slice(1).forEach((header: string, colIndex: number) => {
+        const value = row[colIndex + 1] || '';
+        
+        try {
+          if (value && (value.startsWith('{') || value.startsWith('['))) {
+            statusData[header.toLowerCase()] = JSON.parse(value);
+          } else {
+            statusData[header.toLowerCase()] = value;
+          }
+        } catch {
+          statusData[header.toLowerCase()] = value;
+        }
+      });
+
+      turkeyStatuses[vehicleId] = statusData;
+    });
+
+    return turkeyStatuses;
+  } catch (error) {
+    console.error('Türkiye durumu verilerini çekerken hata:', error);
+    return {};
+  }
+};
+
+// Görsel verilerini çek
+export const getImagesFromSheet = async () => {
+  try {
+    const data = await getSheetData(SHEET_IDS.images);
+    
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+    const images: any = {};
+
+    rows.forEach((row) => {
+      const vehicleId = row[0];
+      if (!vehicleId) return;
+
+      const imageData: any = {};
+      headers.slice(1).forEach((header: string, colIndex: number) => {
+        const value = row[colIndex + 1] || '';
+        
+        if (header.toLowerCase() === 'images' || header.toLowerCase() === 'görseller') {
+          imageData.images = value ? value.split(',').map((img: string) => img.trim()) : [];
+        } else {
+          imageData[header.toLowerCase()] = value;
+        }
+      });
+
+      images[vehicleId] = imageData;
+    });
+
+    return images;
+  } catch (error) {
+    console.error('Görsel verilerini çekerken hata:', error);
+    return {};
+  }
+};
+
+// Çevresel etki verilerini çek
+export const getEnvironmentalImpactsFromSheet = async () => {
+  try {
+    const data = await getSheetData(SHEET_IDS.environmental_impacts);
+    
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+    const environmentalImpacts: any = {};
+
+    rows.forEach((row) => {
+      const vehicleId = row[0];
+      if (!vehicleId) return;
+
+      const impactData: any = {};
+      headers.slice(1).forEach((header: string, colIndex: number) => {
+        const value = row[colIndex + 1] || '';
+        
+        try {
+          if (value && (value.startsWith('{') || value.startsWith('['))) {
+            impactData[header.toLowerCase()] = JSON.parse(value);
+          } else {
+            impactData[header.toLowerCase()] = value;
+          }
+        } catch {
+          impactData[header.toLowerCase()] = value;
+        }
+      });
+
+      environmentalImpacts[vehicleId] = impactData;
+    });
+
+    return environmentalImpacts;
+  } catch (error) {
+    console.error('Çevresel etki verilerini çekerken hata:', error);
+    return {};
+  }
+};
+
+// Garanti verilerini çek
+export const getWarrantiesFromSheet = async () => {
+  try {
+    const data = await getSheetData(SHEET_IDS.warranties);
+    
+    if (!data || data.length < 2) {
+      return {};
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+    const warranties: any = {};
+
+    rows.forEach((row) => {
+      const vehicleId = row[0];
+      if (!vehicleId) return;
+
+      const warrantyData: any = {};
+      headers.slice(1).forEach((header: string, colIndex: number) => {
+        const value = row[colIndex + 1] || '';
+        
+        try {
+          if (value && (value.startsWith('{') || value.startsWith('['))) {
+            warrantyData[header.toLowerCase()] = JSON.parse(value);
+          } else {
+            warrantyData[header.toLowerCase()] = value;
+          }
+        } catch {
+          warrantyData[header.toLowerCase()] = value;
+        }
+      });
+
+      warranties[vehicleId] = warrantyData;
+    });
+
+    return warranties;
+  } catch (error) {
+    console.error('Garanti verilerini çekerken hata:', error);
+    return {};
+  }
+};
+
+// Tüm verileri birleştirerek tam araç verilerini oluştur
+export const getCompleteVehicleData = async () => {
+  try {
+    console.log('🔄 Tüm Google Sheets verilerini çekiliyor...');
+    
+    const [
+      vehicles,
+      chargingTimes,
+      performances,
+      dimensions,
+      efficiencies,
+      comforts,
+      features,
+      prices,
+      turkeyStatuses,
+      images,
+      environmentalImpacts,
+      warranties
+    ] = await Promise.all([
+      getElectricVehiclesFromSheet(),
+      getChargingTimesFromSheet(),
+      getPerformancesFromSheet(),
+      getDimensionsFromSheet(),
+      getEfficienciesFromSheet(),
+      getComfortsFromSheet(),
+      getFeaturesFromSheet(),
+      getPricesFromSheet(),
+      getTurkeyStatusesFromSheet(),
+      getImagesFromSheet(),
+      getEnvironmentalImpactsFromSheet(),
+      getWarrantiesFromSheet()
+    ]);
+
+    console.log(`✅ ${vehicles.length} araç verisi çekildi`);
+
+    // Verileri birleştir
+    const completeVehicles = vehicles.map(vehicle => {
+      const vehicleId = vehicle.id;
+      
+      return {
+        ...vehicle,
+        charging_time: chargingTimes[vehicleId] || {
+          ac: 0,
+          dc: 0,
+          fastCharging: { power: 0, time10to80: 0 },
+          acTime: 0
+        },
+        performance: performances[vehicleId] || {
+          acceleration: 0,
+          topSpeed: 0,
+          power: 0,
+          torque: 0
+        },
+        dimensions: dimensions[vehicleId] || {
+          length: 0,
+          width: 0,
+          height: 0,
+          weight: 0
+        },
+        efficiency: efficiencies[vehicleId] || {
+          consumption: 0
+        },
+        comfort: comforts[vehicleId] || {},
+        price: prices[vehicleId] || {
+          base: 0,
+          currency: 'TRY'
+        },
+        features: features[vehicleId]?.features || [],
+        extra_features: features[vehicleId]?.extra_features || [],
+        turkey_status: turkeyStatuses[vehicleId] || {
+          available: false
+        },
+        images: images[vehicleId]?.images || [],
+        environmental_impact: environmentalImpacts[vehicleId] || {},
+        warranty: warranties[vehicleId] || {
+          battery: 0,
+          vehicle: 0
+        }
+      };
+    });
+
+    return completeVehicles;
+  } catch (error) {
+    console.error('Tam araç verilerini çekerken hata:', error);
+    return [];
+  }
+};
+
+// Son eklenen araçları kontrol etme (basitleştirilmiş)
+export const getLatestVehiclesFromSheet = async (lastSyncTime?: string) => {
+  try {
+    const vehicles = await getCompleteVehicleData();
+    
+    // Eğer son senkronizasyon zamanı varsa, sadece yeni eklenenleri filtrele
+    // Şimdilik tüm verileri döndürüyoruz
+    return vehicles;
+  } catch (error) {
+    console.error('Son araçları çekerken hata:', error);
+    return [];
+  }
+}; 

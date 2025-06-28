@@ -75,6 +75,11 @@ const Footer = () => {
                   Kullanım Koşulları
                 </Link>
               </li>
+              <li>
+                <Link href="/2fa-setup" className="text-gray-600 hover:text-[#660566] transition-colors">
+                  İki Faktörlü Kimlik Doğrulama
+                </Link>
+              </li>
             </ul>
           </div>
 

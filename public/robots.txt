@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
+# Sync sayfalarını engelle
+Disallow: /sync-sheets
+Disallow: /st77xrLm00
+
 Sitemap: https://www.elektrikliyiz.com/sitemap.xml

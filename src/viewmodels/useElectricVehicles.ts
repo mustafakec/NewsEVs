@@ -64,7 +64,7 @@ type Filters = {
   maxChargeSpeed?: number;
   heatPump?: string; // 'yes' | 'no' | 'optional'
   v2l?: string; // 'yes' | 'no' | 'optional'
-  turkeyStatus?: string; // 'available' | 'unavailable'
+  turkeyStatuses?: string; // 'available' | 'unavailable'
   comingSoon?: boolean; // Türkiye'de yakında satışa sunulacak
   searchTerm?: string; // Arama terimi
 };
@@ -237,8 +237,8 @@ function applyFiltersToQuery(query: any, filters: Filters) {
   }
 
   // Türkiye durumu filtresi
-  if (filters.turkeyStatus) {
-    query = query.eq('turkey_statuses.available', filters.turkeyStatus === 'available');
+  if (filters.turkeyStatuses) {
+    query = query.eq('turkey_statuses.available', filters.turkeyStatuses === 'available');
   }
 
   // Yakında geliyor filtresi

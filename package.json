@@ -14,7 +14,10 @@
     "debug": "NODE_OPTIONS='--inspect' next dev",
     "generate-sitemap": "node scripts/generate-sitemap.js",
     "migrate-images": "node scripts/migrate-images-to-cloudinary.js",
-    "migrate-public-images": "node scripts/migrate-public-images-to-cloudinary.js"
+    "migrate-public-images": "node scripts/migrate-public-images-to-cloudinary.js",
+    "sync-sheets": "node scripts/sync-sheets.js",
+    "sync-sheets-all": "node scripts/sync-sheets.js sync-all",
+    "sync-sheets-latest": "node scripts/sync-sheets.js sync-latest"
   },
   "dependencies": {
     "@cloudinary/url-gen": "^1.21.0",
@@ -36,8 +39,11 @@
     "echarts": "^5.6.0",
     "echarts-for-react": "^3.0.2",
     "framer-motion": "^12.4.10",
+    "google-auth-library": "^10.1.0",
+    "googleapis": "^150.0.1",
     "lightweight-charts": "^4.1.1",
     "next": "^15.3.3",
+    "node-fetch": "^3.3.2",
     "react": "18.2.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "18.2.0",
@@ -51,6 +57,8 @@
   },
   "devDependencies": {
     "@types/google.maps": "^3.58.1",
+    "@types/qrcode": "^1.5.5",
+    "@types/speakeasy": "^2.0.10",
     "@types/video.js": "^7.3.58",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",

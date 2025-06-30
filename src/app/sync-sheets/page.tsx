@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface SyncResult {
   success: boolean;
@@ -28,6 +29,25 @@ export default function SheetSyncPage() {
   const [result, setResult] = useState<SyncResult | null>(null);
   const [debugResult, setDebugResult] = useState<DebugResult | null>(null);
   const [vehicleId, setVehicleId] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const router = useRouter();
+
+  // Auth kontrolü
+  useEffect(() => {
+    const checkAuth = () => {
+      const authStatus = sessionStorage.getItem('sync-auth');
+      if (authStatus === 'true') {
+        setIsAuthenticated(true);
+      } else {
+        // Giriş yapmamış kullanıcıyı login sayfasına yönlendir
+        router.push('/st77xrLm00');
+      }
+      setIsCheckingAuth(false);
+    };
+
+    checkAuth();
+  }, [router]);
 
   const handleSync = async (action: string) => {
     setIsLoading(true);
@@ -39,6 +59,7 @@ export default function SheetSyncPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer sync-auth-token',
         },
         body: JSON.stringify({ action, vehicleId }),
       });
@@ -61,9 +82,43 @@ export default function SheetSyncPage() {
     }
   };
 
+  const handleLogout = () => {
+    // Session storage'dan temizle
+    sessionStorage.removeItem('sync-auth');
+    
+    // Cookie'den temizle
+    document.cookie = 'sync-auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    
+    // Login sayfasına yönlendir
+    router.push('/st77xrLm00');
+  };
+
+  // Auth kontrolü yapılırken loading göster
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Yetkilendirme kontrol ediliyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Giriş yapmamış kullanıcılar için boş sayfa (zaten yönlendirme yapıldı)
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="text-center">
+      <div className="text-center relative">
+        <button
+          onClick={handleLogout}
+          className="absolute top-0 right-0 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+        >
+          Çıkış Yap
+        </button>
         <h1 className="text-3xl font-bold mb-2">Google Sheets Senkronizasyon</h1>
         <p className="text-gray-600">
           Google Sheets'ten elektrikli araç verilerini Supabase'e senkronize edin

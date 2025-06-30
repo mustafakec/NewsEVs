@@ -2,8 +2,33 @@ import { NextRequest, NextResponse } from 'next/server';
 import { syncAllVehiclesFromSheet, syncLatestVehiclesFromSheet, syncVehicleById } from '../../../services/sheetSyncService';
 import { getCompleteVehicleData, getElectricVehiclesFromSheet } from '../../../lib/google-sheets';
 
+// Auth kontrolü fonksiyonu
+function checkAuth(request: NextRequest): boolean {
+  // Cookie'den auth durumunu kontrol et
+  const authCookie = request.cookies.get('sync-auth');
+  if (authCookie?.value === 'true') {
+    return true;
+  }
+
+  // Authorization header'dan kontrol et
+  const authHeader = request.headers.get('authorization');
+  if (authHeader === 'Bearer sync-auth-token') {
+    return true;
+  }
+
+  return false;
+}
+
 export async function POST(request: NextRequest) {
   try {
+    // Auth kontrolü
+    if (!checkAuth(request)) {
+      return NextResponse.json(
+        { error: 'Yetkilendirme gerekli. Lütfen giriş yapın.' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { action, vehicleId } = body;
 
@@ -131,6 +156,14 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    // Auth kontrolü
+    if (!checkAuth(request)) {
+      return NextResponse.json(
+        { error: 'Yetkilendirme gerekli. Lütfen giriş yapın.' },
+        { status: 401 }
+      );
+    }
+
     // GET isteği ile sadece son eklenen araçları senkronize et
     const result = await syncLatestVehiclesFromSheet();
     

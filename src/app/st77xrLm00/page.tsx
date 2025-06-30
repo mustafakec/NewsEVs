@@ -19,6 +19,10 @@ const LoginPage = () => {
     if (email === 'trapcat35@gmail.com' && password === 'ruuv8x0L*#1') {
       // Başarılı giriş - session storage'a kaydet
       sessionStorage.setItem('sync-auth', 'true');
+      
+      // Cookie'ye de kaydet (API için)
+      document.cookie = 'sync-auth=true; path=/; max-age=3600; SameSite=Strict';
+      
       router.push('/sync-sheets');
     } else {
       setError('Geçersiz e-posta veya şifre');

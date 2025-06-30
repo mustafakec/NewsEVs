@@ -302,9 +302,8 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
     <div className="relative">
       <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {currentVehicles?.map((vehicle: ElectricVehicle, idx: number) => (
-          <>
+          <div key={`vehicle-${vehicle.id}-${idx}`}>
             <VehicleCard
-              key={vehicle.id}
               vehicle={vehicle}
             />
             {(idx + 1) % 3 === 0 && (
@@ -312,7 +311,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
                 <AdFeedIn />
               </div>
             )}
-          </>
+          </div>
         ))}
       </div>
 

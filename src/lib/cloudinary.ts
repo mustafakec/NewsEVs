@@ -50,6 +50,9 @@ export const cloudinaryUtils = {
       return url; // Cloudinary URL değilse orijinal URL'i döndür
     }
 
+    // URL'yi temizle - boşluk ve kontrol karakterlerini kaldır
+    const cleanUrl = url.trim().replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+
     const {
       width = 800,
       height = 600,
@@ -58,8 +61,8 @@ export const cloudinaryUtils = {
     } = options;
 
     // Cloudinary URL'ini optimize et
-    const baseUrl = url.split('/upload/')[0] + '/upload/';
-    const imageId = url.split('/upload/')[1];
+    const baseUrl = cleanUrl.split('/upload/')[0] + '/upload/';
+    const imageId = cleanUrl.split('/upload/')[1];
     
     const transformations = [
       `w_${width}`,

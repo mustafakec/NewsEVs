@@ -115,7 +115,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
         {/* Resim Alanı */}
         <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
           <Image
-            src={optimizedUrl}
+            src={optimizedUrl?.trim() || '/images/car-placeholder.jpg'}
             alt={`${vehicle.brand} ${vehicle.model}`}
             width={800}
             height={450}

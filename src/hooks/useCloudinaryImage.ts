@@ -40,8 +40,11 @@ export const useCloudinaryImage = (
   const optimizedUrl = useMemo(() => {
     if (!imageUrl) return '/images/car-placeholder.jpg';
     
+    // URL'yi temizle - boşluk ve kontrol karakterlerini kaldır
+    const cleanImageUrl = imageUrl.trim().replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+    
     if (isCloudinary) {
-      return cloudinaryUtils.optimizeImage(imageUrl, {
+      return cloudinaryUtils.optimizeImage(cleanImageUrl, {
         width,
         height,
         quality,
@@ -49,7 +52,7 @@ export const useCloudinaryImage = (
       });
     }
     
-    return imageUrl;
+    return cleanImageUrl;
   }, [imageUrl, isCloudinary, width, height, quality, format]);
 
   const responsiveUrls = useMemo(() => {

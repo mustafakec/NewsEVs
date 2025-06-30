@@ -531,9 +531,10 @@ const fetchVehicleTypes = async () => {
     return [];
   }
 
-  // Benzersiz tipleri al
+  // Benzersiz tipleri al ve Van tipini filtrele
   const uniqueTypes = Array.from(new Set(data.map(item => item.type)));
-  return uniqueTypes;
+  const filteredTypes = uniqueTypes.filter(type => type.toLowerCase() !== 'van');
+  return filteredTypes;
 };
 
 // Ana Filtre Bileşeni

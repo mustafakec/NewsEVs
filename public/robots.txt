@@ -5,4 +5,11 @@ Allow: /
 Disallow: /sync-sheets
 Disallow: /st77xrLm00
 
-Sitemap: https://www.elektrikliyiz.com/sitemap.xml
+# Auth ve profil sayfalarını engelle
+Disallow: /auth/login
+Disallow: /auth/register
+Disallow: /auth/forgot-password
+Disallow: /auth/verify-email
+Disallow: /profil
+
+Sitemap: https://elektrikliyiz.com/sitemap.xml

@@ -87,7 +87,8 @@ async function fetchVehiclesFromSupabase(filters: Filters = {}): Promise<Electri
         images!inner(*),
         prices!inner!inner(*),
         warranties!inner(*)
-        `);
+        `)
+      .order('id', { ascending: true }); // ID'ye göre artan sıralama (EV0001'den başlar)
 
     // Filtreler uygulanıyor
     query = applyFiltersToQuery(query, filters);

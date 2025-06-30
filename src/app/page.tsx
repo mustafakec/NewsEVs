@@ -246,7 +246,19 @@ export default function HomePage() {
 
 function PopularVehicles() {
   const { data: vehicles } = useVehicles();
-  const popularVehicles = vehicles?.slice(0, 4) || [];
+  
+  // Belirtilen popüler araç ID'leri ve sıraları
+  const popularVehicleIds = ['ev0001', 'ev0005', 'ev0044', 'ev0211'];
+  
+  // Belirtilen ID'lere sahip araçları filtrele ve sırala
+  const popularVehicles = vehicles?.filter(vehicle => 
+    popularVehicleIds.includes(vehicle.id)
+  ).sort((a, b) => {
+    // popularVehicleIds dizisindeki sıraya göre sırala
+    const indexA = popularVehicleIds.indexOf(a.id);
+    const indexB = popularVehicleIds.indexOf(b.id);
+    return indexA - indexB;
+  }) || [];
 
   return (
     <>

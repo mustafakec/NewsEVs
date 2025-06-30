@@ -42,14 +42,29 @@ const sheets = google.sheets({ version: 'v4', auth });
 // Google Sheets'ten veri çekme fonksiyonu
 export const getSheetData = async (sheetId: string, range: string = 'A:Z') => {
   try {
+    console.log(`🔍 Google Sheets'ten veri çekiliyor: ${sheetId}`);
+    console.log(`📊 Range: ${range}`);
+    
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: sheetId,
       range,
     });
 
+    console.log(`✅ Veri çekildi: ${response.data.values?.length || 0} satır`);
+    
+    if (response.data.values && response.data.values.length > 0) {
+      console.log(`📝 İlk satır (başlıklar): ${response.data.values[0].join(', ')}`);
+    }
+
     return response.data.values;
-  } catch (error) {
-    console.error(`Google Sheets veri çekme hatası (${sheetId}):`, error);
+  } catch (error: any) {
+    console.error(`❌ Google Sheets veri çekme hatası (${sheetId}):`, error.message);
+    if (error.code) {
+      console.error(`🔍 Hata kodu: ${error.code}`);
+    }
+    if (error.status) {
+      console.error(`🔍 HTTP durumu: ${error.status}`);
+    }
     throw error;
   }
 };
@@ -57,16 +72,23 @@ export const getSheetData = async (sheetId: string, range: string = 'A:Z') => {
 // Ana elektrikli araç verilerini çek
 export const getElectricVehiclesFromSheet = async () => {
   try {
+    console.log('📊 Ana araç verileri çekiliyor...');
+    
     const data = await getSheetData(SHEET_IDS.electric_vehicles);
     
     if (!data || data.length < 2) {
+      console.log('❌ Google Sheets\'te veri bulunamadı veya yetersiz');
       return [];
     }
+
+    console.log(`📋 ${data.length} satır veri bulundu`);
 
     const headers = data[0];
     const rows = data.slice(1);
 
-    return rows.map((row, index) => {
+    console.log('📝 Başlıklar:', headers);
+
+    const vehicles = rows.map((row, index) => {
       const vehicle: any = {};
       
       headers.forEach((header: string, colIndex: number) => {
@@ -74,6 +96,7 @@ export const getElectricVehiclesFromSheet = async () => {
         
         switch (header.toLowerCase()) {
           case 'id':
+          case 'vehicle_id':
             vehicle.id = value;
             break;
           case 'brand':
@@ -121,8 +144,22 @@ export const getElectricVehiclesFromSheet = async () => {
 
       return vehicle;
     });
+
+    // Geçerli araçları filtrele (ID, brand ve model olanlar)
+    const validVehicles = vehicles.filter(v => v.id && v.brand && v.model);
+    
+    console.log(`✅ ${validVehicles.length} geçerli araç bulundu`);
+    
+    if (validVehicles.length === 0) {
+      console.log('⚠️ Hiç geçerli araç bulunamadı. İlk birkaç araç:');
+      vehicles.slice(0, 3).forEach((v, i) => {
+        console.log(`  ${i + 1}. ID: ${v.id}, Brand: ${v.brand}, Model: ${v.model}`);
+      });
+    }
+
+    return validVehicles;
   } catch (error) {
-    console.error('Elektrikli araç verilerini çekerken hata:', error);
+    console.error('❌ Elektrikli araç verilerini çekerken hata:', error);
     return [];
   }
 };
@@ -141,6 +178,7 @@ export const getChargingTimesFromSheet = async () => {
     const chargingTimes: any = {};
 
     rows.forEach((row) => {
+      // İlk sütun araç ID'si olabilir (id veya vehicle_id)
       const vehicleId = row[0]; // İlk sütun araç ID'si
       if (!vehicleId) return;
 
@@ -341,35 +379,23 @@ export const getComfortsFromSheet = async () => {
 export const getFeaturesFromSheet = async () => {
   try {
     const data = await getSheetData(SHEET_IDS.features);
-    
     if (!data || data.length < 2) {
       return {};
     }
-
     const headers = data[0];
     const rows = data.slice(1);
     const features: any = {};
-
     rows.forEach((row) => {
       const vehicleId = row[0];
       if (!vehicleId) return;
-
-      const featureData: any = {};
+      const featureObj: any = {};
       headers.slice(1).forEach((header: string, colIndex: number) => {
         const value = row[colIndex + 1] || '';
-        
-        if (header.toLowerCase() === 'features' || header.toLowerCase() === 'özellikler') {
-          featureData.features = value ? value.split(',').map((f: string) => f.trim()) : [];
-        } else if (header.toLowerCase() === 'extra_features' || header.toLowerCase() === 'ek_özellikler') {
-          featureData.extra_features = value ? value.split(',').map((f: string) => f.trim()) : [];
-        } else {
-          featureData[header.toLowerCase()] = value;
-        }
+        featureObj[header.toLowerCase()] = value;
       });
-
-      features[vehicleId] = featureData;
+      if (!features[vehicleId]) features[vehicleId] = [];
+      features[vehicleId].push(featureObj);
     });
-
     return features;
   } catch (error) {
     console.error('Özellikler verilerini çekerken hata:', error);
@@ -465,33 +491,23 @@ export const getTurkeyStatusesFromSheet = async () => {
 export const getImagesFromSheet = async () => {
   try {
     const data = await getSheetData(SHEET_IDS.images);
-    
     if (!data || data.length < 2) {
       return {};
     }
-
     const headers = data[0];
     const rows = data.slice(1);
     const images: any = {};
-
     rows.forEach((row) => {
       const vehicleId = row[0];
       if (!vehicleId) return;
-
-      const imageData: any = {};
+      const imageObj: any = {};
       headers.slice(1).forEach((header: string, colIndex: number) => {
         const value = row[colIndex + 1] || '';
-        
-        if (header.toLowerCase() === 'images' || header.toLowerCase() === 'görseller') {
-          imageData.images = value ? value.split(',').map((img: string) => img.trim()) : [];
-        } else {
-          imageData[header.toLowerCase()] = value;
-        }
+        imageObj[header.toLowerCase()] = value;
       });
-
-      images[vehicleId] = imageData;
+      if (!images[vehicleId]) images[vehicleId] = [];
+      images[vehicleId].push(imageObj);
     });
-
     return images;
   } catch (error) {
     console.error('Görsel verilerini çekerken hata:', error);
@@ -583,7 +599,7 @@ export const getWarrantiesFromSheet = async () => {
   }
 };
 
-// Tüm verileri birleştirerek tam araç verilerini oluştur
+// Tüm verileri çek ve ayrı ayrı döndür
 export const getCompleteVehicleData = async () => {
   try {
     console.log('🔄 Tüm Google Sheets verilerini çekiliyor...');
@@ -618,69 +634,92 @@ export const getCompleteVehicleData = async () => {
 
     console.log(`✅ ${vehicles.length} araç verisi çekildi`);
 
-    // Verileri birleştir
-    const completeVehicles = vehicles.map(vehicle => {
-      const vehicleId = vehicle.id;
-      
-      return {
-        ...vehicle,
-        charging_time: chargingTimes[vehicleId] || {
-          ac: 0,
-          dc: 0,
-          fastCharging: { power: 0, time10to80: 0 },
-          acTime: 0
-        },
-        performance: performances[vehicleId] || {
-          acceleration: 0,
-          topSpeed: 0,
-          power: 0,
-          torque: 0
-        },
-        dimensions: dimensions[vehicleId] || {
-          length: 0,
-          width: 0,
-          height: 0,
-          weight: 0
-        },
-        efficiency: efficiencies[vehicleId] || {
-          consumption: 0
-        },
-        comfort: comforts[vehicleId] || {},
-        price: prices[vehicleId] || {
-          base: 0,
-          currency: 'TRY'
-        },
-        features: features[vehicleId]?.features || [],
-        extra_features: features[vehicleId]?.extra_features || [],
-        turkey_status: turkeyStatuses[vehicleId] || {
-          available: false
-        },
-        images: images[vehicleId]?.images || [],
-        environmental_impact: environmentalImpacts[vehicleId] || {},
-        warranty: warranties[vehicleId] || {
-          battery: 0,
-          vehicle: 0
-        }
-      };
-    });
-
-    return completeVehicles;
+    // Ana araç verilerini döndür, alt tablo verilerini ayrı ayrı tut
+    return {
+      vehicles,
+      chargingTimes,
+      performances,
+      dimensions,
+      efficiencies,
+      comforts,
+      features,
+      prices,
+      turkeyStatuses,
+      images,
+      environmentalImpacts,
+      warranties
+    };
   } catch (error) {
     console.error('Tam araç verilerini çekerken hata:', error);
-    return [];
+    return {
+      vehicles: [],
+      chargingTimes: {},
+      performances: {},
+      dimensions: {},
+      efficiencies: {},
+      comforts: {},
+      features: {},
+      prices: {},
+      turkeyStatuses: {},
+      images: {},
+      environmentalImpacts: {},
+      warranties: {}
+    };
   }
 };
 
 // Son eklenen araçları kontrol etme (basitleştirilmiş)
 export const getLatestVehiclesFromSheet = async (lastSyncTime?: string) => {
   try {
+    console.log('🔍 Son eklenen araçlar kontrol ediliyor...');
+    
     const vehicles = await getCompleteVehicleData();
     
+    console.log(`✅ Toplam ${vehicles.vehicles.length} araç bulundu`);
+    
     // Eğer son senkronizasyon zamanı varsa, sadece yeni eklenenleri filtrele
-    // Şimdilik tüm verileri döndürüyoruz
-    return vehicles;
+    if (lastSyncTime) {
+      // Bu kısım gelecekte implement edilebilir
+      // Şimdilik tüm verileri döndürüyoruz
+      console.log('⚠️ Son senkronizasyon zamanı kontrolü henüz implement edilmedi');
+    }
+    
+    // En az 1 araç varsa döndür
+    if (vehicles.vehicles.length > 0) {
+      console.log(`✅ ${vehicles.vehicles.length} araç işlenmeye hazır`);
+      return vehicles;
+    } else {
+      console.log('❌ Hiç araç bulunamadı');
+      return {
+        vehicles: [],
+        chargingTimes: {},
+        performances: {},
+        dimensions: {},
+        efficiencies: {},
+        comforts: {},
+        features: {},
+        prices: {},
+        turkeyStatuses: {},
+        images: {},
+        environmentalImpacts: {},
+        warranties: {}
+      };
+    }
   } catch (error) {
-    console.error('Son araçları çekerken hata:', error);
-    return [];
+    console.error('❌ Son araçları çekerken hata:', error);
+    return {
+      vehicles: [],
+      chargingTimes: {},
+      performances: {},
+      dimensions: {},
+      efficiencies: {},
+      comforts: {},
+      features: {},
+      prices: {},
+      turkeyStatuses: {},
+      images: {},
+      environmentalImpacts: {},
+      warranties: {}
+    };
   }
 }; 

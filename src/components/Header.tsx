@@ -338,8 +338,8 @@ const Header = () => {
                     <Image 
                       src={cloudinaryUtils.getPublicImageUrl('logo.png')} 
                       alt="elektrikliyiz Logo" 
-                      width={24} 
-                      height={24} 
+                      width={32} 
+                      height={32} 
                       className="object-contain"
                       unoptimized={true}
                     />

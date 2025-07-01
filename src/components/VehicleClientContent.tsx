@@ -9,6 +9,8 @@ import { useElectricVehicleStore } from '@/viewmodels/useElectricVehicles';
 import FavoriteButton from '@/components/FavoriteButton';
 import { ElectricVehicle } from '@/models/ElectricVehicle';
 import { cloudinaryUtils } from '@/lib/cloudinary';
+import AdHorizontal from './AdHorizontal';
+import AdFeedIn from './AdFeedIn';
 
 // Props için arayüz
 interface VehicleClientContentProps {
@@ -413,7 +415,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
               <h1 className="text-3xl font-bold text-gray-900">{vehicleData.brand} {vehicleData.model}</h1>
 
               <div className="flex flex-wrap items-center gap-3">
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-3 sm:mt-0">
                   <span className="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-medium">
                     {getTypeWithSuffix(vehicleData.type)}
                   </span>
@@ -536,7 +538,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                 </button>
                 <a
                   href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
-                  className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                  className="w-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 px-4 sm:px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 text-base sm:text-lg"
                 >
                   Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} İncele
                 </a>
@@ -610,115 +612,130 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
           </div>
 
           {/* Detaylı Bilgiler */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-            {/* Performans Bilgileri */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-              <div className="bg-gradient-to-r from-purple-50 to-white p-4 border-b border-gray-100">
-                <h2 className="text-xl font-bold text-gray-900">Güç ve Hız</h2>
+          <div className="space-y-8 mb-8">
+            {/* İlk iki tablo: Güç ve Hız + Batarya ve Şarj */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Performans Bilgileri */}
+              <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+                <div className="bg-gradient-to-r from-purple-50 to-white p-4 border-b border-gray-100">
+                  <h2 className="text-xl font-bold text-gray-900">Güç ve Hız</h2>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">Motor Gücü</span>
+                    <span className="font-medium">{vehicleData.performance?.power || 'Belirtilmemiş'} {vehicleData.performance?.power ? 'HP' : ''}</span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">Tork</span>
+                    <span className="font-medium">{vehicleData.performance?.torque || 'Belirtilmemiş'} {vehicleData.performance?.torque ? 'Nm' : ''}</span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">Azami Hız</span>
+                    <span className="font-medium">{vehicleData.performance?.topSpeed || 'Belirtilmemiş'} {vehicleData.performance?.topSpeed ? 'km/s' : ''}</span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">0-100 km/s</span>
+                    <span className="font-medium">{vehicleData.performance?.acceleration || 'Belirtilmemiş'} {vehicleData.performance?.acceleration ? 's' : ''}</span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">Sürüş Sistemi</span>
+                    <span className="font-medium">{vehicleData.performance?.driveType || '-'}</span>
+                  </div>
+                </div>
               </div>
-              <div className="divide-y divide-gray-100">
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">Motor Gücü</span>
-                  <span className="font-medium">{vehicleData.performance?.power || 'Belirtilmemiş'} {vehicleData.performance?.power ? 'HP' : ''}</span>
+
+              {/* Batarya ve Şarj */}
+              <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+                <div className="bg-gradient-to-r from-purple-50 to-white p-4 border-b border-gray-100">
+                  <h2 className="text-xl font-bold text-gray-900">Batarya ve Şarj</h2>
                 </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">Tork</span>
-                  <span className="font-medium">{vehicleData.performance?.torque || 'Belirtilmemiş'} {vehicleData.performance?.torque ? 'Nm' : ''}</span>
-                </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">Azami Hız</span>
-                  <span className="font-medium">{vehicleData.performance?.topSpeed || 'Belirtilmemiş'} {vehicleData.performance?.topSpeed ? 'km/s' : ''}</span>
-                </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">0-100 km/s</span>
-                  <span className="font-medium">{vehicleData.performance?.acceleration || 'Belirtilmemiş'} {vehicleData.performance?.acceleration ? 's' : ''}</span>
-                </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">Sürüş Sistemi</span>
-                  <span className="font-medium">{vehicleData.performance?.driveType || '-'}</span>
+                <div className="divide-y divide-gray-100">
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">Batarya</span>
+                    <span className="font-medium">{vehicleData.batteryCapacity || 'Belirtilmemiş'} {vehicleData.batteryCapacity ? 'kWh' : ''}</span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">Menzil</span>
+                    <span className="font-medium">{vehicleData.range || 'Belirtilmemiş'} {vehicleData.range ? 'km' : ''}</span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">DC Şarj Hızı</span>
+                    <span className="font-medium">{vehicleData.chargingTime?.fastCharging?.power || 'Belirtilmemiş'} {vehicleData.chargingTime?.fastCharging?.power ? 'kW' : ''}</span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">AC Şarj Hızı</span>
+                    <span className="font-medium">{vehicleData.chargingTime?.ac || 'Belirtilmemiş'} {vehicleData.chargingTime?.ac ? 'kW' : ''}</span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">DC Şarj Süresi</span>
+                    <span className="font-medium">{vehicleData.chargingTime?.fastCharging?.time10to80 || 'Belirtilmemiş'} {vehicleData.chargingTime?.fastCharging?.time10to80 ? 'dakika' : ''}</span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">AC Şarj Süresi</span>
+                    <span className="font-medium">{vehicleData.chargingTime?.acTime || 'Belirtilmemiş'} {vehicleData.chargingTime?.acTime ? 'saat' : ''}</span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">Ortalama Tüketim</span>
+                    <span className="font-medium">{vehicleData.efficiency?.consumption || 'Belirtilmemiş'} kWh / 100 km</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Batarya ve Şarj */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-              <div className="bg-gradient-to-r from-purple-50 to-white p-4 border-b border-gray-100">
-                <h2 className="text-xl font-bold text-gray-900">Batarya ve Şarj</h2>
-              </div>
-              <div className="divide-y divide-gray-100">
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">Batarya</span>
-                  <span className="font-medium">{vehicleData.batteryCapacity || 'Belirtilmemiş'} {vehicleData.batteryCapacity ? 'kWh' : ''}</span>
+            {/* İlk reklam alanı - Güç ve Hız ile Batarya ve Şarj tabloları arası */}
+            <div className="mb-8">
+              <AdHorizontal />
+            </div>
+
+            {/* Araç Ölçüleri tablosu */}
+            <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
+              <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+                <div className="bg-gradient-to-r from-purple-50 to-white p-4 border-b border-gray-100">
+                  <h2 className="text-xl font-bold text-gray-900">Araç Ölçüleri</h2>
                 </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">Menzil</span>
-                  <span className="font-medium">{vehicleData.range || 'Belirtilmemiş'} {vehicleData.range ? 'km' : ''}</span>
-                </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">DC Şarj Hızı</span>
-                  <span className="font-medium">{vehicleData.chargingTime?.fastCharging?.power || 'Belirtilmemiş'} {vehicleData.chargingTime?.fastCharging?.power ? 'kW' : ''}</span>
-                </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">AC Şarj Hızı</span>
-                  <span className="font-medium">{vehicleData.chargingTime?.ac || 'Belirtilmemiş'} {vehicleData.chargingTime?.ac ? 'kW' : ''}</span>
-                </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">DC Şarj Süresi</span>
-                  <span className="font-medium">{vehicleData.chargingTime?.fastCharging?.time10to80 || 'Belirtilmemiş'} {vehicleData.chargingTime?.fastCharging?.time10to80 ? 'dakika' : ''}</span>
-                </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">AC Şarj Süresi</span>
-                  <span className="font-medium">{vehicleData.chargingTime?.acTime || 'Belirtilmemiş'} {vehicleData.chargingTime?.acTime ? 'saat' : ''}</span>
-                </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">Ortalama Tüketim</span>
-                  <span className="font-medium">{vehicleData.efficiency?.consumption || 'Belirtilmemiş'} kWh / 100 km</span>
+                <div className="divide-y divide-gray-100">
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">Ağırlık</span>
+                    <span className="font-medium">
+                      {vehicleData.dimensions?.weight ? `${vehicleData.dimensions.weight.toLocaleString('tr-TR')} kg` : 'Belirtilmemiş'}
+                    </span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">Uzunluk</span>
+                    <span className="font-medium">
+                      {vehicleData.dimensions?.length ? `${vehicleData.dimensions.length.toLocaleString('tr-TR')} mm` : 'Belirtilmemiş'}
+                    </span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">Genişlik</span>
+                    <span className="font-medium">
+                      {vehicleData.dimensions?.width ? `${vehicleData.dimensions.width.toLocaleString('tr-TR')} mm` : 'Belirtilmemiş'}
+                    </span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">Yükseklik</span>
+                    <span className="font-medium">
+                      {vehicleData.dimensions?.height ? `${vehicleData.dimensions.height.toLocaleString('tr-TR')} mm` : 'Belirtilmemiş'}
+                    </span>
+                  </div>
+                  <div className="px-4 py-3 flex justify-between">
+                    <span className="text-gray-600">Bagaj Hacmi</span>
+                    <span className="font-medium">
+                      {vehicleData.dimensions?.cargoCapacity ? `${vehicleData.dimensions.cargoCapacity.toLocaleString('tr-TR')} litre` : 'Belirtilmemiş'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Araç Ölçüleri */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-              <div className="bg-gradient-to-r from-purple-50 to-white p-4 border-b border-gray-100">
-                <h2 className="text-xl font-bold text-gray-900">Araç Ölçüleri</h2>
-              </div>
-              <div className="divide-y divide-gray-100">
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">Ağırlık</span>
-                  <span className="font-medium">
-                    {vehicleData.dimensions?.weight ? `${vehicleData.dimensions.weight.toLocaleString('tr-TR')} kg` : 'Belirtilmemiş'}
-                  </span>
-                </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">Uzunluk</span>
-                  <span className="font-medium">
-                    {vehicleData.dimensions?.length ? `${vehicleData.dimensions.length.toLocaleString('tr-TR')} mm` : 'Belirtilmemiş'}
-                  </span>
-                </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">Genişlik</span>
-                  <span className="font-medium">
-                    {vehicleData.dimensions?.width ? `${vehicleData.dimensions.width.toLocaleString('tr-TR')} mm` : 'Belirtilmemiş'}
-                  </span>
-                </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">Yükseklik</span>
-                  <span className="font-medium">
-                    {vehicleData.dimensions?.height ? `${vehicleData.dimensions.height.toLocaleString('tr-TR')} mm` : 'Belirtilmemiş'}
-                  </span>
-                </div>
-                <div className="px-4 py-3 flex justify-between">
-                  <span className="text-gray-600">Bagaj Hacmi</span>
-                  <span className="font-medium">
-                    {vehicleData.dimensions?.cargoCapacity ? `${vehicleData.dimensions.cargoCapacity.toLocaleString('tr-TR')} litre` : 'Belirtilmemiş'}
-                  </span>
-                </div>
-              </div>
+            {/* İkinci reklam alanı - Araç Ölçüleri ile Diğer Özellikler arası */}
+            <div className="mb-8">
+              <AdFeedIn />
             </div>
           </div>
 
           {/* Özellikler */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 mb-16">
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 mb-8">
             <div className="bg-gradient-to-r from-purple-50 to-white p-4 border-b border-gray-100">
               <h2 className="text-xl font-bold text-gray-900">Diğer Özellikler</h2>
             </div>
@@ -773,17 +790,22 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
             </div>
           </div>
 
+          {/* Üçüncü reklam alanı - Diğer Özellikler ile Alt CTA arası */}
+          <div className="mb-8">
+            <AdHorizontal />
+          </div>
+
           {/* Alt CTA */}
           <div className="bg-gradient-to-r from-purple-100 to-purple-50 rounded-xl p-8 mb-16">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type))} Araçlar</h2>
-                <p className="text-gray-600">Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type))} araçları inceleyebilir ve karşılaştırabilirsiniz.</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "simple_plural")}</h2>
+                <p className="text-gray-600">Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} inceleyebilir ve karşılaştırabilirsiniz.</p>
               </div>
               <div className="flex gap-4">
                 <a
                   href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
-                  className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                  className="w-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 px-4 sm:px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 text-base sm:text-lg"
                 >
                   Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} İncele
                 </a>

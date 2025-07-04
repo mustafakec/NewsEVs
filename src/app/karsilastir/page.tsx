@@ -335,8 +335,8 @@ export default function ComparePage() {
               {[
                 { key: 'range', label: 'Menzil', unit: 'km' },
                 { key: 'batteryCapacity', label: 'Batarya Kapasitesi', unit: 'kWh' },
-                { key: 'chargingTime.fastCharging.acTime', label: 'AC Şarj Süresi', unit: 'saat' },
-                { key: 'chargingTime.dc', label: 'DC Şarj Süresi', unit: 'saat' },
+                { key: 'chargingTime.acTime', label: 'AC Şarj Süresi', unit: 'saat' },
+                { key: 'chargingTime.fastCharging.time10to80', label: 'DC Şarj Süresi', unit: 'dakika' },
                 { key: 'performance.acceleration', label: '0-100 km/s', unit: 'saniye' },
                 { key: 'performance.topSpeed', label: 'Maksimum Hız', unit: 'km/s' },
                 { key: 'performance.power', label: 'Güç', unit: 'HP' },

@@ -59,6 +59,23 @@ export default function RootLayout({
             gtag('config', 'G-P7PN1BEVEG');
           `}
         </Script>
+        {/* Google Reader Revenue Manager - Katkılar Özelliği */}
+        <Script
+          src="https://news.google.com/swg/js/v1/swg-basic.js"
+          strategy="afterInteractive"
+        />
+        <Script id="google-reader-revenue" strategy="afterInteractive">
+          {`
+            (self.SWG_BASIC = self.SWG_BASIC || []).push( basicSubscriptions => {
+              basicSubscriptions.init({
+                type: "NewsArticle",
+                isPartOfType: ["Product"],
+                isPartOfProductId: "CAow8e-2Cw:openaccess",
+                clientOptions: { theme: "light", lang: "tr" },
+              });
+            });
+          `}
+        </Script>
       </head>
       <body className="min-h-screen flex flex-col bg-gray-50">
         <Providers>

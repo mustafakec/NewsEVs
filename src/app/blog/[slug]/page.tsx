@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import GoogleReaderRevenue from '@/components/GoogleReaderRevenue';
 
 interface BlogPost {
   title: string;
@@ -199,23 +200,23 @@ const blogPosts: BlogPosts = {
 
       ## Şarj Alışkanlıkları
 
-      1. **Şarj Aralığı**: %20-80 kuralına uyun
-      2. **Hızlı Şarj**: Minimum seviyede tutun
-      3. **Şarj Sıcaklığı**: Optimum sıcaklık kontrolü
+      1. **Optimum Şarj Aralığı**: %20-80 arası şarj seviyeleri
+      2. **Yavaş Şarj Tercihi**: Hızlı şarjı sadece gerektiğinde kullanın
+      3. **Sıcaklık Kontrolü**: Aşırı sıcak ve soğuktan koruyun
 
-      ## Kullanım İpuçları
+      ## Kullanım Stratejileri
 
-      1. **Depolama**: Uzun süreli park stratejileri
-      2. **Sıcaklık Yönetimi**: Aşırı sıcak/soğuktan koruma
-      3. **Düzenli Kullanım**: Optimum kullanım sıklığı
+      1. **Düzenli Kullanım**: Uzun süreli park etmekten kaçının
+      2. **Tam Şarj**: Uzun yolculuklar dışında %100 şarj yapmayın
+      3. **Derin Deşarj**: %10'un altına düşürmekten kaçının
 
-      ## Batarya Bakımı
+      ## Bakım İpuçları
 
-      1. **Diagnostik**: Düzenli batarya kontrolü
-      2. **Yazılım**: Güncel yazılım takibi
-      3. **Servis**: Periyodik bakım planı
+      1. **Yazılım Güncellemeleri**: Batarya yönetim sistemini güncel tutun
+      2. **Periyodik Kontroller**: Batarya sağlığını düzenli kontrol edin
+      3. **Uygun Depolama**: Uzun süreli park için uygun koşullar
 
-      Doğru bakım ile batarya ömrünü uzatmak mümkün.
+      Doğru kullanım ile batarya ömrünü %30'a kadar uzatabilirsiniz.
     `,
   },
   'akilli-sarj-stratejileri': {
@@ -224,27 +225,27 @@ const blogPosts: BlogPosts = {
     readTime: '8 dk',
     publishDate: '29 Aralık 2024',
     content: `
-      Elektrikli aracınızı daha akıllı şarj etmek için stratejiler:
+      Elektrikli aracınızı daha verimli şarj etmek için akıllı stratejiler:
 
-      ## Şarj Planlaması
+      ## Zamanlamalı Şarj
 
-      1. **Tarife Optimizasyonu**: Ucuz elektrik saatleri
-      2. **Şarj Programlama**: Akıllı zamanlama
-      3. **Şarj Seviyesi**: İhtiyaca göre planlama
+      1. **Gece Şarjı**: Düşük tarife saatlerini kullanın
+      2. **Akıllı Şarj**: Otomatik şarj planlaması
+      3. **Güneş Enerjisi**: Yenilenebilir enerji entegrasyonu
 
-      ## Şarj Tipleri
+      ## Şarj Optimizasyonu
 
-      1. **AC Şarj**: Ev ve ofis şarjı stratejileri
-      2. **DC Şarj**: Hızlı şarj kullanım senaryoları
-      3. **Destination Charging**: Varış noktası şarjı
+      1. **Şarj Hızı**: Duruma göre optimum hız seçimi
+      2. **Şarj Lokasyonu**: En uygun istasyon seçimi
+      3. **Şarj Sıklığı**: Gereksiz şarjları önleme
 
-      ## Verimli Şarj
+      ## İleri Teknikler
 
-      1. **Sıcaklık Kontrolü**: Optimum şarj sıcaklığı
-      2. **Şarj Hızı**: Durum bazlı hız seçimi
-      3. **Batarya Sağlığı**: Uzun vadeli koruma
+      1. **Bidirectional Şarj**: Araçtan eve enerji aktarımı
+      2. **Grid Stabilizasyonu**: Şebeke dengeleme katkısı
+      3. **Enerji Depolama**: Akıllı enerji yönetimi
 
-      Akıllı şarj stratejileri ile maksimum verim sağlayın.
+      Akıllı şarj stratejileri ile hem tasarruf edin hem de şebekeye katkıda bulunun.
     `,
   },
 
@@ -255,35 +256,27 @@ const blogPosts: BlogPosts = {
     readTime: '8 dk',
     publishDate: '5 Ocak 2025',
     content: `
-      Kış aylarında elektrikli araç kullanıcılarının en büyük endişelerinden biri menzil kaybıdır. 
-      Soğuk havalarda batarya performansı düşebilir ve ısıtma sistemi ekstra enerji tüketebilir. 
-      İşte menzil kaybını minimize etmek için önerilerimiz:
+      Kış aylarında elektrikli araç kullanımı ve menzil optimizasyonu:
 
-      ## Sürüş Öncesi Hazırlık
+      ## Soğuk Hava Etkileri
 
-      1. **Aracı Şarjda Tutun**: Mümkünse aracınızı kapalı bir alanda park edin ve şarjda tutun.
-      2. **Ön Isıtma Kullanın**: Araç şarjdayken yola çıkmadan önce kabini ısıtın.
-      3. **Lastik Basıncını Kontrol Edin**: Doğru lastik basıncı, enerji verimliliği için kritiktir.
+      1. **Batarya Performansı**: Düşük sıcaklık etkileri
+      2. **Isıtma Sistemi**: Enerji tüketimi artışı
+      3. **Lastik Basıncı**: Soğuk hava etkileri
 
-      ## Sürüş Sırasında
+      ## Optimizasyon Stratejileri
 
-      1. **Eco Modu Kullanın**: Eco sürüş modu, enerji tüketimini optimize eder.
-      2. **Kademeli Frenleme**: Rejeneratif frenlemeyi maksimize etmek için yumuşak frenlemeler yapın.
-      3. **Hız Kontrolü**: Sabit ve makul bir hızda seyredin.
+      1. **Ön Şartlandırma**: Şarjdayken kabini ısıtın
+      2. **Isıtma Verimliliği**: Akıllı ısıtma kullanımı
+      3. **Rota Planlaması**: Soğuk hava faktörünü hesaba katın
 
-      ## Kabin İçi Konfor
+      ## Pratik İpuçları
 
-      1. **Koltuk Isıtma**: Kabin ısıtması yerine koltuk ısıtmayı tercih edin.
-      2. **Akıllı Klima Kullanımı**: Otomatik klima yerine manuel kontrol kullanın.
-      3. **Yalıtım**: Araç içi yalıtımı güçlendirin.
+      1. **Garaj Kullanımı**: Mümkünse kapalı alanda park edin
+      2. **Kısa Mesafeler**: Soğuk havalarda kısa yolculukları optimize edin
+      3. **Şarj Planlaması**: Soğuk havalarda daha sık şarj yapın
 
-      ## Batarya Yönetimi
-
-      1. **Şarj Seviyesi**: %20-80 aralığında tutmaya çalışın.
-      2. **Hızlı Şarj**: Soğuk havalarda hızlı şarjı minimize edin.
-      3. **Şarj Planlaması**: Gece şarjı için zamanlayıcı kullanın.
-
-      Bu önerileri uygulayarak kış aylarında menzil kaybını %15-30 oranında azaltabilirsiniz.
+      Doğru stratejilerle kış aylarında da verimli kullanım mümkün.
     `,
   },
   'yaz-sicaklarinda-batarya-yonetimi': {
@@ -292,27 +285,27 @@ const blogPosts: BlogPosts = {
     readTime: '7 dk',
     publishDate: '12 Ocak 2025',
     content: `
-      Yaz aylarında batarya performansını korumak için öneriler:
+      Sıcak havalarda batarya performansını koruma yöntemleri:
 
-      ## Sıcaklık Yönetimi
+      ## Sıcak Hava Etkileri
 
-      1. **Park Stratejisi**: Gölgede park önemli
-      2. **Ön Soğutma**: Şarj esnasında kabini soğutun
-      3. **Batarya Soğutma**: Sistem kontrolü ve bakımı
+      1. **Batarya Sıcaklığı**: Aşırı ısınma riskleri
+      2. **Soğutma Sistemi**: Klima enerji tüketimi
+      3. **Şarj Performansı**: Sıcak hava etkileri
 
-      ## Yaz Kullanımı
+      ## Koruma Stratejileri
 
-      1. **Klima Kullanımı**: Verimli soğutma stratejileri
-      2. **Şarj Zamanlaması**: Serin saatleri tercih edin
-      3. **Havalandırma**: Doğal soğutmadan faydalanın
+      1. **Gölge Park**: Güneş ışınlarından koruma
+      2. **Soğutma Optimizasyonu**: Verimli klima kullanımı
+      3. **Şarj Zamanlaması**: Serin saatlerde şarj
 
-      ## Performans İpuçları
+      ## Önleyici Tedbirler
 
-      1. **Sürüş Modları**: Sıcağa uygun mod seçimi
-      2. **Menzil Planlaması**: Sıcak hava faktörünü hesaplayın
-      3. **Batarya Kontrolü**: Düzenli durum takibi
+      1. **Batarya Monitörü**: Sıcaklık takibi
+      2. **Ventilasyon**: Aracın havalandırılması
+      3. **Şarj Limitleri**: Sıcak havalarda şarj limitleri
 
-      Sıcak havada doğru kullanım batarya ömrünü korur.
+      Sıcak havalarda da batarya sağlığını koruyarak verimli kullanım.
     `,
   },
   'bahar-aylarinda-elektrikli-arac': {
@@ -321,27 +314,27 @@ const blogPosts: BlogPosts = {
     readTime: '6 dk',
     publishDate: '19 Ocak 2025',
     content: `
-      Bahar aylarında elektrikli araç kullanımı için öneriler:
+      Bahar mevsiminde elektrikli araç kullanımı için öneriler:
 
-      ## Mevsim Geçişi
+      ## Bahar Avantajları
 
-      1. **Sistem Kontrolü**: Kış sonrası genel kontrol
-      2. **Lastik Değişimi**: Mevsime uygun lastik seçimi
-      3. **Batarya Bakımı**: Bahar bakımı önerileri
+      1. **Optimum Sıcaklık**: Batarya performansı için ideal koşullar
+      2. **Düşük Enerji Tüketimi**: Isıtma/soğutma ihtiyacı azalır
+      3. **Uzun Menzil**: Maksimum menzil performansı
 
-      ## Verimlilik
+      ## Bahar Bakımı
 
-      1. **Doğal Havalandırma**: Klima yerine pencere kullanımı
-      2. **Rota Planlaması**: Bahar aktivitelerine göre planlama
-      3. **Enerji Tasarrufu**: Optimal sürüş koşulları
+      1. **Temizlik**: Kış kirliliğinden arındırma
+      2. **Lastik Kontrolü**: Basınç ve durum kontrolü
+      3. **Filtre Temizliği**: Hava filtrelerinin kontrolü
 
-      ## Bakım İpuçları
+      ## Verimlilik İpuçları
 
-      1. **Temizlik**: Kapsamlı bahar temizliği
-      2. **Filtre Kontrolü**: Polen filtresi değişimi
-      3. **Yazılım**: Sezon güncellemeleri
+      1. **Pencere Kullanımı**: Klima yerine doğal havalandırma
+      2. **Rota Optimizasyonu**: Bahar güzergahları
+      3. **Şarj Planlaması**: Optimum şarj stratejileri
 
-      Bahar ayları elektrikli araç için ideal mevsimdir.
+      Bahar ayları elektrikli araç kullanımı için en ideal dönemdir.
     `,
   },
   'mevsim-gecislerinde-adaptasyon': {
@@ -350,27 +343,27 @@ const blogPosts: BlogPosts = {
     readTime: '9 dk',
     publishDate: '26 Ocak 2025',
     content: `
-      Mevsim geçişlerinde elektrikli aracınızı adapte etme rehberi:
+      Mevsim değişikliklerinde elektrikli araç kullanımı için adaptasyon önerileri:
 
-      ## Geçiş Hazırlığı
+      ## Mevsim Geçişleri
 
-      1. **Kontrol Listesi**: Mevsimsel kontrol noktaları
-      2. **Ekipman Değişimi**: Mevsime uygun ekipman
-      3. **Sistem Ayarları**: Mevsimsel mod optimizasyonu
+      1. **Sıcaklık Değişimleri**: Ani sıcaklık farklılıkları
+      2. **Nem Oranları**: Nem etkileri ve önlemler
+      3. **Hava Koşulları**: Yağış ve rüzgar etkileri
 
-      ## Sürüş Adaptasyonu
+      ## Adaptasyon Stratejileri
 
-      1. **Hava Koşulları**: Değişken hava şartlarına uyum
-      2. **Menzil Planlaması**: Mevsimsel faktörleri hesaplama
-      3. **Enerji Tüketimi**: Geçiş dönemi stratejileri
+      1. **Sürüş Teknikleri**: Mevsime göre sürüş ayarlamaları
+      2. **Enerji Yönetimi**: Değişen enerji ihtiyaçları
+      3. **Bakım Rutinleri**: Mevsimsel bakım gereksinimleri
 
-      ## Bakım Planı
+      ## Uzun Vadeli Planlama
 
-      1. **Periyodik Kontrol**: Mevsim geçiş kontrolü
-      2. **Önleyici Bakım**: Potansiyel sorunları önleme
-      3. **Performans İzleme**: Adaptasyon takibi
+      1. **Şarj Altyapısı**: Mevsimsel şarj ihtiyaçları
+      2. **Rota Planlaması**: Hava koşullarına göre rotalar
+      3. **Ekipman Hazırlığı**: Mevsimsel ekipman ihtiyaçları
 
-      Mevsim geçişlerinde doğru adaptasyon önemlidir.
+      Mevsim geçişlerinde doğru adaptasyon ile sorunsuz kullanım.
     `,
   },
 
@@ -381,28 +374,27 @@ const blogPosts: BlogPosts = {
     readTime: '10 dk',
     publishDate: '2 Şubat 2025',
     content: `
-      Elektrikli araç sahipleri için ev şarj istasyonu, büyük kolaylık sağlar. 
-      İşte ev şarj istasyonu kurulumu hakkında bilmeniz gerekenler:
+      Ev şarj istasyonu kurulumu için gereksinimler ve süreç hakkında bilgiler:
 
-      ## Temel Gereksinimler
+      ## Kurulum Gereksinimleri
 
-      1. **Elektrik Altyapısı**: Minimum 32A destekleyen elektrik tesisatı
-      2. **Montaj Alanı**: Havalandırması iyi olan, korunaklı bir alan
-      3. **İzinler**: Belediye ve elektrik dağıtım şirketi onayları
-
-      ## Maliyet Kalemleri
-
-      1. **Şarj Ünitesi**: 15.000 TL - 30.000 TL arası
-      2. **Montaj**: 5.000 TL - 10.000 TL arası
-      3. **Ek Ekipman**: Kablo, sigorta vb. 2.000 TL - 5.000 TL
+      1. **Elektrik Altyapısı**: Gerekli güç kapasitesi
+      2. **Park Alanı**: Uygun park ve erişim
+      3. **İzinler**: Gerekli resmi izinler
 
       ## Kurulum Süreci
 
-      1. **Ön İnceleme**: Elektrik tesisatının kontrolü
-      2. **İzinler**: Gerekli başvuruların yapılması
-      3. **Montaj**: Profesyonel ekip tarafından kurulum
+      1. **Teknik Değerlendirme**: Uzman kontrolü
+      2. **Ekipman Seçimi**: Uygun şarj cihazı
+      3. **Kurulum**: Profesyonel montaj
 
-      Detaylı bilgi için yetkili servislere danışmanızı öneririz.
+      ## Kullanım ve Bakım
+
+      1. **Güvenlik**: Güvenli kullanım kuralları
+      2. **Bakım**: Düzenli kontrol ve temizlik
+      3. **Optimizasyon**: Verimli kullanım stratejileri
+
+      Ev şarj istasyonu ile konforlu ve ekonomik şarj imkanı.
     `,
   },
   'halka-acik-sarj-istasyonlari': {
@@ -411,27 +403,27 @@ const blogPosts: BlogPosts = {
     readTime: '8 dk',
     publishDate: '9 Şubat 2025',
     content: `
-      Halka açık şarj istasyonlarını verimli kullanma rehberi:
+      Halka açık şarj istasyonlarını verimli kullanma kılavuzu:
 
-      ## İstasyon Bulma
+      ## İstasyon Tipleri
 
-      1. **Uygulama Kullanımı**: Şarj noktası bulma apps
-      2. **Planlama**: Rota üzerinde istasyon belirleme
-      3. **Rezervasyon**: Uygun olduğunda önceden rezerve
+      1. **AC İstasyonlar**: Yavaş şarj seçenekleri
+      2. **DC İstasyonlar**: Hızlı şarj imkanları
+      3. **Ücretsiz İstasyonlar**: Kamu destekli noktalar
 
-      ## Verimli Kullanım
+      ## Kullanım Stratejileri
 
-      1. **Ödeme Seçenekleri**: Farklı ödeme metodları
-      2. **Şarj Hızları**: İstasyon tipine göre planlama
-      3. **Bekleme Süresi**: Verimli zaman kullanımı
+      1. **Planlama**: Önceden rota planlaması
+      2. **Uygulama Kullanımı**: Şarj istasyonu uygulamaları
+      3. **Ödeme Yöntemleri**: Farklı ödeme seçenekleri
 
       ## Pratik İpuçları
 
-      1. **Kablo Uyumluluğu**: Adaptör ihtiyaçları
-      2. **İstasyon Etiketleri**: Durum bilgisi kontrolü
-      3. **Sorun Giderme**: Yaygın problemler ve çözümler
+      1. **Yoğun Saatler**: Kalabalık saatlerden kaçınma
+      2. **Alternatif Planlar**: Yedek şarj noktaları
+      3. **Güvenlik**: Güvenli kullanım önerileri
 
-      Halka açık istasyonları etkin kullanmak önemlidir.
+      Halka açık istasyonları verimli kullanarak sorunsuz yolculuk.
     `,
   },
   'hizli-sarj-teknolojileri': {
@@ -614,21 +606,28 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
   }
 
   return (
-    <article className="max-w-3xl mx-auto">
-      <header className="mb-8">
-        <div className="flex items-center gap-2 text-sm text-[#660566] mb-3">
-          <span>{post.category}</span>
-          <span>•</span>
-          <span>{post.readTime}</span>
-          <span>•</span>
-          <span>{post.publishDate}</span>
-        </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          {post.title}
-        </h1>
-      </header>
+    <>
+      <GoogleReaderRevenue />
+      <div className="min-h-screen bg-white">
+        <div className="container mx-auto px-4 py-8">
+          <article className="max-w-3xl mx-auto">
+            <header className="mb-8">
+              <div className="flex items-center gap-2 text-sm text-[#660566] mb-3">
+                <span>{post.category}</span>
+                <span>•</span>
+                <span>{post.readTime}</span>
+                <span>•</span>
+                <span>{post.publishDate}</span>
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                {post.title}
+              </h1>
+            </header>
 
-      <BlogContent content={post.content} />
-    </article>
+            <BlogContent content={post.content} />
+          </article>
+        </div>
+      </div>
+    </>
   );
 } 

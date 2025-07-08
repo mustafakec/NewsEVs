@@ -85,7 +85,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
       } else if (mode === 'register') {
         // Şifre güvenliği kontrolü
         if (passwordStrength === 'weak') {
-          setError('Lütfen daha güçlü bir şifre oluşturun');
+          setError('Please create a stronger password');
           return;
         }
 
@@ -97,24 +97,24 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         })
 
         if (data?.user?.id) {
-          setError('Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
+          setError('Registration successful! You can now sign in.');
           setTimeout(() => {
             setMode('login');
             setPassword('');
             setError(null);
           }, 2000);
         } else {
-          setError('Bir hata oluştu');
+          setError('An error occurred');
         }
       } else if (mode === 'resetPassword') {
         // Şifre sıfırlama işlemi
         if (passwordStrength === 'weak') {
-          setError('Lütfen daha güçlü bir şifre oluşturun');
+          setError('Please create a stronger password');
           return;
         }
 
         // Gerçek bir şifre sıfırlama işlemi burada olacak
-        setError('Şifre sıfırlama talebi alındı. E-posta adresinize gönderilen bağlantıyı kontrol edin.');
+        setError('Password reset request received. Please check the link sent to your email address.');
         setTimeout(() => {
           setMode('login');
           setPassword('');
@@ -122,7 +122,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         }, 3000);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata oluştu');
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -171,7 +171,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     />
                   </div>
                   <Dialog.Title className="text-[22px] font-bold text-gray-900">
-                    {mode === 'login' ? 'Hesabınıza Giriş Yapın' : 'Yeni Hesap Oluşturun'}
+                    {mode === 'login' ? 'Sign in to your account' : 'Create new account'}
                   </Dialog.Title>
                 </div>
 
@@ -188,7 +188,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                         ? 'bg-gradient-to-r from-[#660566] to-[#330233] text-white shadow-lg hover:shadow-xl'
                         : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
                   >
-                    Giriş Yap
+                    Sign In
                   </button>
                   <button
                     onClick={() => {
@@ -201,7 +201,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                         ? 'bg-gradient-to-r from-[#660566] to-[#330233] text-white shadow-lg hover:shadow-xl'
                         : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
                   >
-                    Kayıt Ol
+                    Register
                   </button>
                 </div>
 
@@ -218,7 +218,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     <>
                       <div>
                         <label htmlFor="name" className="block text-[11px] font-medium text-gray-700 mb-1">
-                          Ad Soyad
+                          Full Name
                         </label>
                         <input
                           type="text"
@@ -234,7 +234,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
                   <div>
                     <label htmlFor="email" className="block text-[11px] font-medium text-gray-700 mb-1">
-                      E-posta
+                      Email
                     </label>
                     <input
                       type="email"
@@ -248,7 +248,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
                   <div>
                     <label htmlFor="password" className="block text-[11px] font-medium text-gray-700 mb-1">
-                      Şifre
+                      Password
                     </label>
                     <input
                       type="password"
@@ -281,25 +281,25 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                             <span className={`mr-1 ${hasMinLength ? 'text-green-500' : 'text-red-500'}`}>
                               {hasMinLength ? '✓' : '✗'}
                             </span>
-                            En az 6 karakter
+                            At least 6 characters
                           </li>
                           <li className="flex items-center">
                             <span className={`mr-1 ${hasUpperCase ? 'text-green-500' : 'text-red-500'}`}>
                               {hasUpperCase ? '✓' : '✗'}
                             </span>
-                            En az bir büyük harf
+                            At least one uppercase letter
                           </li>
                           <li className="flex items-center">
                             <span className={`mr-1 ${hasLowerCase ? 'text-green-500' : 'text-red-500'}`}>
                               {hasLowerCase ? '✓' : '✗'}
                             </span>
-                            En az bir küçük harf
+                            At least one lowercase letter
                           </li>
                           <li className="flex items-center">
                             <span className={`mr-1 ${hasNumber ? 'text-green-500' : 'text-red-500'}`}>
                               {hasNumber ? '✓' : '✗'}
                             </span>
-                            En az bir rakam
+                            At least one number
                           </li>
                         </ul>
                       </div>
@@ -318,7 +318,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                       <div className="flex items-center justify-center">
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                       </div>
-                    ) : mode === 'login' ? 'Giriş Yap' : mode === 'resetPassword' ? 'Şifremi Sıfırla' : 'Kayıt Ol'}
+                    ) : mode === 'login' ? 'Sign In' : mode === 'resetPassword' ? 'Reset Password' : 'Register'}
                   </button>
                 </form>
 
@@ -333,7 +333,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                       }}
                       className="text-[#660566] hover:text-[#4d044d] transition-colors text-[12px]"
                     >
-                      Şifremi Unuttum
+                      Forgot Password
                     </button>
                   </div>
                 )}
@@ -348,7 +348,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                       }}
                       className="text-[#660566] hover:text-[#4d044d] transition-colors text-[12px]"
                     >
-                      Giriş Sayfasına Dön
+                      Back to Login
                     </button>
                   </div>
                 )}

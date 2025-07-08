@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Blog | elektrikliyiz',
-  description: 'Elektrikli araç dünyasından en güncel bilgiler, kullanım rehberleri ve ipuçları.',
+  title: 'Blog | NewsEVs',
+  description: 'The latest news, user guides, and tips from the world of electric vehicles.',
 };
 
 export default function BlogLayout({

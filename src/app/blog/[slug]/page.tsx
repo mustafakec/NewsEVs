@@ -16,472 +16,468 @@ type BlogPosts = {
 // Gerçek uygulamada bu veriler bir CMS veya veritabanından gelecektir
 const blogPosts: BlogPosts = {
   // Kullanım Rehberi Kategorisi
-  'elektrikli-arac-bakimi': {
-    title: 'Elektrikli Araç Bakımı',
-    category: 'Kullanım Rehberi',
-    readTime: '6 dk',
-    publishDate: '10 Kasım 2024',
+  'ev-maintenance': {
+    title: 'Electric Vehicle Maintenance',
+    category: 'User Guide',
+    readTime: '6 min',
+    publishDate: 'November 10, 2024',
     content: `
-      Elektrikli araçlar, içten yanmalı motorlu araçlara göre daha az bakım gerektirir.
-      Ancak düzenli kontrol edilmesi gereken noktalar vardır:
+      Electric vehicles require less maintenance than internal combustion engine vehicles, but there are still important points to check regularly:
 
-      ## Temel Bakım Noktaları
+      ## Basic Maintenance Points
 
-      1. **Batarya Sağlığı**: Şarj seviyelerini optimum aralıkta tutun
-      2. **Fren Sistemi**: Rejeneratif frenleme kontrolü
-      3. **Lastikler**: Basınç ve aşınma kontrolü
+      1. **Battery Health**: Keep charge levels within the optimal range
+      2. **Brake System**: Check regenerative braking
+      3. **Tires**: Monitor pressure and wear
 
-      ## Periyodik Kontroller
+      ## Periodic Checks
 
-      1. **Aylık Kontroller**: Lastik basıncı, fren sıvısı
-      2. **6 Aylık Kontroller**: Süspansiyon, rotlar
-      3. **Yıllık Kontroller**: Batarya diagnostiği
+      1. **Monthly**: Tire pressure, brake fluid
+      2. **Every 6 Months**: Suspension, steering
+      3. **Annually**: Battery diagnostics
 
-      Düzenli bakım, aracınızın ömrünü uzatır ve performansını korur.
+      Regular maintenance extends your vehicle's life and preserves performance.
     `,
   },
-  'ilk-elektrikli-arac-rehberi': {
-    title: 'İlk Elektrikli Aracınız İçin Kapsamlı Rehber',
-    category: 'Kullanım Rehberi',
-    readTime: '12 dk',
-    publishDate: '17 Kasım 2024',
+  'first-ev-guide': {
+    title: 'Comprehensive Guide for Your First EV',
+    category: 'User Guide',
+    readTime: '12 min',
+    publishDate: 'November 17, 2024',
     content: `
-      Elektrikli araç dünyasına yeni adım atanlar için kapsamlı bir rehber hazırladık.
-      İşte bilmeniz gereken temel konular:
+      A comprehensive guide for those new to the world of electric vehicles. Here are the basics you need to know:
 
-      ## Temel Kavramlar
+      ## Key Concepts
 
-      1. **kWh (Kilowatt Saat)**: Batarya kapasitesini gösteren birim
-      2. **Menzil**: Tek şarjla gidilebilecek mesafe
-      3. **Şarj Tipleri**: AC ve DC şarj seçenekleri
+      1. **kWh (Kilowatt-hour)**: Unit showing battery capacity
+      2. **Range**: Distance you can travel on a single charge
+      3. **Charging Types**: AC and DC charging options
 
-      ## İlk Kullanım İpuçları
+      ## First Use Tips
 
-      1. **Şarj Planlaması**: Günlük rutininize göre şarj planı oluşturun
-      2. **Sürüş Modları**: Farklı sürüş modlarını öğrenin ve deneyin
-      3. **Enerji Takibi**: Enerji tüketimini düzenli kontrol edin
+      1. **Charging Planning**: Create a charging plan based on your daily routine
+      2. **Driving Modes**: Learn and try different driving modes
+      3. **Energy Monitoring**: Regularly check energy consumption
 
-      ## Yaygın Endişeler
+      ## Common Concerns
 
-      1. **Menzil Kaygısı**: Doğru planlama ile üstesinden gelin
-      2. **Şarj İstasyonları**: Güzergah üzerindeki istasyonları önceden belirleyin
-      3. **Batarya Ömrü**: Optimum kullanım ile batarya ömrünü uzatın
+      1. **Range Anxiety**: Overcome with proper planning
+      2. **Charging Stations**: Identify stations along your route in advance
+      3. **Battery Life**: Extend battery life with optimal use
 
-      Elektrikli araç kullanımı, kısa bir adaptasyon sürecinden sonra çok keyifli hale gelecektir.
+      After a short adaptation period, driving an electric vehicle becomes very enjoyable.
     `,
   },
-  'regeneratif-frenleme-kullanimi': {
-    title: 'Rejeneratif Frenleme: Verimli Kullanım Rehberi',
-    category: 'Kullanım Rehberi',
-    readTime: '7 dk',
-    publishDate: '24 Kasım 2024',
+  'regenerative-braking-guide': {
+    title: 'Regenerative Braking: Efficient Usage Guide',
+    category: 'User Guide',
+    readTime: '7 min',
+    publishDate: 'November 24, 2024',
     content: `
-      Rejeneratif frenleme, elektrikli araçların en önemli özelliklerinden biridir.
-      Bu teknolojiden maksimum verim almak için ipuçları:
+      Regenerative braking is one of the most important features of electric vehicles. Here are tips to maximize its benefits:
 
-      ## Rejeneratif Frenleme Nedir?
+      ## What is Regenerative Braking?
 
-      1. **Temel Prensip**: Frenleme enerjisinin elektriğe dönüştürülmesi
-      2. **Verimlilik**: %10-20 arası menzil artışı sağlar
-      3. **Sistem Çalışması**: Motor jeneratör olarak çalışır
+      1. **Basic Principle**: Converting braking energy into electricity
+      2. **Efficiency**: Can increase range by 10-20%
+      3. **System Operation**: The motor acts as a generator
 
-      ## Doğru Kullanım
+      ## Proper Usage
 
-      1. **Yumuşak Frenleme**: Ani frenlerden kaçının
-      2. **Öngörülü Sürüş**: Trafik akışını önceden okuyun
-      3. **Mod Seçimi**: Farklı rejenerasyon seviyelerini deneyin
+      1. **Smooth Braking**: Avoid sudden braking
+      2. **Anticipatory Driving**: Read traffic flow ahead
+      3. **Mode Selection**: Try different regeneration levels
 
-      ## İleri Teknikler
+      ## Advanced Techniques
 
-      1. **One Pedal Driving**: Tek pedal kullanımı
-      2. **Yokuş Aşağı**: Enerji kazanımını maksimize edin
-      3. **Trafik Takibi**: Akıllı mesafe bırakma
+      1. **One Pedal Driving**: Use single pedal for both acceleration and braking
+      2. **Downhill**: Maximize energy recovery
+      3. **Traffic Following**: Maintain smart distance
 
-      Doğru rejeneratif frenleme kullanımı, menzili önemli ölçüde artırır.
+      Proper use of regenerative braking can significantly increase your range.
     `,
   },
-  'elektrikli-arac-surus-teknikleri': {
-    title: 'Elektrikli Araç Sürüş Teknikleri',
-    category: 'Kullanım Rehberi',
-    readTime: '9 dk',
-    publishDate: '1 Aralık 2024',
+  'ev-driving-techniques': {
+    title: 'Electric Vehicle Driving Techniques',
+    category: 'User Guide',
+    readTime: '9 min',
+    publishDate: 'December 1, 2024',
     content: `
-      Elektrikli araç sürüşü, geleneksel araçlardan farklı teknikler gerektirir.
-      İşte verimli sürüş için önemli noktalar:
+      Driving an electric vehicle requires some different techniques compared to traditional cars. Here are key points for efficient driving:
 
-      ## Temel Sürüş Teknikleri
+      ## Basic Driving Techniques
 
-      1. **Ani Hızlanma**: Kontrollü ivmelenme ile enerji tasarrufu
-      2. **Momentum Kullanımı**: Aracın atalet enerjisinden faydalanma
-      3. **Mesafe Kontrolü**: Güvenli ve verimli takip mesafesi
+      1. **Smooth Acceleration**: Save energy with controlled acceleration
+      2. **Use of Momentum**: Take advantage of the vehicle's inertia
+      3. **Distance Control**: Maintain a safe and efficient following distance
 
-      ## İleri Sürüş Teknikleri
+      ## Advanced Driving Techniques
 
-      1. **Enerji Akış Takibi**: Gösterge panelini etkin kullanma
-      2. **Mod Optimizasyonu**: Yol şartlarına göre mod seçimi
-      3. **Hız Sabitleyici**: Akıllı kullanım stratejileri
+      1. **Energy Flow Monitoring**: Use the dashboard efficiently
+      2. **Mode Optimization**: Select the right mode for road conditions
+      3. **Cruise Control**: Use smart strategies
 
-      ## Güvenlik İpuçları
+      ## Safety Tips
 
-      1. **Sessiz Sürüş**: Yayalara karşı dikkatli olun
-      2. **Ağırlık Merkezi**: Düşük ağırlık merkezini göz önünde bulundurun
-      3. **Acil Durumlar**: Elektrikli araça özel müdahale yöntemleri
+      1. **Silent Driving**: Be careful of pedestrians
+      2. **Center of Gravity**: Consider the low center of gravity
+      3. **Emergencies**: Know EV-specific emergency procedures
 
-      Doğru sürüş teknikleri hem güvenliği artırır hem de verimliliği maksimize eder.
+      Proper driving techniques increase both safety and efficiency.
     `,
   },
 
   // Verimlilik Kategorisi
-  'menzil-optimizasyonu': {
-    title: 'Menzil Optimizasyonu: Her Şarjdan Maksimum Verim',
-    category: 'Verimlilik',
-    readTime: '8 dk',
-    publishDate: '8 Aralık 2024',
+  'range-optimization': {
+    title: 'Range Optimization: Get the Most from Every Charge',
+    category: 'Efficiency',
+    readTime: '8 min',
+    publishDate: 'December 8, 2024',
     content: `
-      Elektrikli aracınızdan maksimum menzil almak için kapsamlı öneriler:
+      Comprehensive tips for maximizing your EV's range:
 
-      ## Sürüş Alışkanlıkları
+      ## Driving Habits
 
-      1. **Hız Kontrolü**: Optimum hız aralığını koruyun
-      2. **İvmelenme**: Yumuşak hızlanma ve yavaşlama
-      3. **Rota Planlaması**: Enerji verimli rotalar seçin
+      1. **Speed Control**: Maintain optimal speed range
+      2. **Acceleration**: Accelerate and decelerate smoothly
+      3. **Route Planning**: Choose energy-efficient routes
 
-      ## Araç Ayarları
+      ## Vehicle Settings
 
-      1. **Eco Mod**: Doğru sürüş modunun seçimi
-      2. **Klima Kullanımı**: Akıllı iklimlendirme stratejileri
-      3. **Lastik Basıncı**: Düzenli kontrol ve optimizasyon
+      1. **Eco Mode**: Select the right driving mode
+      2. **Climate Control**: Use smart climate strategies
+      3. **Tire Pressure**: Check and optimize regularly
 
-      ## İleri Teknikler
+      ## Advanced Techniques
 
-      1. **Enerji Monitörü**: Tüketim verilerini analiz edin
-      2. **Şarj Stratejisi**: Optimum şarj seviyelerini koruyun
-      3. **Aerodinamik**: Gereksiz yüklerden kaçının
+      1. **Energy Monitor**: Analyze consumption data
+      2. **Charging Strategy**: Maintain optimal charge levels
+      3. **Aerodynamics**: Avoid unnecessary loads
 
-      Verimli kullanım ile menzili %20'ye kadar artırmak mümkün.
+      Efficient use can increase range by up to 20%.
     `,
   },
-  'enerji-tasarrufu-taktikleri': {
-    title: 'Enerji Tasarrufu: Akıllı Kullanım Taktikleri',
-    category: 'Verimlilik',
-    readTime: '7 dk',
-    publishDate: '15 Aralık 2024',
+  'energy-saving-tactics': {
+    title: 'Energy Saving: Smart Usage Tactics',
+    category: 'Efficiency',
+    readTime: '7 min',
+    publishDate: 'December 15, 2024',
     content: `
-      Elektrikli aracınızın enerji tüketimini optimize etmek için öneriler:
+      Tips to optimize your EV's energy consumption:
 
-      ## Günlük Kullanım
+      ## Daily Use
 
-      1. **Ön Şartlandırma**: Şarjdayken kabini hazırlayın
-      2. **Rota Optimizasyonu**: Enerji verimli güzergahlar
-      3. **Yük Yönetimi**: Gereksiz ağırlıkları azaltın
+      1. **Preconditioning**: Prepare the cabin while charging
+      2. **Route Optimization**: Choose energy-efficient routes
+      3. **Load Management**: Reduce unnecessary weight
 
-      ## Şarj Stratejileri
+      ## Charging Strategies
 
-      1. **Zamanlamalı Şarj**: Uygun tarife saatlerini kullanın
-      2. **Şarj Limitleri**: Optimum batarya ömrü için
-      3. **Şarj Planlaması**: Günlük rutine göre planlama
+      1. **Scheduled Charging**: Use off-peak rates
+      2. **Charging Limits**: For optimal battery life
+      3. **Charging Planning**: Plan according to your daily routine
 
-      ## Verimlilik İpuçları
+      ## Efficiency Tips
 
-      1. **Enerji Geri Kazanımı**: Maksimum rejenerasyon
-      2. **Sürüş Modları**: Durum bazlı mod seçimi
-      3. **İklimlendirme**: Akıllı klima kullanımı
+      1. **Energy Recovery**: Maximize regeneration
+      2. **Driving Modes**: Select mode based on conditions
+      3. **Climate Control**: Use smart air conditioning
 
-      Bu taktiklerle enerji tüketimini optimize edebilirsiniz.
+      These tactics will help you optimize energy consumption.
     `,
   },
-  'batarya-omru-uzatma': {
-    title: 'Batarya Ömrünü Uzatma Rehberi',
-    category: 'Verimlilik',
-    readTime: '10 dk',
-    publishDate: '22 Aralık 2024',
+  'battery-life-extension': {
+    title: 'Battery Life Extension Guide',
+    category: 'Efficiency',
+    readTime: '10 min',
+    publishDate: 'December 22, 2024',
     content: `
-      Elektrikli aracınızın batarya ömrünü maksimize etmek için öneriler:
+      Tips to maximize your EV battery's lifespan:
 
-      ## Şarj Alışkanlıkları
+      ## Charging Habits
 
-      1. **Optimum Şarj Aralığı**: %20-80 arası şarj seviyeleri
-      2. **Yavaş Şarj Tercihi**: Hızlı şarjı sadece gerektiğinde kullanın
-      3. **Sıcaklık Kontrolü**: Aşırı sıcak ve soğuktan koruyun
+      1. **Optimal Charge Range**: Keep between 20-80%
+      2. **Prefer Slow Charging**: Use fast charging only when necessary
+      3. **Temperature Control**: Avoid extreme heat and cold
 
-      ## Kullanım Stratejileri
+      ## Usage Strategies
 
-      1. **Düzenli Kullanım**: Uzun süreli park etmekten kaçının
-      2. **Tam Şarj**: Uzun yolculuklar dışında %100 şarj yapmayın
-      3. **Derin Deşarj**: %10'un altına düşürmekten kaçının
+      1. **Regular Use**: Avoid long-term parking
+      2. **Full Charge**: Avoid 100% charge except for long trips
+      3. **Deep Discharge**: Avoid dropping below 10%
 
-      ## Bakım İpuçları
+      ## Maintenance Tips
 
-      1. **Yazılım Güncellemeleri**: Batarya yönetim sistemini güncel tutun
-      2. **Periyodik Kontroller**: Batarya sağlığını düzenli kontrol edin
-      3. **Uygun Depolama**: Uzun süreli park için uygun koşullar
+      1. **Software Updates**: Keep battery management system updated
+      2. **Periodic Checks**: Regularly check battery health
+      3. **Proper Storage**: Store under suitable conditions for long-term parking
 
-      Doğru kullanım ile batarya ömrünü %30'a kadar uzatabilirsiniz.
+      Proper use can extend battery life by up to 30%.
     `,
   },
-  'akilli-sarj-stratejileri': {
-    title: 'Akıllı Şarj Stratejileri',
-    category: 'Verimlilik',
-    readTime: '8 dk',
-    publishDate: '29 Aralık 2024',
+  'smart-charging-strategies': {
+    title: 'Smart Charging Strategies',
+    category: 'Efficiency',
+    readTime: '8 min',
+    publishDate: 'December 29, 2024',
     content: `
-      Elektrikli aracınızı daha verimli şarj etmek için akıllı stratejiler:
+      Smart strategies for more efficient EV charging:
 
-      ## Zamanlamalı Şarj
+      ## Scheduled Charging
 
-      1. **Gece Şarjı**: Düşük tarife saatlerini kullanın
-      2. **Akıllı Şarj**: Otomatik şarj planlaması
-      3. **Güneş Enerjisi**: Yenilenebilir enerji entegrasyonu
+      1. **Night Charging**: Use off-peak rates
+      2. **Smart Charging**: Automatic charging planning
+      3. **Solar Energy**: Integrate renewable energy
 
-      ## Şarj Optimizasyonu
+      ## Charging Optimization
 
-      1. **Şarj Hızı**: Duruma göre optimum hız seçimi
-      2. **Şarj Lokasyonu**: En uygun istasyon seçimi
-      3. **Şarj Sıklığı**: Gereksiz şarjları önleme
+      1. **Charging Speed**: Select optimal speed for the situation
+      2. **Charging Location**: Choose the best station
+      3. **Charging Frequency**: Avoid unnecessary charging
 
-      ## İleri Teknikler
+      ## Advanced Techniques
 
-      1. **Bidirectional Şarj**: Araçtan eve enerji aktarımı
-      2. **Grid Stabilizasyonu**: Şebeke dengeleme katkısı
-      3. **Enerji Depolama**: Akıllı enerji yönetimi
+      1. **Bidirectional Charging**: Vehicle-to-home energy transfer
+      2. **Grid Stabilization**: Contribute to grid balancing
+      3. **Energy Storage**: Smart energy management
 
-      Akıllı şarj stratejileri ile hem tasarruf edin hem de şebekeye katkıda bulunun.
+      With smart charging strategies, you can save money and help the grid.
     `,
   },
 
   // Mevsimsel Rehber Kategorisi
-  'soguk-havalarda-menzil-kaybi': {
-    title: 'Soğuk Havalarda Menzil Kaybını Minimize Etme',
-    category: 'Mevsimsel Rehber',
-    readTime: '8 dk',
-    publishDate: '5 Ocak 2025',
+  'minimizing-range-loss-cold': {
+    title: 'Minimizing Range Loss in Cold Weather',
+    category: 'Seasonal Guide',
+    readTime: '8 min',
+    publishDate: 'January 5, 2025',
     content: `
-      Kış aylarında elektrikli araç kullanımı ve menzil optimizasyonu:
+      How to optimize range and use your EV efficiently in winter:
 
-      ## Soğuk Hava Etkileri
+      ## Cold Weather Effects
 
-      1. **Batarya Performansı**: Düşük sıcaklık etkileri
-      2. **Isıtma Sistemi**: Enerji tüketimi artışı
-      3. **Lastik Basıncı**: Soğuk hava etkileri
+      1. **Battery Performance**: Effects of low temperatures
+      2. **Heating System**: Increased energy consumption
+      3. **Tire Pressure**: Effects of cold weather
 
-      ## Optimizasyon Stratejileri
+      ## Optimization Strategies
 
-      1. **Ön Şartlandırma**: Şarjdayken kabini ısıtın
-      2. **Isıtma Verimliliği**: Akıllı ısıtma kullanımı
-      3. **Rota Planlaması**: Soğuk hava faktörünü hesaba katın
+      1. **Preconditioning**: Heat the cabin while charging
+      2. **Heating Efficiency**: Use smart heating
+      3. **Route Planning**: Consider cold weather factors
 
-      ## Pratik İpuçları
+      ## Practical Tips
 
-      1. **Garaj Kullanımı**: Mümkünse kapalı alanda park edin
-      2. **Kısa Mesafeler**: Soğuk havalarda kısa yolculukları optimize edin
-      3. **Şarj Planlaması**: Soğuk havalarda daha sık şarj yapın
+      1. **Garage Use**: Park indoors if possible
+      2. **Short Trips**: Optimize short trips in cold weather
+      3. **Charging Planning**: Charge more frequently in cold weather
 
-      Doğru stratejilerle kış aylarında da verimli kullanım mümkün.
+      With the right strategies, you can use your EV efficiently even in winter.
     `,
   },
-  'yaz-sicaklarinda-batarya-yonetimi': {
-    title: 'Yaz Sıcaklarında Batarya Yönetimi',
-    category: 'Mevsimsel Rehber',
-    readTime: '7 dk',
-    publishDate: '12 Ocak 2025',
+  'summer-battery-management': {
+    title: 'Battery Management in Summer Heat',
+    category: 'Seasonal Guide',
+    readTime: '7 min',
+    publishDate: 'January 12, 2025',
     content: `
-      Sıcak havalarda batarya performansını koruma yöntemleri:
+      How to maintain battery performance in hot weather:
 
-      ## Sıcak Hava Etkileri
+      ## Hot Weather Effects
 
-      1. **Batarya Sıcaklığı**: Aşırı ısınma riskleri
-      2. **Soğutma Sistemi**: Klima enerji tüketimi
-      3. **Şarj Performansı**: Sıcak hava etkileri
+      1. **Battery Temperature**: Risks of overheating
+      2. **Cooling System**: Air conditioning energy consumption
+      3. **Charging Performance**: Effects of hot weather
 
-      ## Koruma Stratejileri
+      ## Protection Strategies
 
-      1. **Gölge Park**: Güneş ışınlarından koruma
-      2. **Soğutma Optimizasyonu**: Verimli klima kullanımı
-      3. **Şarj Zamanlaması**: Serin saatlerde şarj
+      1. **Shade Parking**: Protect from sunlight
+      2. **Cooling Optimization**: Use air conditioning efficiently
+      3. **Charging Timing**: Charge during cooler hours
 
-      ## Önleyici Tedbirler
+      ## Preventive Measures
 
-      1. **Batarya Monitörü**: Sıcaklık takibi
-      2. **Ventilasyon**: Aracın havalandırılması
-      3. **Şarj Limitleri**: Sıcak havalarda şarj limitleri
+      1. **Battery Monitor**: Monitor temperature
+      2. **Ventilation**: Ensure vehicle ventilation
+      3. **Charging Limits**: Set limits in hot weather
 
-      Sıcak havalarda da batarya sağlığını koruyarak verimli kullanım.
+      Maintain battery health for efficient use even in hot weather.
     `,
   },
-  'bahar-aylarinda-elektrikli-arac': {
-    title: 'Bahar Aylarında Elektrikli Araç Kullanımı',
-    category: 'Mevsimsel Rehber',
-    readTime: '6 dk',
-    publishDate: '19 Ocak 2025',
+  'spring-ev-tips': {
+    title: 'Springtime EV Tips',
+    category: 'Seasonal Guide',
+    readTime: '6 min',
+    publishDate: 'January 19, 2025',
     content: `
-      Bahar mevsiminde elektrikli araç kullanımı için öneriler:
+      Recommendations for using electric vehicles in spring:
 
-      ## Bahar Avantajları
+      ## Spring Advantages
 
-      1. **Optimum Sıcaklık**: Batarya performansı için ideal koşullar
-      2. **Düşük Enerji Tüketimi**: Isıtma/soğutma ihtiyacı azalır
-      3. **Uzun Menzil**: Maksimum menzil performansı
+      1. **Optimal Temperature**: Ideal conditions for battery performance
+      2. **Low Energy Consumption**: Less need for heating/cooling
+      3. **Long Range**: Maximum range performance
 
-      ## Bahar Bakımı
+      ## Spring Maintenance
 
-      1. **Temizlik**: Kış kirliliğinden arındırma
-      2. **Lastik Kontrolü**: Basınç ve durum kontrolü
-      3. **Filtre Temizliği**: Hava filtrelerinin kontrolü
+      1. **Cleaning**: Remove winter dirt
+      2. **Tire Check**: Check pressure and condition
+      3. **Filter Cleaning**: Check air filters
 
-      ## Verimlilik İpuçları
+      ## Efficiency Tips
 
-      1. **Pencere Kullanımı**: Klima yerine doğal havalandırma
-      2. **Rota Optimizasyonu**: Bahar güzergahları
-      3. **Şarj Planlaması**: Optimum şarj stratejileri
+      1. **Window Use**: Use natural ventilation instead of AC
+      2. **Route Optimization**: Choose scenic spring routes
+      3. **Charging Planning**: Use optimal charging strategies
 
-      Bahar ayları elektrikli araç kullanımı için en ideal dönemdir.
+      Spring is the best season for EV use.
     `,
   },
-  'mevsim-gecislerinde-adaptasyon': {
-    title: 'Mevsim Geçişlerinde Adaptasyon Rehberi',
-    category: 'Mevsimsel Rehber',
-    readTime: '9 dk',
-    publishDate: '26 Ocak 2025',
+  'seasonal-adaptation': {
+    title: 'Seasonal Adaptation Guide',
+    category: 'Seasonal Guide',
+    readTime: '9 min',
+    publishDate: 'January 26, 2025',
     content: `
-      Mevsim değişikliklerinde elektrikli araç kullanımı için adaptasyon önerileri:
+      Tips for adapting electric vehicle use to seasonal changes:
 
-      ## Mevsim Geçişleri
+      ## Seasonal Changes
 
-      1. **Sıcaklık Değişimleri**: Ani sıcaklık farklılıkları
-      2. **Nem Oranları**: Nem etkileri ve önlemler
-      3. **Hava Koşulları**: Yağış ve rüzgar etkileri
+      1. **Temperature Fluctuations**: Sudden changes
+      2. **Humidity Levels**: Effects and precautions
+      3. **Weather Conditions**: Rain and wind effects
 
-      ## Adaptasyon Stratejileri
+      ## Adaptation Strategies
 
-      1. **Sürüş Teknikleri**: Mevsime göre sürüş ayarlamaları
-      2. **Enerji Yönetimi**: Değişen enerji ihtiyaçları
-      3. **Bakım Rutinleri**: Mevsimsel bakım gereksinimleri
+      1. **Driving Techniques**: Adjust driving for the season
+      2. **Energy Management**: Changing energy needs
+      3. **Maintenance Routines**: Seasonal maintenance requirements
 
-      ## Uzun Vadeli Planlama
+      ## Long-Term Planning
 
-      1. **Şarj Altyapısı**: Mevsimsel şarj ihtiyaçları
-      2. **Rota Planlaması**: Hava koşullarına göre rotalar
-      3. **Ekipman Hazırlığı**: Mevsimsel ekipman ihtiyaçları
+      1. **Charging Infrastructure**: Seasonal charging needs
+      2. **Route Planning**: Plan routes for weather
+      3. **Equipment Preparation**: Prepare seasonal equipment
 
-      Mevsim geçişlerinde doğru adaptasyon ile sorunsuz kullanım.
+      With the right adaptation, you can use your EV smoothly in all seasons.
     `,
   },
 
   // Şarj İpuçları Kategorisi
-  'ev-sarj-istasyonu-kurulumu': {
-    title: 'Ev Şarj İstasyonu Kurulumu',
-    category: 'Şarj İpuçları',
-    readTime: '10 dk',
-    publishDate: '2 Şubat 2025',
+  'home-charging-installation': {
+    title: 'Home Charging Station Installation',
+    category: 'Charging Tips',
+    readTime: '10 min',
+    publishDate: 'February 2, 2025',
     content: `
-      Ev şarj istasyonu kurulumu için gereksinimler ve süreç hakkında bilgiler:
+      Requirements and process for installing a home charging station:
 
-      ## Kurulum Gereksinimleri
+      ## Installation Requirements
 
-      1. **Elektrik Altyapısı**: Gerekli güç kapasitesi
-      2. **Park Alanı**: Uygun park ve erişim
-      3. **İzinler**: Gerekli resmi izinler
+      1. **Electrical Infrastructure**: Sufficient power capacity
+      2. **Parking Area**: Suitable parking and access
+      3. **Permits**: Necessary official permits
 
-      ## Kurulum Süreci
+      ## Installation Process
 
-      1. **Teknik Değerlendirme**: Uzman kontrolü
-      2. **Ekipman Seçimi**: Uygun şarj cihazı
-      3. **Kurulum**: Profesyonel montaj
+      1. **Technical Assessment**: Expert inspection
+      2. **Equipment Selection**: Choose the right charger
+      3. **Installation**: Professional mounting
 
-      ## Kullanım ve Bakım
+      ## Usage and Maintenance
 
-      1. **Güvenlik**: Güvenli kullanım kuralları
-      2. **Bakım**: Düzenli kontrol ve temizlik
-      3. **Optimizasyon**: Verimli kullanım stratejileri
+      1. **Safety**: Follow safe usage rules
+      2. **Maintenance**: Regular checks and cleaning
+      3. **Optimization**: Efficient usage strategies
 
-      Ev şarj istasyonu ile konforlu ve ekonomik şarj imkanı.
+      Home charging stations offer convenient and economical charging.
     `,
   },
-  'halka-acik-sarj-istasyonlari': {
-    title: 'Halka Açık Şarj İstasyonları Rehberi',
-    category: 'Şarj İpuçları',
-    readTime: '8 dk',
-    publishDate: '9 Şubat 2025',
+  'public-charging-stations': {
+    title: 'Public Charging Station Guide',
+    category: 'Charging Tips',
+    readTime: '8 min',
+    publishDate: 'February 9, 2025',
     content: `
-      Halka açık şarj istasyonlarını verimli kullanma kılavuzu:
+      How to efficiently use public charging stations:
 
-      ## İstasyon Tipleri
+      ## Station Types
 
-      1. **AC İstasyonlar**: Yavaş şarj seçenekleri
-      2. **DC İstasyonlar**: Hızlı şarj imkanları
-      3. **Ücretsiz İstasyonlar**: Kamu destekli noktalar
+      1. **AC Stations**: Slow charging options
+      2. **DC Stations**: Fast charging options
+      3. **Free Stations**: Publicly supported points
 
-      ## Kullanım Stratejileri
+      ## Usage Strategies
 
-      1. **Planlama**: Önceden rota planlaması
-      2. **Uygulama Kullanımı**: Şarj istasyonu uygulamaları
-      3. **Ödeme Yöntemleri**: Farklı ödeme seçenekleri
+      1. **Planning**: Plan your route in advance
+      2. **App Usage**: Use charging station apps
+      3. **Payment Methods**: Different payment options
 
-      ## Pratik İpuçları
+      ## Practical Tips
 
-      1. **Yoğun Saatler**: Kalabalık saatlerden kaçınma
-      2. **Alternatif Planlar**: Yedek şarj noktaları
-      3. **Güvenlik**: Güvenli kullanım önerileri
+      1. **Peak Hours**: Avoid busy times
+      2. **Alternative Plans**: Backup charging points
+      3. **Safety**: Safe usage recommendations
 
-      Halka açık istasyonları verimli kullanarak sorunsuz yolculuk.
+      Efficient use of public stations ensures a smooth journey.
     `,
   },
-  'hizli-sarj-teknolojileri': {
-    title: 'Hızlı Şarj Teknolojileri ve Kullanımı',
-    category: 'Şarj İpuçları',
-    readTime: '9 dk',
-    publishDate: '16 Şubat 2025',
+  'fast-charging-technologies': {
+    title: 'Fast Charging Technologies and Usage',
+    category: 'Charging Tips',
+    readTime: '9 min',
+    publishDate: 'February 16, 2025',
     content: `
-      Hızlı şarj teknolojilerini anlamak ve doğru kullanmak:
+      A guide to understanding and using fast charging technologies correctly:
 
-      ## Hızlı Şarj Temelleri
+      ## Fast Charging Basics
 
-      1. **DC Şarj**: Yüksek güç aktarımı
-      2. **Güç Seviyeleri**: Farklı hız seçenekleri
-      3. **Batarya Etkisi**: Hızlı şarjın etkileri
+      1. **DC Charging**: High power transfer
+      2. **Power Levels**: Different speed options
+      3. **Battery Impact**: Effects of fast charging
 
-      ## Doğru Kullanım
+      ## Proper Usage
 
-      1. **Sıcaklık Kontrolü**: Optimum şarj sıcaklığı
-      2. **Şarj Eğrisi**: Güç azalma noktaları
-      3. **Kullanım Sıklığı**: Önerilen kullanım aralıkları
+      1. **Temperature Control**: Maintain optimal charging temperature
+      2. **Charging Curve**: Power drop-off points
+      3. **Usage Frequency**: Recommended intervals
 
-      ## Güvenlik
+      ## Safety
 
-      1. **Kablo Kontrolü**: Fiziksel kontroller
-      2. **Soğutma Sistemi**: Sistem performansı
-      3. **Acil Durumlar**: Güvenlik prosedürleri
+      1. **Cable Check**: Physical inspections
+      2. **Cooling System**: System performance
+      3. **Emergencies**: Safety procedures
 
-      Hızlı şarj doğru kullanıldığında çok faydalıdır.
+      Fast charging is very useful when used correctly.
     `,
   },
-  'sarj-maliyeti-optimizasyonu': {
-    title: 'Şarj Maliyeti Optimizasyonu',
-    category: 'Şarj İpuçları',
-    readTime: '7 dk',
-    publishDate: '23 Şubat 2025',
+  'charging-cost-optimization': {
+    title: 'Charging Cost Optimization',
+    category: 'Charging Tips',
+    readTime: '7 min',
+    publishDate: 'February 23, 2025',
     content: `
-      Şarj maliyetlerini minimize etme stratejileri:
+      Strategies to minimize your charging costs:
 
-      ## Maliyet Analizi
+      ## Cost Analysis
 
-      1. **Tarife Karşılaştırma**: Elektrik tarifeleri
-      2. **Şarj Tipleri**: Maliyet farklılıkları
-      3. **Abonelikler**: Üyelik avantajları
+      1. **Tariff Comparison**: Compare electricity tariffs
+      2. **Charging Types**: Cost differences
+      3. **Subscriptions**: Membership advantages
 
-      ## Tasarruf Stratejileri
+      ## Saving Strategies
 
-      1. **Ev Şarjı**: Gece tarifesi kullanımı
-      2. **İstasyon Seçimi**: Fiyat karşılaştırması
-      3. **Kampanyalar**: Özel fırsatları takip
+      1. **Home Charging**: Use night tariffs
+      2. **Station Selection**: Compare prices
+      3. **Campaigns**: Follow special offers
 
-      ## Uzun Vadeli Planlama
+      ## Long-Term Planning
 
-      1. **Güneş Enerjisi**: Ev sistemi entegrasyonu
-      2. **Şarj Planı**: Maliyet odaklı planlama
-      3. **Verimlilik**: Tüketim optimizasyonu
+      1. **Solar Energy**: Integrate home systems
+      2. **Charging Plan**: Cost-focused planning
+      3. **Efficiency**: Optimize consumption
 
-      Akıllı şarj stratejileri ile tasarruf mümkün.
+      With smart charging strategies, you can save money.
     `,
   },
   // Satışlar ve Raporlar Kategorisi

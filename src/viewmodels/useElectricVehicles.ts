@@ -24,24 +24,27 @@ export const normalizeVehicleType = (type: string): string => {
     'roadster': 'Spor',
     'sedan': 'Sedan',
     'hatchback': 'Hatchback',
-    'van': 'Ticari',
+    'van': 'Van',
     'ticari': 'Ticari',
+    'commercial': 'Ticari',
+    'kamyonet': 'Kamyonet',
+    'truck': 'Kamyonet',
     'minivan': 'MPV',
     'mpv': 'MPV',
     'station wagon': 'Station Wagon',
+    'stationwagon': 'Station Wagon',
     'pickup': 'Pickup',
     'minibüs': 'Otobüs',
+    'minibus': 'Otobüs',
     'otobüs': 'Otobüs',
+    'otobus': 'Otobüs',
     'bus': 'Otobüs',
-    // Motosiklet varyasyonları
     'motosiklet': 'Motosiklet',
-    'motor': 'Motosiklet',
     'motorcycle': 'Motosiklet',
     'moto': 'Motosiklet',
-    // Scooter varyasyonları
     'scooter': 'Scooter',
     'elektrikli scooter': 'Scooter',
-    'e-scooter': 'Scooter',
+    'e-scooter': 'Scooter'
   };
 
   // Eşleşme varsa standart değeri döndür, yoksa orijinal değeri kullan
@@ -51,7 +54,7 @@ export const normalizeVehicleType = (type: string): string => {
 // Filtre tipi tanımı
 type Filters = {
   brand?: string;
-  vehicleType?: string;
+  vehicleType?: string | string[];
   minPrice?: number;
   maxPrice?: number;
   minBatteryCapacity?: number;
@@ -64,7 +67,7 @@ type Filters = {
   maxChargeSpeed?: number;
   heatPump?: string; // 'yes' | 'no' | 'optional'
   v2l?: string; // 'yes' | 'no' | 'optional'
-  turkeyStatuses?: string; // 'available' | 'unavailable'
+
   comingSoon?: boolean; // Türkiye'de yakında satışa sunulacak
   searchTerm?: string; // Arama terimi
 };
@@ -183,8 +186,12 @@ function applyFiltersToQuery(query: any, filters: Filters) {
 
   // Araç tipi filtresi
   if (filters.vehicleType) {
-    const normalizedType = normalizeVehicleType(filters.vehicleType);
-    query = query.eq('type', normalizedType);
+    if (Array.isArray(filters.vehicleType)) {
+      query = query.in('type', filters.vehicleType);
+    } else {
+      const normalizedType = normalizeVehicleType(filters.vehicleType);
+      query = query.eq('type', normalizedType);
+    }
   }
 
   // Fiyat filtreleri
@@ -237,10 +244,7 @@ function applyFiltersToQuery(query: any, filters: Filters) {
     query = query.eq('v2l', filters.v2l);
   }
 
-  // Türkiye durumu filtresi
-  if (filters.turkeyStatuses) {
-    query = query.eq('turkey_statuses.available', filters.turkeyStatuses === 'available');
-  }
+
 
   // Yakında geliyor filtresi
   if (filters.comingSoon !== undefined) {

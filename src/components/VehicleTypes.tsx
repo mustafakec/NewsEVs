@@ -15,34 +15,34 @@ import {
 
 const vehicleTypes = [
   {
-    title: 'Elektrikli Otomobil',
+    title: 'Electric Car',
     icon: <AiFillCar className="text-4xl mb-2" />,
-    description: 'Şehir içi kullanıma uygun elektrikli araçlar'
+    description: 'Electric vehicles suitable for urban use'
   },
   {
-    title: 'Elektrikli Kamyon',
+    title: 'Electric Truck',
     icon: <BsFillLightningFill className="text-4xl mb-2" />,
-    description: 'Ağır yük taşımacılığı için elektrikli çözümler'
+    description: 'Electric solutions for heavy-duty transportation'
   },
   {
-    title: 'Elektrikli Otobüs',
+    title: 'Electric Bus',
     icon: <IoMdBus className="text-4xl mb-2" />,
-    description: 'Toplu taşıma için elektrikli alternatifler'
+    description: 'Electric alternatives for public transportation'
   },
   {
-    title: 'Elektrikli Motosiklet',
+    title: 'Electric Motorcycle',
     icon: <RiMotorbikeFill className="text-4xl mb-2" />,
-    description: 'İki tekerlekli elektrikli ulaşım araçları'
+    description: 'Two-wheeled electric transportation vehicles'
   },
   {
-    title: 'Elektrikli Bisiklet',
+    title: 'Electric Bicycle',
     icon: <AiFillThunderbolt className="text-4xl mb-2" />,
-    description: 'Çevre dostu mikro mobilite çözümleri'
+    description: 'Eco-friendly micro-mobility solutions'
   },
   {
-    title: 'Elektrikli Minibüs',
+    title: 'Electric Minibus',
     icon: <AiFillSetting className="text-4xl mb-2" />,
-    description: 'Orta ölçekli yolcu taşımacılığı'
+    description: 'Medium-scale passenger transportation'
   }
 ];
 
@@ -50,7 +50,7 @@ export default function VehicleTypes() {
   return (
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-8">Popüler Elektrikli Araçlar</h2>
+        <h2 className="text-3xl font-bold text-center mb-8">Popular Electric Vehicles</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {vehicleTypes.map((type, index) => (
             <div 

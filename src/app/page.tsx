@@ -25,13 +25,13 @@ export default function HomePage() {
           <div className="max-w-5xl mx-auto text-center space-y-8">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight bg-clip-text text-transparent 
                          bg-gradient-to-r from-[#660566] via-[#330233] to-black leading-relaxed pb-2">
-              Elektrikli Araç Dünyasını Keşfedin
+              Explore the Electric Vehicle World
             </h1>
 
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Elektrikli araç modellerini inceleyin, karşılaştırın ve size en uygun olanı bulun.
+              Explore electric vehicle models, compare them and find the one that suits you best.
               <br />
-              Detaylı teknik özellikler, fiyatlar, karşılaştırmalar ve daha fazlası.
+              Detailed technical specifications, prices, comparisons and more.
             </p>
 
             <EnhancedSearchBar />
@@ -40,15 +40,15 @@ export default function HomePage() {
             <div className="grid grid-cols-3 md:grid-cols-3 gap-4 mt-10 pt-6 border-t border-purple-100">
               <div className="flex flex-col items-center">
                 <div className="text-3xl font-bold text-gray-900 mb-1">200+</div>
-                <div className="text-sm text-gray-500">Elektrikli Araç</div>
+                <div className="text-sm text-gray-500">Electric Vehicles</div>
               </div>
               <div className="flex flex-col items-center">
                 <div className="text-3xl font-bold text-gray-900 mb-1">12</div>
-                <div className="text-sm text-gray-500">Araç Tipi</div>
+                <div className="text-sm text-gray-500">Vehicle Types</div>
               </div>
               <div className="flex flex-col items-center">
                 <div className="text-3xl font-bold text-gray-900 mb-1">50+</div>
-                <div className="text-sm text-gray-500">Marka</div>
+                <div className="text-sm text-gray-500">Brands</div>
               </div>
             </div>
           </div>
@@ -71,8 +71,8 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Araç Tipleri</h2>
-              <p className="text-gray-600">Size en uygun araç tipini seçin</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Vehicle Types</h2>
+              <p className="text-gray-600">Choose the vehicle type that suits you best</p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 lg:gap-8">
@@ -80,19 +80,19 @@ export default function HomePage() {
                 { name: 'Sedan', image: '/icons/sedan.png' },
                 { name: 'Hatchback', image: '/icons/hatchback.png' },
                 { name: 'SUV', image: '/icons/suv.png' },
-                { name: 'Ticari', image: '/icons/ticari.png' },
+                { name: 'Commercial', image: '/icons/ticari.png' },
                 { name: 'Station Wagon', image: '/icons/station-wagon.png' },
                 { name: 'Pickup', image: '/icons/pickup.png' },
                 { name: 'MPV', image: '/icons/mpv.png' },
-                { name: 'Spor', image: '/icons/spor.png' },
-                { name: 'Kamyonet', image: '/icons/kamyonet.png' },
-                { name: 'Otobüs', image: '/icons/otobus.png' },
-                { name: 'Motosiklet', image: '/icons/motors2.png' },
+                { name: 'Sports', image: '/icons/spor.png' },
+                { name: 'Truck', image: '/icons/kamyonet.png' },
+                { name: 'Bus', image: '/icons/otobus.png' },
+                { name: 'Motorcycle', image: '/icons/motors2.png' },
                 { name: 'Scooter', image: '/icons/scoot.png' }
               ].map((type) => (
                 <Link
                   key={type.name}
-                  href={`/elektrikli-araclar?tip=${type.name.toLowerCase()}`}
+                  href={`/electric-vehicles?type=${type.name.toLowerCase()}`}
                   className="group flex flex-col items-center p-6 rounded-xl border border-gray-100
                          hover:border-[#660566]/20 hover:bg-[#660566]/5 transition-all duration-300
                          hover:shadow-lg hover:-translate-y-1"
@@ -120,8 +120,8 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Popüler Araçlar</h2>
-              <p className="text-gray-600">En çok ilgi gören elektrikli araçları keşfedin</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Popular Vehicles</h2>
+              <p className="text-gray-600">Discover the most popular electric vehicles</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -130,11 +130,11 @@ export default function HomePage() {
 
             <div className="text-center mt-10">
               <Link
-                href="/elektrikli-araclar"
+                href="/electric-vehicles"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-[#660566] to-[#330233] 
                        text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200"
               >
-                Tüm Elektrikli Araçları İncele
+                View All Electric Vehicles
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
@@ -160,9 +160,9 @@ export default function HomePage() {
                       d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Elektrikli Araçlar</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Electric Vehicles</h3>
                 <p className="text-gray-600">
-                  Dünya genelinde satılan elektrikli araçların fiyat, menzil ve diğer tüm özelliklerini keşfedin.
+                  Discover prices, range and all other features of electric vehicles sold worldwide.
                 </p>
               </div>
 
@@ -177,9 +177,9 @@ export default function HomePage() {
                       d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Detaylı Karşılaştırma</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Detailed Comparison</h3>
                 <p className="text-gray-600">
-                  Elektrikli araç karşılaştırma özelliğimizle fiyat, menzil ve performans gibi detayları kolayca karşılaştırın.
+                  Easily compare details such as price, range and performance with our electric vehicle comparison feature.
                 </p>
               </div>
 
@@ -197,9 +197,9 @@ export default function HomePage() {
                     <span className="text-base">₺</span>
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Şarj İstasyonu Ücretleri </h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Charging Station Fees</h3>
                 <p className="text-gray-600">
-                Şarj istasyonlarındaki güncel ücretleri öğrenin, bütçenize uygun seçenekleri kolayca görün.
+                Learn about current fees at charging stations, easily see options that fit your budget.
                 </p>
               </div>
 
@@ -214,9 +214,9 @@ export default function HomePage() {
                       d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Şarj Maliyeti Hesaplayıcı</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Charging Cost Calculator</h3>
                 <p className="text-gray-600">
-                Elektrikli aracınızın şarjının ne kadar tutacağını kolayca hesaplayabilirsiniz. Hızlı ve pratik şekilde, aracınızın enerji ihtiyacına göre maliyeti öğrenin.
+                You can easily calculate how much your electric vehicle's charging will cost. Learn the cost quickly and practically according to your vehicle's energy needs.
                 </p>
               </div>
 
@@ -233,7 +233,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">Blog</h3>
                 <p className="text-gray-600">
-                  Elektrikli araçlar hakkında en güncel bilgiler, incelemeler ve önerilere göz atın.
+                  Check out the latest information, reviews and recommendations about electric vehicles.
                 </p>
               </div>
             </div>

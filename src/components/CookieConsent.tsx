@@ -6,7 +6,7 @@ export default function CookieConsent() {
   const [showConsent, setShowConsent] = useState(false);
 
   useEffect(() => {
-    // Çerez tercihini kontrol et
+    // Check cookie preference
     const consent = localStorage.getItem('cookieConsent');
     if (!consent) {
       setShowConsent(true);
@@ -23,7 +23,7 @@ export default function CookieConsent() {
     setShowConsent(false);
   };
 
-  // Test için çerez tercihini sıfırlama fonksiyonu
+  // Function to reset cookie preference for testing
   const handleReset = () => {
     localStorage.removeItem('cookieConsent');
     setShowConsent(true);
@@ -31,7 +31,7 @@ export default function CookieConsent() {
 
   return (
     <>
-      {/* Çerez Bildirimi */}
+      {/* Cookie Notification */}
       {showConsent && (
         <div className="fixed bottom-4 right-4 z-50 max-w-xs bg-white rounded-xl shadow-xl border border-gray-100 p-4 animate-fade-in">
           <div className="space-y-3">
@@ -42,9 +42,9 @@ export default function CookieConsent() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-base font-semibold text-gray-900 mb-1">Çerez Bildirimi</h3>
+                <h3 className="text-base font-semibold text-gray-900 mb-1">Cookie Notice</h3>
                 <p className="text-gray-600 text-sm">
-                  Bu web sitesi, size en iyi deneyimi sunabilmek için çerezleri kullanmaktadır.
+                  This website uses cookies to provide you with the best experience.
                 </p>
               </div>
             </div>
@@ -54,14 +54,14 @@ export default function CookieConsent() {
                 className="flex-1 bg-gradient-to-r from-[#660566] to-[#330233] text-white px-4 py-1.5 rounded-lg
                        text-sm font-medium hover:opacity-90 transition-all duration-200"
               >
-                Tümünü Kabul Et
+                Accept All
               </button>
               <button
                 onClick={handleReject}
                 className="px-6 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm
                        font-medium hover:bg-gray-200 transition-all duration-200"
               >
-                Reddet
+                Reject
               </button>
             </div>
           </div>

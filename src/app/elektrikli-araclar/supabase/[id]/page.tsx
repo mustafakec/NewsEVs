@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { customPrices } from '@/constants/customPrices';
 
 // SEO için metadata dinamik olarak oluşturuluyor
 export async function generateMetadata({ params }: { params: { id: string } }) {
@@ -79,6 +80,13 @@ export default async function VehicleDetailPage({ params }: { params: { id: stri
         <div className="p-6 border-b">
           <h1 className="text-3xl font-bold text-gray-800">{vehicle.brand} {vehicle.model}</h1>
           <p className="text-lg text-gray-600">{vehicle.year} • {vehicle.type}</p>
+          <p className="text-xl font-bold text-blue-700 mt-2">
+            {typeof customPrices[vehicle.id] === 'number'
+              ? `$${customPrices[vehicle.id].toLocaleString('en-US')}`
+              : vehicle.price?.base
+                ? `$${vehicle.price.base.toLocaleString('en-US')}`
+                : 'Fiyat Bilgisi Yok'}
+          </p>
         </div>
         
         <div className="p-6">

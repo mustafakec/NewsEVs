@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback, ChangeEvent } from 'react';
-import { useElectricVehicleStore, CurrencyType } from '@/viewmodels/useElectricVehicles';
+import { useElectricVehicleStore, CurrencyType, normalizeVehicleType } from '@/viewmodels/useElectricVehicles';
 import { useVehicles } from '@/hooks/useVehicles';
 import type { ElectricVehicle } from '@/models/ElectricVehicle';
 import { useUserStore } from '@/stores/useUserStore';
@@ -10,7 +10,7 @@ import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 
-// Debounce hook'u - yazma işlemini geciktirir
+// Debounce hook - delays writing operation
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
@@ -27,10 +27,10 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-// Giriş alanlarında önerileri engellemek için global stil
+// Global style to prevent suggestions in input fields
 const NoAutocompleteStyles = () => (
   <style jsx global>{`
-    /* Tüm tarayıcılarda otomatik tamamlama önerilerini devre dışı bırakma */
+    /* Disable automatic completion suggestions in all browsers */
     input:-webkit-autofill,
     input:-webkit-autofill:hover,
     input:-webkit-autofill:focus,
@@ -39,7 +39,7 @@ const NoAutocompleteStyles = () => (
       transition: background-color 5000s ease-in-out 0s;
     }
     
-    /* Chrome, Safari, Edge için öneri göstergelerini gizleme */
+    /* Hide suggestion indicators for Chrome, Safari, Edge */
     input::-webkit-calendar-picker-indicator,
     input::-webkit-list-button,
     input::-webkit-clear-button,
@@ -48,12 +48,12 @@ const NoAutocompleteStyles = () => (
       display: none !important;
     }
     
-    /* Firefox için sayı girişlerini özelleştirme */
+    /* Customize number inputs for Firefox */
     input[type="number"] {
       -moz-appearance: textfield;
     }
     
-    /* Dataist önerilerini devre dışı bırakma */
+    /* Disable datalist suggestions */
     input::-webkit-contacts-auto-fill-button {
       visibility: hidden;
       display: none !important;
@@ -63,7 +63,7 @@ const NoAutocompleteStyles = () => (
       margin: 0;
     }
 
-    /* Checkbox tick rengini mor yapma */
+    /* Make checkbox tick color purple */
     input[type="checkbox"]:checked {
       background-color: #660566 !important;
       border-color: #660566 !important;
@@ -79,7 +79,7 @@ const NoAutocompleteStyles = () => (
   `}</style>
 );
 
-// Accordion bileşeni (açılır/kapanır başlık)
+// Accordion component (expandable/collapsible header)
 const FilterAccordion = ({
   title,
   children,
@@ -117,7 +117,7 @@ const FilterAccordion = ({
   );
 };
 
-// Min-Max input bileşeni (sayısal değerler için)
+// Min-Max input component (for numeric values)
 const MinMaxInput = ({
   onChangeMin,
   onChangeMax,
@@ -135,36 +135,36 @@ const MinMaxInput = ({
   placeholder?: string,
   formatThousands?: boolean
 }) => {
-  // Lokal state yönetimi (autocomplete sorununu çözmek için)
+  // Local state management (to solve autocomplete issues)
   const [minInputValue, setMinInputValue] = useState('');
   const [maxInputValue, setMaxInputValue] = useState('');
 
-  // Binlik ayırıcı nokta ile formatlama fonksiyonu
+  // Formatting function with thousands separator dot
   const formatWithThousandsSeparator = (value: string): string => {
     if (!formatThousands) return value;
 
-    // Noktaları temizle, sadece sayıları al
+    // Clear dots, take only numbers
     const cleanValue = value.replace(/\D/g, '');
 
-    // Boş string ise boş string döndür
+    // Return empty string if empty
     if (cleanValue === '') return '';
 
-    // Sayıyı parseInt ile çevir
+    // Convert number with parseInt
     const number = parseInt(cleanValue, 10);
 
-    // Binlik ayraç kullanarak formatlı string oluştur
-    return number.toLocaleString('tr-TR');
+    // Create formatted string using thousands separator
+    return number.toLocaleString('en-US');
   };
 
-  // Formatlı stringi sayıya çevirme fonksiyonu
+  // Function to convert formatted string to number
   const parseFormattedValue = (value: string): string => {
     if (!formatThousands) return value;
 
-    // Tüm nokta ve virgülleri kaldır, sadece sayıları al
+    // Remove all dots and commas, take only numbers
     return value.replace(/\D/g, '');
   };
 
-  // Props değiştiğinde state'i güncelle
+  // Update state when props change
   useEffect(() => {
     if (minValue !== undefined) {
       setMinInputValue(formatThousands ? formatWithThousandsSeparator(String(minValue)) : String(minValue));
@@ -177,140 +177,97 @@ const MinMaxInput = ({
     }
   }, [maxValue, formatThousands]);
 
-  // Min değerini sadece lokalde güncelle
+  // Update min value only locally
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
 
     if (formatThousands) {
-      // Noktaları temizle, sonra formatlı hale getir
+      // Clear dots, then format
       const cleanValue = rawValue.replace(/\D/g, '');
       setMinInputValue(formatWithThousandsSeparator(cleanValue));
     } else {
-      // Formatlamayı kullanma, sadece sayıları izin ver
+      // Don't use formatting, only allow numbers
       const value = rawValue.replace(/[^0-9]/g, '');
       setMinInputValue(value);
     }
   };
 
-  // Max değerini sadece lokalde güncelle
+  // Update max value only locally
   const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
 
     if (formatThousands) {
-      // Noktaları temizle, sonra formatlı hale getir
+      // Clear dots, then format
       const cleanValue = rawValue.replace(/\D/g, '');
       setMaxInputValue(formatWithThousandsSeparator(cleanValue));
     } else {
-      // Formatlamayı kullanma, sadece sayıları izin ver
+      // Don't use formatting, only allow numbers
       const value = rawValue.replace(/[^0-9]/g, '');
       setMaxInputValue(value);
     }
   };
 
-  // Input alanından çıkıldığında (blur) değeri aktar
+  // When min input loses focus, send the actual value
   const handleMinBlur = () => {
-    const parsedValue = parseFormattedValue(minInputValue);
-
-    if (parsedValue !== String(minValue)) {
-      onChangeMin(parsedValue);
-    }
+    const actualValue = formatThousands ? parseFormattedValue(minInputValue) : minInputValue;
+    onChangeMin(actualValue);
   };
 
-  // Input alanından çıkıldığında (blur) değeri aktar
+  // When max input loses focus, send the actual value
   const handleMaxBlur = () => {
-    const parsedValue = parseFormattedValue(maxInputValue);
-
-    if (parsedValue !== String(maxValue)) {
-      onChangeMax(parsedValue);
-    }
+    const actualValue = formatThousands ? parseFormattedValue(maxInputValue) : maxInputValue;
+    onChangeMax(actualValue);
   };
 
-  // Enter tuşuna basıldığında form gönderimi
+  // Handle key press for min/max inputs
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, isMin: boolean) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-
-      const parsedValue = isMin
-        ? parseFormattedValue(minInputValue)
-        : parseFormattedValue(maxInputValue);
-
-      if (isMin && parsedValue !== String(minValue)) {
-        onChangeMin(parsedValue);
-      } else if (!isMin && parsedValue !== String(maxValue)) {
-        onChangeMax(parsedValue);
+      if (isMin) {
+        handleMinBlur();
+      } else {
+        handleMaxBlur();
       }
-
-      // Input odağını kaldır
-      (e.target as HTMLInputElement).blur();
     }
   };
 
-  // Rastgele id'ler oluştur (her render için benzersiz olacak)
-  const minId = React.useMemo(() => `min-${Math.random().toString(36).substring(2, 9)}`, []);
-  const maxId = React.useMemo(() => `max-${Math.random().toString(36).substring(2, 9)}`, []);
-
   return (
-    <div className="flex items-center gap-2">
-      <div className="relative flex-1">
+    <div className="grid grid-cols-2 gap-2">
+      <div>
+        <label className="block text-xs text-gray-500 mb-1">
+          Min {unit && `(${unit})`}
+        </label>
         <input
-          id={minId}
-          name={minId}
           type="text"
-          inputMode="numeric"
-          placeholder="Min"
           value={minInputValue}
           onChange={handleMinChange}
           onBlur={handleMinBlur}
           onKeyDown={(e) => handleKeyDown(e, true)}
-          className="w-full px-2 py-2 bg-gray-50 border border-gray-200 rounded-lg 
-                  placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500/20 
-                  focus:border-purple-500/30 transition-all duration-200 text-sm"
+          className="w-full border border-gray-300 rounded p-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#660566] focus:border-[#660566]"
+          placeholder={placeholder}
           autoComplete="off"
-          autoCapitalize="off"
-          autoCorrect="off"
-          spellCheck="false"
-          role="presentation"
-          aria-autocomplete="none"
         />
-        {unit && (
-          <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-            <span className="text-gray-400 text-xs">{unit}</span>
-          </div>
-        )}
       </div>
-      <span className="text-gray-400">-</span>
-      <div className="relative flex-1">
+      <div>
+        <label className="block text-xs text-gray-500 mb-1">
+          Max {unit && `(${unit})`}
+        </label>
         <input
-          id={maxId}
-          name={maxId}
           type="text"
-          inputMode="numeric"
-          placeholder="Max"
           value={maxInputValue}
           onChange={handleMaxChange}
           onBlur={handleMaxBlur}
           onKeyDown={(e) => handleKeyDown(e, false)}
-          className="w-full px-2 py-2 bg-gray-50 border border-gray-200 rounded-lg 
-                  placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500/20 
-                  focus:border-purple-500/30 transition-all duration-200 text-sm"
+          className="w-full border border-gray-300 rounded p-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#660566] focus:border-[#660566]"
+          placeholder={placeholder}
           autoComplete="off"
-          autoCapitalize="off"
-          autoCorrect="off"
-          spellCheck="false"
-          role="presentation"
-          aria-autocomplete="none"
         />
-        {unit && (
-          <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-            <span className="text-gray-400 text-xs">{unit}</span>
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
-// Buton seçenek grubu bileşeni
+// Button options component
 const ButtonOptions = ({
   options,
   selectedOption,
@@ -321,16 +278,17 @@ const ButtonOptions = ({
   onChange: (value: string) => void
 }) => {
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="flex flex-wrap gap-2">
       {options.map((option) => (
         <button
           key={option.value}
           type="button"
-          className={`py-2 px-2 rounded-lg text-sm font-medium border transition-colors duration-150 ${selectedOption === option.value
-            ? 'bg-purple-100 border-purple-300 text-purple-800'
-            : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-            }`}
-          onClick={() => onChange(option.value === selectedOption ? '' : option.value)}
+          onClick={() => onChange(option.value)}
+          className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+            selectedOption === option.value
+              ? 'bg-[#660566] text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
         >
           {option.label}
         </button>
@@ -339,7 +297,7 @@ const ButtonOptions = ({
   );
 };
 
-// Para Birimi Seçici Bileşeni
+// Currency selector component
 const CurrencySelector = ({
   selectedCurrency,
   onChange
@@ -347,40 +305,38 @@ const CurrencySelector = ({
   selectedCurrency: CurrencyType,
   onChange: (currency: CurrencyType) => void
 }) => {
-  const currencies: { value: CurrencyType, label: string, symbol: string }[] = [
-    { value: 'TRY', label: 'TL', symbol: '₺' },
-    { value: 'USD', label: 'USD', symbol: '$' },
-    { value: 'EUR', label: 'EUR', symbol: '€' },
-    { value: 'CNY', label: 'CNY', symbol: '¥' },
+  const currencies = [
+    { label: 'TRY', value: 'TRY' },
+    { label: 'USD', value: 'USD' },
+    { label: 'EUR', value: 'EUR' }
   ];
 
   return (
-    <div className="mb-3">
-      <label className="block text-sm font-medium text-gray-700 mb-1">Para Birimi</label>
-      <div className="grid grid-cols-4 gap-2">
-        {currencies.map((currency) => (
-          <button
-            key={currency.value}
-            onClick={() => onChange(currency.value)}
-            className={`px-2 py-2 text-sm font-medium rounded-lg transition-colors flex items-center justify-center ${selectedCurrency === currency.value
+    <div className="flex flex-wrap gap-2">
+      {currencies.map((currency) => (
+        <button
+          key={currency.value}
+          type="button"
+          onClick={() => onChange(currency.value as CurrencyType)}
+          className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+            selectedCurrency === currency.value
               ? 'bg-[#660566] text-white'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-          >
-            {currency.symbol} {currency.label}
-          </button>
-        ))}
-      </div>
+          }`}
+        >
+          {currency.label}
+        </button>
+      ))}
     </div>
   );
 };
 
-// Arama yapılabilen dropdown bileşeni
+// Searchable dropdown component
 const SearchableDropdown = ({
   options,
   selectedValue,
   onChange,
-  placeholder = "Seçiniz..."
+  placeholder = "Select..."
 }: {
   options: string[],
   selectedValue: string | undefined,
@@ -391,7 +347,7 @@ const SearchableDropdown = ({
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Dropdown dışına tıklandığında kapat
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -405,104 +361,55 @@ const SearchableDropdown = ({
     };
   }, []);
 
-  // Filtrelenmiş seçenekler
-  const filteredOptions = options.filter(option =>
-    option.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Seçenek seçildiğinde
   const handleSelect = (value: string) => {
     onChange(value === selectedValue ? undefined : value);
     setIsOpen(false);
     setSearchTerm('');
   };
 
+  const filteredOptions = options.filter(option =>
+    option.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="relative w-full" ref={dropdownRef}>
-      {/* Seçim kutusu */}
+    <div className="relative" ref={dropdownRef}>
       <button
         type="button"
-        className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                text-left text-gray-700 focus:outline-none focus:ring-1 focus:ring-purple-500/20 
-                focus:border-purple-500/30 transition-all duration-200 text-sm"
         onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
+        className="w-full border border-gray-300 rounded p-2 text-left text-sm focus:outline-none focus:ring-1 focus:ring-[#660566] focus:border-[#660566]"
       >
-        <span className={`truncate ${!selectedValue ? 'text-gray-400' : 'text-gray-700'}`}>
-          {selectedValue || placeholder}
-        </span>
-        <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
-          fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        {selectedValue || placeholder}
       </button>
-
-      {/* Dropdown menü */}
+      
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-hidden flex flex-col">
-          {/* Arama kutusu */}
-          <div className="p-2 border-b border-gray-100 sticky top-0 bg-white">
-            <input
-              type="text"
-              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg
-                      placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500/20 
-                      focus:border-purple-500/30 transition-all duration-200 text-sm"
-              placeholder="Marka ara..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              autoComplete="off"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
-
-          {/* Seçenekler listesi */}
-          <div className="overflow-y-auto max-h-60 py-1">
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  className={`w-full text-left px-3 py-2 text-sm transition-colors ${selectedValue === option
-                    ? 'bg-purple-50 text-purple-800'
-                    : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                  onClick={() => handleSelect(option)}
-                  aria-selected={selectedValue === option}
-                >
-                  {option}
-                </button>
-              ))
-            ) : (
-              <div className="text-sm text-gray-500 py-2 text-center">
-                Sonuç bulunamadı
-              </div>
-            )}
-          </div>
-
-          {/* Tümünü seç butonu */}
-          <div className="p-2 border-t border-gray-100 sticky bottom-0 bg-white">
+        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-48 overflow-y-auto">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search..."
+            className="w-full p-2 border-b border-gray-200 text-sm focus:outline-none"
+            autoFocus
+          />
+          {filteredOptions.map((option) => (
             <button
+              key={option}
               type="button"
-              className="w-full flex items-center justify-center px-3 py-2 text-sm 
-                      bg-gray-50 border border-gray-200 rounded-lg text-gray-500 
-                      hover:bg-gray-100 transition-colors"
-              onClick={() => {
-                onChange(undefined);
-                setIsOpen(false);
-                setSearchTerm('');
-              }}
+              onClick={() => handleSelect(option)}
+              className={`w-full text-left p-2 text-sm hover:bg-gray-50 ${
+                selectedValue === option ? 'bg-[#660566] text-white' : ''
+              }`}
             >
-              Tüm Markalar
+              {option}
             </button>
-          </div>
+          ))}
         </div>
       )}
     </div>
   );
 };
 
-// Supabase'den araç markalarını çeken fonksiyon
+// Function to fetch vehicle brands from Supabase
 const fetchBrands = async () => {
   const { data, error } = await supabase
     .from('electric_vehicles')
@@ -510,16 +417,16 @@ const fetchBrands = async () => {
     .order('brand');
 
   if (error) {
-    console.error('Marka verileri çekilirken hata oluştu:', error);
+    console.error('Error fetching brand data:', error);
     return [];
   }
 
-  // Benzersiz markaları al
+  // Get unique brands
   const uniqueBrands = Array.from(new Set(data.map(item => item.brand)));
   return uniqueBrands;
 };
 
-// Supabase'den araç tiplerini çeken fonksiyon
+// Function to fetch vehicle types from Supabase
 const fetchVehicleTypes = async () => {
   const { data, error } = await supabase
     .from('electric_vehicles')
@@ -527,17 +434,66 @@ const fetchVehicleTypes = async () => {
     .order('type');
 
   if (error) {
-    console.error('Araç tipleri çekilirken hata oluştu:', error);
+    console.error('Error fetching vehicle types:', error);
     return [];
   }
 
-  // Benzersiz tipleri al ve Van tipini filtrele
+  // Get unique types and filter out Van type
   const uniqueTypes = Array.from(new Set(data.map(item => item.type)));
   const filteredTypes = uniqueTypes.filter(type => type.toLowerCase() !== 'van');
   return filteredTypes;
 };
 
-// Ana Filtre Bileşeni
+const reverseTypeMapping: Record<string, string> = {
+  'Truck': 'Kamyonet',
+  'Motorcycle': 'Motosiklet',
+  'Bus': 'Otobüs',
+  'Sports': 'Spor',
+  'Commercial': 'Ticari',
+  'Hatchback': 'Hatchback',
+  'MPV': 'MPV',
+  'Pickup': 'Pickup',
+  'Scooter': 'Scooter',
+  'Sedan': 'Sedan',
+  'Station Wagon': 'Station Wagon',
+  'SUV': 'SUV',
+};
+
+// İngilizce type mapping (sadece İngilizce değerler)
+const typeVariants: Record<string, string[]> = {
+  'Truck': ['Truck'],
+  'Bus': ['Bus'],
+  'Commercial': ['Commercial'],
+  'Motorcycle': ['Motorcycle'],
+  'Sports': ['Sports'],
+  'Van': ['Van'],
+  'Hatchback': ['Hatchback'],
+  'MPV': ['MPV'],
+  'Pickup': ['Pickup'],
+  'Scooter': ['Scooter'],
+  'Sedan': ['Sedan'],
+  'Station Wagon': ['Station Wagon'],
+  'SUV': ['SUV'],
+};
+
+// Türkçe -> İngilizce araç tipi çeviri tablosu
+const vehicleTypeTranslations: Record<string, string> = {
+  "Hatchback": "Hatchback",
+  "Kamyonet": "Truck",
+  "Motosiklet": "Motorcycle",
+  "MPV": "MPV",
+  "Otobüs": "Bus",
+  "Pickup": "Pickup",
+  "Scooter": "Scooter",
+  "Sedan": "Sedan",
+  "Spor": "Sports",
+  "Station Wagon": "Station Wagon",
+  "SUV": "SUV",
+  "Ticari": "Commercial",
+  "Van": "Truck",
+};
+
+// Main Filter Component
 const VehicleFilters = () => {
   const {
     temporaryFilters,
@@ -552,25 +508,31 @@ const VehicleFilters = () => {
     battery: false,
     range: false,
     specs: false,
-    turkeyStatuses: false,
   });
 
   const [brandSearch, setBrandSearch] = useState('');
 
-  // Markalar ve araç tipleri için React Query kullanımı
+  // URL'den gelen araç tipini al ve temporaryFilters'a senkronize et
+  useEffect(() => {
+    if (filters.vehicleType && !temporaryFilters.vehicleType) {
+      setTemporaryFilters({ vehicleType: filters.vehicleType });
+    }
+  }, [filters.vehicleType, temporaryFilters.vehicleType, setTemporaryFilters]);
+
+  // Use React Query for brands and vehicle types
   const { data: brands = [] } = useQuery({
     queryKey: ['vehicleBrands'],
     queryFn: fetchBrands,
-    staleTime: Infinity, // Marka listesi değişmediği için süresiz önbelleğe alınabilir
+    staleTime: Infinity, // Can be cached indefinitely since brand list doesn't change
   });
 
   const { data: vehicleTypes = [] } = useQuery({
     queryKey: ['vehicleTypes'],
     queryFn: fetchVehicleTypes,
-    staleTime: Infinity, // Tip listesi değişmediği için süresiz önbelleğe alınabilir
+    staleTime: Infinity, // Can be cached indefinitely since type list doesn't change
   });
 
-  // Filter panel durumlarını tutan state ve toggle fonksiyonu
+  // State and toggle function for filter panel states
   const toggleFilterPanel = (panel: keyof typeof filterPanels) => {
     setFilterPanels((prev) => ({
       ...prev,
@@ -578,33 +540,43 @@ const VehicleFilters = () => {
     }));
   };
 
-  // Marka filtresini değiştiren fonksiyon
+  // Function to change brand filter
   const handleBrandChange = (brand: string) => {
     if (temporaryFilters.brand === brand) {
-      // Aynı markaya tekrar tıklanırsa filtreyi kaldır
+      // Remove filter if same brand is clicked again
       setTemporaryFilters({ brand: undefined });
     } else {
-      // Yeni marka seçilirse filtreye ekle
+      // Add to filter if new brand is selected
       setTemporaryFilters({ brand });
     }
-    // Anında uygula
+    // Apply immediately
     applyFilters();
   };
 
-  // Araç tipi filtresini değiştiren fonksiyon
+  // Function to change vehicle type filter
   const handleVehicleTypeChange = (vehicleType: string) => {
-    if (temporaryFilters.vehicleType === vehicleType) {
-      // Aynı tipe tekrar tıklanırsa filtreyi kaldır
+    const variants = typeVariants[vehicleType] || [vehicleType];
+    
+    // Seçili filtre kontrolü - hem string hem array için
+    const isCurrentlySelected = (() => {
+      if (!temporaryFilters.vehicleType) return false;
+      
+      if (Array.isArray(temporaryFilters.vehicleType)) {
+        return temporaryFilters.vehicleType.some(v => typeVariants[vehicleType]?.includes(v));
+      } else {
+        return typeVariants[vehicleType]?.includes(temporaryFilters.vehicleType) || temporaryFilters.vehicleType === vehicleType;
+      }
+    })();
+    
+    if (isCurrentlySelected) {
       setTemporaryFilters({ vehicleType: undefined });
     } else {
-      // Yeni tip seçilirse filtreye ekle
-      setTemporaryFilters({ vehicleType });
+      setTemporaryFilters({ vehicleType: variants });
     }
-    // Anında uygula
     applyFilters();
   };
 
-  // Range (değer aralığı) filtrelerini değiştiren fonksiyon
+  // Function to change range (value range) filters
   const handleRangeFilterChange = (type: string, value: string) => {
     const numValue = value ? parseInt(value) : undefined;
     switch (type) {
@@ -623,7 +595,7 @@ const VehicleFilters = () => {
     }
   };
 
-  // Checkbox filterlarını değiştiren fonksiyon
+  // Function to change checkbox filters
   const handleCheckboxFilterChange = (type: string, value: string | boolean) => {
     switch (type) {
       case 'heatPump':
@@ -632,22 +604,20 @@ const VehicleFilters = () => {
       case 'v2l':
         setTemporaryFilters({ v2l: value ? 'yes' : undefined });
         break;
-      case 'turkeyStatuses':
-        setTemporaryFilters({ turkeyStatuses: value ? 'available' : undefined });
-        break;
+
       case 'comingSoon':
         setTemporaryFilters({ comingSoon: value === true });
         break;
     }
   };
 
-  // Filtre formunun gönderilmesi
+  // Submit filter form
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     applyFilters();
   };
 
-  // Tüm filtreleri sıfırlama
+  // Reset all filters
   const handleResetFilters = () => {
     setTemporaryFilters({
       brand: undefined,
@@ -664,10 +634,10 @@ const VehicleFilters = () => {
       maxChargeSpeed: undefined,
       heatPump: undefined,
       v2l: undefined,
-      turkeyStatuses: undefined,
+
       comingSoon: undefined,
     });
-    // Anında uygula
+    // Apply immediately
     applyFilters();
   };
 
@@ -675,27 +645,29 @@ const VehicleFilters = () => {
     brand.toLowerCase().includes(brandSearch.toLowerCase())
   );
 
+  const normalizedVehicleTypes = Array.from(new Set(vehicleTypes.map(type => normalizeVehicleType(type))));
+
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="font-semibold text-lg text-gray-800">Filtreler</h2>
+        <h2 className="font-semibold text-lg text-gray-800">Filters</h2>
         <button
           type="button"
           onClick={handleResetFilters}
           className="text-sm text-[#660566] hover:text-[#4d044d] transition-colors"
         >
-          Sıfırla
+          Reset
         </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Marka Filtresi */}
+        {/* Brand Filter */}
         <div>
           <div
             className="flex justify-between items-center mb-2 cursor-pointer"
             onClick={() => toggleFilterPanel('brand')}
           >
-            <h3 className="font-medium">Markalar</h3>
+            <h3 className="font-medium">Brands</h3>
             <svg
               className={`w-5 h-5 transition-transform ${filterPanels.brand ? 'transform rotate-180' : ''
                 }`}
@@ -716,7 +688,7 @@ const VehicleFilters = () => {
             <div className="mt-2 space-y-1 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-100 pr-1">
               <input type="text"
                 className="border border-gray-300 h-8 w-full rounded-lg outline-none px-3 text-sm"
-                placeholder="Marka ara..."
+                placeholder="Search brands..."
                 value={brandSearch}
                 onChange={(e) => setBrandSearch(e.target.value)} />
               {filteredBrands.map((brand) => (
@@ -737,33 +709,40 @@ const VehicleFilters = () => {
           )}
         </div>
 
-        {/* Araç Tipi Filtresi */}
+        {/* Vehicle Type Filter */}
         <div>
-          <h3 className="font-medium mb-2">Araç Tipi</h3>
+          <h3 className="font-medium mb-2">Vehicle Type</h3>
           <div className="flex flex-wrap gap-2">
-            {vehicleTypes.map((type) => (
+            {normalizedVehicleTypes.map((type) => (
               <button
                 key={type}
                 type="button"
                 onClick={() => handleVehicleTypeChange(type)}
-                className={`px-3 py-1 rounded-full text-xs font-medium ${temporaryFilters.vehicleType === type
+                className={`px-3 py-1 rounded-full text-xs font-medium ${(() => {
+                  if (!temporaryFilters.vehicleType) return false;
+                  if (Array.isArray(temporaryFilters.vehicleType)) {
+                    return temporaryFilters.vehicleType.some(v => typeVariants[type]?.includes(v));
+                  } else {
+                    return typeVariants[type]?.includes(temporaryFilters.vehicleType) || temporaryFilters.vehicleType === type;
+                  }
+                })()
                   ? 'bg-[#660566] text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
               >
-                {type}
+                {vehicleTypeTranslations[type] || type}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Fiyat Aralığı */}
+        {/* Price Range */}
         <div>
           <div
             className="flex justify-between items-center mb-2 cursor-pointer"
             onClick={() => toggleFilterPanel('price')}
           >
-            <h3 className="font-medium">Fiyat Aralığı</h3>
+            <h3 className="font-medium">Price Range</h3>
             <svg
               className={`w-5 h-5 transition-transform ${filterPanels.price ? 'transform rotate-180' : ''
                 }`}
@@ -787,7 +766,7 @@ const VehicleFilters = () => {
                   htmlFor="minPrice"
                   className="block text-xs text-gray-500"
                 >
-                  Min (TL)
+                  Min ($)
                 </label>
                 <input
                   type="number"
@@ -803,7 +782,7 @@ const VehicleFilters = () => {
                   htmlFor="maxPrice"
                   className="block text-xs text-gray-500"
                 >
-                  Max (TL)
+                  Max ($)
                 </label>
                 <input
                   type="number"
@@ -818,13 +797,13 @@ const VehicleFilters = () => {
           )}
         </div>
 
-        {/* Batarya Kapasitesi */}
+        {/* Battery Capacity */}
         <div>
           <div
             className="flex justify-between items-center mb-2 cursor-pointer"
             onClick={() => toggleFilterPanel('battery')}
           >
-            <h3 className="font-medium">Batarya Kapasitesi</h3>
+            <h3 className="font-medium">Battery Capacity</h3>
             <svg
               className={`w-5 h-5 transition-transform ${filterPanels.battery ? 'transform rotate-180' : ''
                 }`}
@@ -879,13 +858,13 @@ const VehicleFilters = () => {
           )}
         </div>
 
-        {/* Menzil */}
+        {/* Range */}
         <div>
           <div
             className="flex justify-between items-center mb-2 cursor-pointer"
             onClick={() => toggleFilterPanel('range')}
           >
-            <h3 className="font-medium">Menzil</h3>
+            <h3 className="font-medium">Range</h3>
             <svg
               className={`w-5 h-5 transition-transform ${filterPanels.range ? 'transform rotate-180' : ''
                 }`}
@@ -940,13 +919,13 @@ const VehicleFilters = () => {
           )}
         </div>
 
-        {/* Diğer Özellikler */}
+        {/* Other Features */}
         <div>
           <div
             className="flex justify-between items-center mb-2 cursor-pointer"
             onClick={() => toggleFilterPanel('specs')}
           >
-            <h3 className="font-medium">Diğer Özellikler</h3>
+            <h3 className="font-medium">Other Features</h3>
             <svg
               className={`w-5 h-5 transition-transform ${filterPanels.specs ? 'transform rotate-180' : ''
                 }`}
@@ -965,7 +944,7 @@ const VehicleFilters = () => {
 
           {filterPanels.specs && (
             <div className="mt-2 space-y-2">
-              {/* Isı Pompası */}
+              {/* Heat Pump */}
               <div className="flex items-center">
                 <input
                   type="checkbox"
@@ -978,7 +957,7 @@ const VehicleFilters = () => {
                   htmlFor="heatPumpYes"
                   className="ml-2 text-sm text-gray-700"
                 >
-                  Isı Pompası Var
+                  Has Heat Pump
                 </label>
               </div>
 
@@ -995,89 +974,26 @@ const VehicleFilters = () => {
                   htmlFor="v2lYes"
                   className="ml-2 text-sm text-gray-700"
                 >
-                  V2L Var
+                  Has V2L
                 </label>
               </div>
             </div>
           )}
         </div>
 
-        {/* Türkiye Durumu */}
-        <div>
-          <div
-            className="flex justify-between items-center mb-2 cursor-pointer"
-            onClick={() => toggleFilterPanel('turkeyStatuses')}
-          >
-            <h3 className="font-medium">Türkiye Durumu</h3>
-            <svg
-              className={`w-5 h-5 transition-transform ${filterPanels.turkeyStatuses ? 'transform rotate-180' : ''
-                }`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </div>
-
-          {filterPanels.turkeyStatuses && (
-            <div className="mt-2 space-y-2">
-              {/* Türkiye'de Satışta */}
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="turkeyAvailable"
-                  checked={temporaryFilters.turkeyStatuses === 'available'}
-                  onChange={(e) => handleCheckboxFilterChange('turkeyStatuses', e?.target?.checked ? 'available' : false)}
-                  className="w-4 h-4 accent-[#660566] rounded border-gray-300"
-                  style={{ accentColor: '#660566' }}
-                />
-                <label
-                  htmlFor="turkeyAvailable"
-                  className="ml-2 text-sm text-gray-700"
-                >
-                  Türkiye'de Satışta
-                </label>
-              </div>
-
-              {/* Yakında Türkiye'de */}
-              {/* <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="comingSoon"
-                  checked={temporaryFilters.comingSoon === true}
-                  onChange={(e) => handleCheckboxFilterChange('comingSoon', e.target.checked)}
-                  className="w-4 h-4 text-[#660566] rounded border-gray-300 focus:ring-[#660566]"
-                />
-                <label
-                  htmlFor="comingSoon"
-                  className="ml-2 text-sm text-gray-700"
-                >
-                  Yakında Türkiye'de
-                </label>
-              </div> */}
-            </div>
-          )}
-        </div>
-
-        {/* Filtreleri Uygula Butonu */}
+        {/* Apply Filters Button */}
         <button
           type="submit"
           className="w-full py-2 bg-gradient-to-r from-[#660566] to-[#330233] text-white rounded-md text-sm font-medium hover:opacity-90 transition-colors duration-200"
         >
-          Filtreleri Uygula
+          Apply Filters
         </button>
       </form>
     </div>
   );
 };
 
-/* CSS Animasyon stilini ekle */
+/* Add CSS Animation style */
 <style jsx global>{`
   @keyframes shine {
     0% { transform: translateX(-100%); }
@@ -1088,4 +1004,4 @@ const VehicleFilters = () => {
   }
 `}</style>
 
-export default VehicleFilters; 
+export default VehicleFilters;

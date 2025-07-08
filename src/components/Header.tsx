@@ -119,10 +119,10 @@ const Header = () => {
     // Filtreleri uygula - değişikliklerin anında etkili olması için
 
     // Elektrikli araçlar sayfasına yönlendirme
-    router.push('/elektrikli-araclar');
+    router.push('/electric-vehicles');
 
     // Eğer halihazırda elektrikli araçlar sayfasındaysak sayfayı yenile
-    if (window.location.pathname === '/elektrikli-araclar') {
+    if (window.location.pathname === '/electric-vehicles') {
       setTimeout(() => {
         window.location.reload();
       }, 100);
@@ -150,24 +150,22 @@ const Header = () => {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <Image 
-              src={cloudinaryUtils.getPublicImageUrl('logo.png')} 
-              alt="elektrikliyiz Logo" 
-              width={32} 
-              height={32} 
+              src="/logo.png"
+              alt="NewsEVs Logo" 
+              width={150}
+              height={150}
               priority 
               quality={100} 
               className="object-contain"
               unoptimized={true}
             />
-            <span className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-[#660566] to-[#330233]">elektrikliyiz</span>
-            <span className="text-sm font-normal text-gray-400">v1</span>
           </Link>
 
           {/* Mobil Menü Butonu */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="md:hidden p-2 hover:bg-gray-50 rounded-lg transition-colors relative z-[300]"
-            aria-label="Menüyü aç/kapat"
+            aria-label="Open/close menu"
           >
             <div className="w-6 h-6 flex flex-col justify-center items-center">
               <span className={`block w-5 h-0.5 bg-gray-600 transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-0.5' : '-translate-y-1'}`}></span>
@@ -178,19 +176,19 @@ const Header = () => {
 
           {/* Ana Menü */}
           <nav className="hidden md:flex items-center gap-6">
-            <a href="/elektrikli-araclar"
+            <a href="/electric-vehicles"
               onClick={handleElectricVehiclesClick}
               className="text-gray-600 hover:text-[#660566] transition-colors cursor-pointer">
-              Elektrikli Araçlar
+              Electric Vehicles
             </a>
-            <Link href="/karsilastir" className="text-gray-600 hover:text-[#660566] transition-colors">
-              Karşılaştır
+            <Link href="/compare" className="text-gray-600 hover:text-[#660566] transition-colors">
+              Compare
             </Link>
-            <Link href="/sarj" className="text-gray-600 hover:text-[#660566] transition-colors">
-              Şarj
+            <Link href="/charging" className="text-gray-600 hover:text-[#660566] transition-colors">
+              Charging
             </Link>
-            {/* <Link href="/borsa" className="text-gray-600 hover:text-[#660566] transition-colors">
-              Borsa
+            {/* <Link href="/stocks" className="text-gray-600 hover:text-[#660566] transition-colors">
+              Stocks
             </Link> */}
             <Link href="/blog" className="text-gray-600 hover:text-[#660566] transition-colors">
               Blog
@@ -240,42 +238,44 @@ const Header = () => {
                     <Link
                       href="/profil"
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      onClick={() => setIsProfileMenuOpen(false)}
+                      onClick={(e) => {
+                        setIsProfileMenuOpen(false);
+                        router.push('/profil?tab=profil');
+                        e.preventDefault();
+                      }}
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
-                      Profilim
+                      My Profile
                     </Link>
                     <Link
                       href="/profil?tab=favoriler"
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      onClick={() => setIsProfileMenuOpen(false)}
+                      onClick={(e) => {
+                        setIsProfileMenuOpen(false);
+                        router.push('/profil?tab=favoriler');
+                        e.preventDefault();
+                      }}
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
-                      Favorilerim
+                      My Favorites
                     </Link>
                     <Link
                       href="/profil?tab=karsilastirmalar"
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      onClick={() => setIsProfileMenuOpen(false)}
+                      onClick={(e) => {
+                        setIsProfileMenuOpen(false);
+                        router.push('/profil?tab=karsilastirmalar');
+                        e.preventDefault();
+                      }}
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
-                      Karşılaştırmalarım
-                    </Link>
-                    <Link
-                      href="/2fa-setup"
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      onClick={() => setIsProfileMenuOpen(false)}
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
-                      2FA Kurulumu
+                      My Comparisons
                     </Link>
                     <div className="border-t border-gray-100 my-1"></div>
                     <button
@@ -285,7 +285,7 @@ const Header = () => {
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>
-                      Çıkış Yap
+                      Logout
                     </button>
                   </div>
                 )}
@@ -296,14 +296,14 @@ const Header = () => {
                   onClick={() => handleAuthClick('login')}
                   className="text-sm text-gray-600 hover:text-[#660566] font-medium transition-colors"
                 >
-                  Giriş Yap
+                  Login
                 </button>
                 <button
                   onClick={() => handleAuthClick('register')}
                   className="text-sm bg-gradient-to-r from-[#660566] to-[#330233] text-white px-3 py-1.5 rounded-lg font-medium
                          hover:opacity-90 transition-all duration-200"
                 >
-                  Kayıt Ol
+                  Register
                 </button>
               </>
             )}
@@ -336,19 +336,18 @@ const Header = () => {
                 <div className="flex items-center justify-between p-6 border-b border-gray-100">
                   <div className="flex items-center gap-2">
                     <Image 
-                      src={cloudinaryUtils.getPublicImageUrl('logo.png')} 
-                      alt="elektrikliyiz Logo" 
-                      width={32} 
-                      height={32} 
+                      src="/logo.png"
+                      alt="NewsEVs Logo" 
+                      width={150}
+                      height={150}
                       className="object-contain"
                       unoptimized={true}
                     />
-                    <span className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-[#660566] to-[#330233]">elektrikliyiz</span>
                   </div>
                   <button
                     onClick={() => setIsMenuOpen(false)}
                     className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                    aria-label="Menüyü kapat"
+                    aria-label="Close menu"
                   >
                     <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -359,7 +358,7 @@ const Header = () => {
                 {/* Navigation */}
                 <nav className="flex flex-col p-6 space-y-4">
                   <motion.a
-                    href="/elektrikli-araclar"
+                    href="/electric-vehicles"
                     onClick={handleElectricVehiclesClick}
                     className="flex items-center gap-3 text-gray-700 hover:text-[#660566] transition-colors py-3 px-4 rounded-lg hover:bg-gray-50"
                     whileHover={{ x: 4 }}
@@ -368,7 +367,7 @@ const Header = () => {
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    <span className="font-medium">Elektrikli Araçlar</span>
+                    <span className="font-medium">Electric Vehicles</span>
                   </motion.a>
                   
                   <motion.div
@@ -376,14 +375,14 @@ const Header = () => {
                     transition={{ duration: 0.2 }}
                   >
                     <Link
-                      href="/karsilastir"
+                      href="/compare"
                       onClick={handleMobileNavClick}
                       className="flex items-center gap-3 text-gray-700 hover:text-[#660566] transition-colors py-3 px-4 rounded-lg hover:bg-gray-50"
                     >
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
-                      <span className="font-medium">Karşılaştır</span>
+                      <span className="font-medium">Compare</span>
                     </Link>
                   </motion.div>
                   
@@ -392,14 +391,14 @@ const Header = () => {
                     transition={{ duration: 0.2 }}
                   >
                     <Link
-                      href="/sarj"
+                      href="/charging"
                       onClick={handleMobileNavClick}
                       className="flex items-center gap-3 text-gray-700 hover:text-[#660566] transition-colors py-3 px-4 rounded-lg hover:bg-gray-50"
                     >
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
-                      <span className="font-medium">Şarj</span>
+                      <span className="font-medium">Charging</span>
                     </Link>
                   </motion.div>
                   
@@ -436,44 +435,48 @@ const Header = () => {
                       
                       <div className="space-y-2">
                         <Link
-                          href="/profil"
-                          onClick={handleMobileNavClick}
+                          href="/profil?tab=profil"
+                          onClick={(e) => {
+                            handleMobileNavClick();
+                            router.push('/profil?tab=profil');
+                            e.preventDefault();
+                          }}
                           className="flex items-center gap-3 text-gray-700 hover:text-[#660566] transition-colors py-2 px-3 rounded-lg hover:bg-gray-50"
                         >
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                           </svg>
-                          <span className="text-sm">Profilim</span>
+                          <span className="text-sm">My Profile</span>
                         </Link>
                         <Link
                           href="/profil?tab=favoriler"
-                          onClick={handleMobileNavClick}
+                          onClick={(e) => {
+                            handleMobileNavClick();
+                            router.push('/profil?tab=favoriler');
+                            e.preventDefault();
+                          }}
                           className="flex items-center gap-3 text-gray-700 hover:text-[#660566] transition-colors py-2 px-3 rounded-lg hover:bg-gray-50"
                         >
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                           </svg>
-                          <span className="text-sm">Favorilerim</span>
+                          <span className="text-sm">My Favorites</span>
                         </Link>
                         <Link
                           href="/profil?tab=karsilastirmalar"
-                          onClick={handleMobileNavClick}
+                          onClick={(e) => {
+                            handleMobileNavClick();
+                            router.push('/profil?tab=karsilastirmalar');
+                            e.preventDefault();
+                          }}
                           className="flex items-center gap-3 text-gray-700 hover:text-[#660566] transition-colors py-2 px-3 rounded-lg hover:bg-gray-50"
                         >
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                           </svg>
-                          <span className="text-sm">Karşılaştırmalarım</span>
+                          <span className="text-sm">My Comparisons</span>
                         </Link>
-                        <Link
-                          href="/2fa-setup"
-                          className="flex items-center gap-3 text-gray-700 hover:text-[#660566] transition-colors py-2 px-3 rounded-lg hover:bg-gray-50"
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                          </svg>
-                          <span className="text-sm">2FA Kurulumu</span>
-                        </Link>
+                        <div className="border-t border-gray-100 my-1"></div>
                         <button
                           onClick={handleLogout}
                           className="flex items-center gap-3 text-red-600 hover:text-red-700 transition-colors py-2 px-3 rounded-lg hover:bg-red-50 w-full text-left"
@@ -481,7 +484,7 @@ const Header = () => {
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                           </svg>
-                          <span className="text-sm">Çıkış Yap</span>
+                          <span className="text-sm">Logout</span>
                         </button>
                       </div>
                     </div>
@@ -491,14 +494,14 @@ const Header = () => {
                         onClick={() => handleAuthClick('login')}
                         className="w-full text-center text-gray-700 hover:text-[#660566] font-medium transition-colors py-3 px-4 rounded-lg hover:bg-gray-50"
                       >
-                        Giriş Yap
+                        Login
                       </button>
                       <button
                         onClick={() => handleAuthClick('register')}
                         className="w-full bg-gradient-to-r from-[#660566] to-[#330233] text-white py-3 px-4 rounded-lg font-medium
                                hover:opacity-90 transition-all duration-200"
                       >
-                        Kayıt Ol
+                        Register
                       </button>
                     </div>
                   )}

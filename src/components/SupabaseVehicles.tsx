@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getElectricVehicles } from '@/lib/supabase';
 import { Tables } from '@/lib/supabase';
+import { customPrices } from '@/constants/customPrices';
 
 type ElectricVehicle = Tables<'electric_vehicles'>;
 
@@ -78,31 +79,40 @@ const SupabaseVehicles = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Batarya (kWh)
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Fiyat (USD)
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {vehicles.map((vehicle) => (
-                <tr key={vehicle.id} className="hover:bg-gray-50 transition-all duration-150">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {vehicle.brand}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {vehicle.model}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {vehicle.year}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {vehicle.type}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {vehicle.range}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {vehicle.battery_capacity}
-                  </td>
-                </tr>
-              ))}
+              {vehicles.map((vehicle) => {
+                const price = customPrices[vehicle.id] ?? vehicle.price?.base;
+                return (
+                  <tr key={vehicle.id} className="hover:bg-gray-50 transition-all duration-150">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {vehicle.brand}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {vehicle.model}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {vehicle.year}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {vehicle.type}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {vehicle.range}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {vehicle.battery_capacity}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {typeof price === 'number' ? `$${price.toLocaleString('en-US')}` : '-'}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

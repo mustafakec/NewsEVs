@@ -8,6 +8,9 @@ import { ElectricVehicle } from '@/models/ElectricVehicle';
 import { toSlug } from '@/utils/vehicleUtils';
 import { cloudinaryUtils } from '@/lib/cloudinary';
 import { useVehicleCardImage } from '@/hooks/useCloudinaryImage';
+import { formatCurrency } from '@/components/VehicleClientContent';
+import { customPrices } from '@/constants/customPrices';
+import { customNames } from '@/constants/customPrices';
 
 interface VehicleCardProps {
   vehicle: ElectricVehicle;
@@ -18,13 +21,16 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
   const router = useRouter();
   const [price, setPrice] = useState<{ base: number; currency: string } | null>(null);
   
-  // Cloudinary optimizasyonu
+  // Cloudinary optimization
   const { optimizedUrl } = useVehicleCardImage(vehicle.images?.[0]);
 
-  // Cloudinary URL'i kontrol et
+  // Check if it's a Cloudinary URL
   const isCloudinaryUrl = vehicle.images?.[0]?.includes('cloudinary.com') || false;
 
-  // Fiyat bilgisini çek
+  // Fiyatı customPrices ile override et
+  const customPrice = customPrices[vehicle.id];
+
+  // Fetch price information
   useEffect(() => {
     const fetchPrice = async () => {
       try {
@@ -34,7 +40,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
           setPrice(priceData);
         }
       } catch (error) {
-        console.error('Fiyat bilgisi çekilirken hata:', error);
+        console.error('Error fetching price information:', error);
       }
     };
 
@@ -43,66 +49,63 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
     }
   }, [vehicle.id]);
 
-  // isPremium kontrolünü sadece stil sınıfları için kullanacağız
-  
-
-  // Marka ve modelden URL oluştur - özel karakterleri ve boşlukları doğru şekilde işle
+  // Create URL from brand and model - handle special characters and spaces correctly
   const getVehicleUrl = (vehicle: ElectricVehicle): string => {
     const slug = toSlug(`${vehicle.brand}-${vehicle.model}`);
-    const url = `/elektrikli-araclar/${slug}`;
+    const url = `/electric-vehicles/${slug}`;
     return url;
   };
 
-  // Araç kartına tıklandığında detay sayfasına yönlendir
+  // Navigate to detail page when vehicle card is clicked
   const handleCardClick = () => {
     const url = getVehicleUrl(vehicle);
     router.push(url);
   };
 
-  // İncele butonuna tıklandığında direkt yönlendirme yapsın
-  const handleInceleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  // Direct navigation when View button is clicked
+  const handleViewClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     e.stopPropagation();
     const url = getVehicleUrl(vehicle);
     router.push(url);
   };
 
-  // Karşılaştırmaya araç ekleme fonksiyonu
+  // Function to add vehicle to comparison
   const handleAddToCompare = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    e.stopPropagation(); // Parent div'in onClick'ini engelle
+    e.stopPropagation(); // Prevent parent div's onClick
 
     try {
-      // LocalStorage'da karşılaştırma verilerini kontrol et
+      // Check comparison data in localStorage
       const storedVehicles = localStorage.getItem('compareVehicles');
       let compareVehicles: string[] = [];
 
       if (storedVehicles) {
         compareVehicles = JSON.parse(storedVehicles);
 
-        // Eğer araç zaten karşılaştırma listesindeyse tekrar ekleme
+        // Don't add again if vehicle is already in comparison list
         if (compareVehicles.includes(vehicle.id)) {
-          router.push('/karsilastir');
+          router.push('/compare');
           return;
         }
 
-        // Maksimum 3 araç kontrolü
+        // Maximum 3 vehicles check
         if (compareVehicles.length >= 3) {
-          // İlk aracı çıkar, yenisini ekle (1. araç yerine güncelleme)
+          // Remove first vehicle, add new one (update instead of first vehicle)
           compareVehicles.shift();
         }
       }
 
-      // Yeni aracı ekle
+      // Add new vehicle
       compareVehicles.push(vehicle.id);
 
-      // Güncellenmiş listeyi localStorage'a kaydet
+      // Save updated list to localStorage
       localStorage.setItem('compareVehicles', JSON.stringify(compareVehicles));
 
-      // Karşılaştırma sayfasına yönlendir
-      router.push('/karsilastir');
+      // Navigate to comparison page
+      router.push('/compare');
     } catch (error) {
-      console.error('Karşılaştırma listesi güncellenirken hata oluştu:', error);
+      console.error('Error updating comparison list:', error);
     }
   };
 
@@ -112,7 +115,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
         onClick={handleCardClick}
         className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden cursor-pointer group hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300"
       >
-        {/* Resim Alanı */}
+        {/* Image Area */}
         <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
           <Image
             src={optimizedUrl?.trim() || '/images/car-placeholder.jpg'}
@@ -125,83 +128,75 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
             unoptimized={isCloudinaryUrl}
           />
           
-          {/* Türkiye'de satışta etiketi */}
-          {(vehicle.turkeyStatuses?.available ) && (
-            <div className="absolute top-0 right-0 bg-black/20 backdrop-blur-xl text-white text-xs font-medium px-3 py-1.5 rounded-bl-xl shadow-[0_4px_16px_rgba(0,0,0,0.25)] border border-white/30 transform hover:scale-105 transition-all duration-300 hover:bg-black/30">
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm">🇹🇷</span>
-                <span className="tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)] font-medium">Türkiye'de Satışta</span>
-              </div>
-            </div>
-          )} 
+ 
         </div>
 
-        {/* Bilgi Alanı */}
+        {/* Information Area */}
         <div className="p-4 group-hover:bg-gray-50 transition-colors duration-300">
-          {/* Başlık ve Fiyat Bilgisi */}
+          {/* Title and Price Information */}
           <div className="flex justify-between items-start mb-3">
             <div>
               <h3 className="text-lg font-medium text-gray-900">
-                {vehicle.brand} {vehicle.model}
+                {vehicle.brand} {customNames[vehicle.id] || vehicle.model}
               </h3>
             </div>
             <div className="text-right">
               <p className="font-semibold text-lg text-gray-900">
-                {price?.base ? (
-                  <>
-                    {new Intl.NumberFormat('tr-TR').format(price.base)} {price.currency === "TRY" ? "TL" : price.currency}
-                  </>
+                {typeof customPrice === 'number' ? (
+                  `$${customPrice.toLocaleString('en-US')}`
+                ) : price?.base ? (
+                  formatCurrency(price.base, price.currency)
                 ) : (
-                  'Fiyat Bilgisi Yok'
+                  'No Price Information'
                 )}
               </p>
-              <p className="text-xs text-gray-500">Başlangıç Fiyatı</p>
+              <p className="text-xs text-gray-500">Starting Price</p>
             </div>
           </div>
 
-          {/* Özellikler */}
+          {/* Features */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <p className="text-xs text-gray-500 mb-1">Menzil</p>
+              <p className="text-xs text-gray-500 mb-1">Range</p>
               <p className="font-medium text-sm">
                 {vehicle.range
                   ? `${vehicle.range} km`
-                  : 'Belirtilmemiş'}
+                  : 'Not Specified'}
               </p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-1">Tork</p>
+              <p className="text-xs text-gray-500 mb-1">Torque</p>
               <p className="font-medium text-sm">
                 {vehicle.performance?.torque
                   ? `${vehicle.performance.torque} Nm`
-                  : 'Belirtilmemiş'}
+                  : 'Not Specified'}
               </p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-1">Sürüş Sistemi</p>
+              <p className="text-xs text-gray-500 mb-1">Drive Type</p>
               <p className="font-medium text-sm">
-                {vehicle.performance?.driveType || 'Belirtilmemiş'}
+                {vehicle.performance?.driveType || 'Not Specified'}
               </p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-1">Azami Hız</p>
+              <p className="text-xs text-gray-500 mb-1">Top Speed</p>
               <p className="font-medium text-sm">
                 {vehicle.performance?.topSpeed
-                  ? `${vehicle.performance.topSpeed} km/s`
-                  : 'Belirtilmemiş'}
+                  ? `${vehicle.performance.topSpeed} km/h`
+                  : 'Not Specified'}
               </p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-1">0-100 km/s</p>
+              <p className="text-xs text-gray-500 mb-1">0-100 km/h</p>
               <p className="font-medium text-sm">
                 {vehicle.performance?.acceleration
                   ? `${vehicle.performance.acceleration}s`
-                  : 'Belirtilmemiş'}
+                  : 'Not Specified'}
               </p>
             </div>
           </div>
 
-          {/* Özellikler Listesi */}
+          {/* Features List */}
           {/* <div className="mt-4">
             <div className="flex flex-wrap gap-2">
               {vehicle.features?.map((feature: { name: string; isExtra: boolean }, index: number) => (
@@ -218,22 +213,22 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
             </div>
           </div> */}
 
-          {/* Alt Butonlar */}
+          {/* Bottom Buttons */}
           <div className="flex items-center justify-between mt-4">
             <a
               href={getVehicleUrl(vehicle)}
               className="z-10 inline-block bg-[#660566] hover:bg-[#4d0d4d] text-white text-center text-sm px-5 py-2 rounded-lg transition-colors duration-200 cursor-pointer"
-              aria-label={`${vehicle.brand} ${vehicle.model} aracını incele`}
-              onClick={handleInceleClick}
+              aria-label={`View ${vehicle.brand} ${vehicle.model} vehicle`}
+              onClick={handleViewClick}
             >
-              İncele
+              View
             </a>
             <button
               className="border border-gray-200 text-gray-600 text-sm px-5 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
               onClick={handleAddToCompare}
-              aria-label={`${vehicle.brand} ${vehicle.model} aracını karşılaştırma listesine ekle`}
+              aria-label={`Add ${vehicle.brand} ${vehicle.model} vehicle to comparison list`}
             >
-              Karşılaştır
+              Compare
             </button>
           </div>
         </div>
@@ -244,4 +239,4 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
 
 VehicleCard.displayName = 'VehicleCard';
 
-export default VehicleCard; 
+export default VehicleCard;

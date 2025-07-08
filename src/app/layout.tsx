@@ -9,7 +9,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieConsent from '@/components/CookieConsent';
 import Script from "next/script";
-import AdHorizontal from "@/components/AdHorizontal";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -19,10 +18,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Elektrikliyiz',
-    default: 'Elektrikliyiz – Elektrikli Otomobil ve Elektrikli Araç Modelleri, Fiyatlar, Özellikler ve Karşılaştırmalar',
+    template: '%s | NewsEVs',
+    default: 'NewsEVs – Electric Car and Electric Vehicle Models, Prices, Features and Comparisons',
   },
-  description: "Elektrikli otomobil ve elektrikli araç modellerine dair tüm bilgiler burada! Fiyatlar, teknik özellikler, menzil karşılaştırmaları ve en güncel elektrikli araç rehberi elektrikliyiz.com'da.",
+  description: "All information about electric cars and electric vehicle models is here! Prices, technical specifications, range comparisons and the most up-to-date electric vehicle guide at newsevs.com.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
 };
 
@@ -32,60 +31,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr" className={inter.variable}>
+    <html lang="en" className={inter.variable}>
       <head>
-        {/* Google AdSense - normal script tag kullanıyoruz */}
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7739465360112931"
-          crossOrigin="anonymous"
-        />
-        {/* Google Publisher Tag (GPT) for Rewarded Video Ads */}
-        <script
-          async
-          src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"
-          crossOrigin="anonymous"
-        />
-        {/* Google Analytics */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-P7PN1BEVEG"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-P7PN1BEVEG');
-          `}
-        </Script>
-        {/* Google Reader Revenue Manager - Katkılar Özelliği */}
-        <Script
-          src="https://news.google.com/swg/js/v1/swg-basic.js"
-          strategy="afterInteractive"
-        />
-        <Script id="google-reader-revenue" strategy="afterInteractive">
-          {`
-            (self.SWG_BASIC = self.SWG_BASIC || []).push( basicSubscriptions => {
-              basicSubscriptions.init({
-                type: "NewsArticle",
-                isPartOfType: ["Product"],
-                isPartOfProductId: "CAow8e-2Cw:openaccess",
-                clientOptions: { theme: "light", lang: "tr" },
-              });
-            });
-          `}
-        </Script>
       </head>
       <body className="min-h-screen flex flex-col bg-gray-50">
         <Providers>
           <ToastContainer position="top-right" autoClose={4000} closeOnClick pauseOnHover />
           <Header />
-          <AdHorizontal />
           <main className="flex-grow">
             {children}
           </main>
-          <AdHorizontal />
           <Footer />
           <CookieConsent />
         </Providers>

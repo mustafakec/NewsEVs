@@ -330,24 +330,24 @@ export default function ComparePage() {
 
         {selectedVehicles.filter(Boolean).length >= 2 && (
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Karşılaştırma</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-6">Comparison</h3>
             <div className="space-y-6">
               {[
-                { key: 'range', label: 'Menzil', unit: 'km' },
-                { key: 'batteryCapacity', label: 'Batarya Kapasitesi', unit: 'kWh' },
-                { key: 'chargingTime.acTime', label: 'AC Şarj Süresi', unit: 'saat' },
-                { key: 'chargingTime.fastCharging.time10to80', label: 'DC Şarj Süresi', unit: 'dakika' },
-                { key: 'performance.acceleration', label: '0-100 km/s', unit: 'saniye' },
-                { key: 'performance.topSpeed', label: 'Maksimum Hız', unit: 'km/s' },
-                { key: 'performance.power', label: 'Güç', unit: 'HP' },
-                { key: 'performance.torque', label: 'Tork', unit: 'Nm' },
-                { key: 'dimensions.length', label: 'Uzunluk', unit: 'mm' },
-                { key: 'dimensions.width', label: 'Genişlik', unit: 'mm' },
-                { key: 'dimensions.height', label: 'Yükseklik', unit: 'mm' },
-                { key: 'dimensions.weight', label: 'Ağırlık', unit: 'kg' },
-                { key: 'dimensions.cargoCapacity', label: 'Bagaj Hacmi', unit: 'L' },
-                { key: 'efficiency.consumption', label: 'Tüketim', unit: 'kWh/100km' },
-                { key: 'price.base', label: 'Başlangıç Fiyatı', unit: '' },
+                { key: 'range', label: 'Range', unit: 'km' },
+                { key: 'batteryCapacity', label: 'Battery Capacity', unit: 'kWh' },
+                { key: 'chargingTime.acTime', label: 'AC Charging Time', unit: 'hours' },
+                { key: 'chargingTime.fastCharging.time10to80', label: 'DC Charging Time', unit: 'minutes' },
+                { key: 'performance.acceleration', label: '0-100 km/h', unit: 'seconds' },
+                { key: 'performance.topSpeed', label: 'Top Speed', unit: 'km/h' },
+                { key: 'performance.power', label: 'Power', unit: 'HP' },
+                { key: 'performance.torque', label: 'Torque', unit: 'Nm' },
+                { key: 'dimensions.length', label: 'Length', unit: 'mm' },
+                { key: 'dimensions.width', label: 'Width', unit: 'mm' },
+                { key: 'dimensions.height', label: 'Height', unit: 'mm' },
+                { key: 'dimensions.weight', label: 'Weight', unit: 'kg' },
+                { key: 'dimensions.cargoCapacity', label: 'Cargo Volume', unit: 'L' },
+                { key: 'efficiency.consumption', label: 'Consumption', unit: 'kWh/100km' },
+                { key: 'price.base', label: 'Base Price', unit: '' },
               ].map(({ key, label, unit }) => (
                 <div key={key} className="grid grid-cols-4 gap-4 py-4 border-t border-gray-100">
                   <div className="font-medium text-gray-900">{label}</div>
@@ -404,11 +404,11 @@ export default function ComparePage() {
                     comparisons.push(newComparison);
                     localStorage.setItem('savedComparisons', JSON.stringify(comparisons));
 
-                    // Kullanıcıya bildir
-                    alert('Karşılaştırma kaydedildi! Profil sayfanızdaki "Karşılaştırmalarım" sekmesinden görüntüleyebilirsiniz.');
+                    // Kullanıcıyı profile/comparisons sekmesine yönlendir
+                    window.location.href = '/profil?tab=karsilastirmalar';
                   } catch (error) {
-                    console.error('Karşılaştırma kaydedilirken hata oluştu:', error);
-                    alert('Karşılaştırma kaydedilirken bir hata oluştu.');
+                    console.error('Error while saving comparison:', error);
+                    alert('An error occurred while saving the comparison.');
                   }
                 }}
                 className="bg-[#660566] hover:bg-[#4d044d] text-white py-3 px-8 rounded-xl transition-colors duration-200 font-medium focus:outline-none flex items-center gap-2"
@@ -416,7 +416,7 @@ export default function ComparePage() {
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                 </svg>
-                Karşılaştırmayı Kaydet
+                Save Comparison
               </button>
             </div>
           </div>

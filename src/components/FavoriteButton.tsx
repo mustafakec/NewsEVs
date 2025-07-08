@@ -54,7 +54,7 @@ export default function FavoriteButton({ vehicle }: FavoriteButtonProps) {
         {isFav ? <FaStar className="w-4 h-4" /> : <FaRegStar className="w-4 h-4" />}
       </motion.div>
       <span className="text-sm font-medium">
-        {isFav ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
+        {isFav ? 'Remove from Favorites' : 'Add to Favorites'}
       </span>
     </motion.button>
   );

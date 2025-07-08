@@ -20,7 +20,7 @@ export default function RegisterPage() {
     setError('');
 
     if (password !== confirmPassword) {
-      setError('Şifreler eşleşmiyor');
+      setError('Passwords do not match');
       return;
     }
 
@@ -30,7 +30,7 @@ export default function RegisterPage() {
       // await signUp(email, password, fullName);
       router.push('/auth/verify-email');
     } catch (error: any) {
-      setError(error.message || 'Kayıt olurken bir hata oluştu');
+      setError(error.message || 'An error occurred while registering');
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,7 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Yeni hesap oluşturun
+          Create new account
         </h2>
       </div>
 
@@ -55,7 +55,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
-                Ad Soyad
+                Full Name
               </label>
               <div className="mt-1">
                 <input
@@ -73,7 +73,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                E-posta adresi
+                Email address
               </label>
               <div className="mt-1">
                 <input
@@ -91,7 +91,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Şifre
+                Password
               </label>
               <div className="mt-1">
                 <input
@@ -109,7 +109,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Şifre Tekrar
+                Confirm Password
               </label>
               <div className="mt-1">
                 <input
@@ -131,7 +131,7 @@ export default function RegisterPage() {
                 disabled={loading}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#660566] hover:bg-[#4d044d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#660566] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Kayıt yapılıyor...' : 'Kayıt ol'}
+                {loading ? 'Creating account...' : 'Create account'}
               </button>
             </div>
           </form>
@@ -142,7 +142,7 @@ export default function RegisterPage() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Zaten hesabınız var mı?</span>
+                <span className="px-2 bg-white text-gray-500">Already have an account?</span>
               </div>
             </div>
 
@@ -151,7 +151,7 @@ export default function RegisterPage() {
                 href="/auth/login"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[#660566] bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#660566]"
               >
-                Giriş yap
+                Sign in
               </Link>
             </div>
           </div>

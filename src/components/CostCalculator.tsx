@@ -16,13 +16,13 @@ const CostCalculator = () => {
                   hover:shadow-lg">
       <div className="p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Maliyet Hesaplama
+          Cost Calculator
         </h3>
 
         <form onSubmit={handleCalculate} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Aylık Kilometre
+              Monthly Distance
             </label>
             <div className="relative">
               <input
@@ -35,14 +35,14 @@ const CostCalculator = () => {
                 placeholder="0"
               />
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                <span className="text-gray-500">km</span>
+                <span className="text-gray-500">mi</span>
               </div>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Elektrik Birim Fiyatı
+              Electricity Rate
             </label>
             <div className="relative">
               <input
@@ -55,7 +55,7 @@ const CostCalculator = () => {
                 placeholder="0"
               />
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                <span className="text-gray-500">TL/kWh</span>
+                <span className="text-gray-500">$/kWh</span>
               </div>
             </div>
           </div>
@@ -66,18 +66,18 @@ const CostCalculator = () => {
                    rounded-lg px-4 py-2 font-medium hover:opacity-90 
                    transition-all duration-200"
           >
-            Hesapla
+            Calculate
           </button>
         </form>
 
         <div className="mt-6 pt-6 border-t border-gray-100">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600">Aylık Maliyet</span>
-            <span className="text-lg font-semibold text-gray-900">0 TL</span>
+            <span className="text-sm text-gray-600">Monthly Cost</span>
+            <span className="text-lg font-semibold text-gray-900">$0</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">Km Başına Maliyet</span>
-            <span className="text-lg font-semibold text-gray-900">0 TL</span>
+            <span className="text-sm text-gray-600">Cost per Mile</span>
+            <span className="text-lg font-semibold text-gray-900">$0</span>
           </div>
         </div>
       </div>

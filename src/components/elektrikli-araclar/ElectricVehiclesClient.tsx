@@ -9,9 +9,8 @@ import type { ElectricVehicle } from '@/models/ElectricVehicle';
 import PremiumModal from '@/components/PremiumModal';
 import { useUserStore } from '@/stores/useUserStore';
 import { normalizeVehicleType } from '@/utils/vehicleUtils';
-import AdFeedIn from "@/components/AdFeedIn";
 
-// Araç kartını lazy loading ile yükle
+// Load vehicle card with lazy loading
 const VehicleCard = dynamic(() => import('@/views/VehicleCard'), {
   loading: () => (
     <div className="bg-white rounded-xl shadow-sm p-4 animate-pulse">
@@ -28,7 +27,23 @@ const VehicleCard = dynamic(() => import('@/views/VehicleCard'), {
   ssr: true,
 });
 
-// Ana client bileşeni
+// Türkçe anahtarlar
+const vehicleTypeTitleMap: Record<string, string> = {
+  "Hatchback": "Hatchbacks",
+  "Kamyonet": "Trucks",
+  "Motosiklet": "Motorcycles",
+  "MPV": "MPVs",
+  "Otobüs": "Buses",
+  "Pickup": "Pickups",
+  "Scooter": "Scooters",
+  "Sedan": "Sedans",
+  "Spor": "Sports Cars",
+  "Station Wagon": "Station Wagons",
+  "SUV": "SUVs",
+  "Ticari": "Commercial Vehicles",
+};
+
+// Main client component
 export default function ElectricVehiclesClient() {
   // Client-side state
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
@@ -43,11 +58,11 @@ export default function ElectricVehiclesClient() {
             />
           </Suspense>
 
-          {/* Ana Premium Modal */}
+          {/* Main Premium Modal */}
           <PremiumModal
             isOpen={isPremiumModalOpen}
             onClose={() => setIsPremiumModalOpen(false)}
-            aria-label="Premium üyelik"
+            aria-label="Premium membership"
           />
 
           <div className="mt-12 border-t border-gray-100 pt-6">
@@ -56,9 +71,9 @@ export default function ElectricVehiclesClient() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Bu sayfadaki tüm markalar ve logolar bilgilendirme amaçlıdır.
+                All brands and logos on this page are for informational purposes only.
               </span>
-              <span className="mt-1">Fiyatlar ve bilgiler değişiklik gösterebilir.</span>
+              <span className="mt-1">Prices and information may vary.</span>
             </p>
           </div>
         </div>
@@ -67,7 +82,7 @@ export default function ElectricVehiclesClient() {
   );
 }
 
-// Sayfa yüklenirken gösterilecek loading bileşeni
+// Loading component shown while page is loading
 function PageLoading() {
   return (
     <>
@@ -76,7 +91,7 @@ function PageLoading() {
         <div className="h-5 bg-gray-200 rounded w-2/3 mx-auto animate-pulse"></div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {/* Filtreler */}
+        {/* Filters */}
         <div className="lg:w-full flex-shrink-0">
           <div className="sticky top-4">
             <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
@@ -87,7 +102,7 @@ function PageLoading() {
             </div>
           </div>
         </div>
-        {/* Araç Listesi */}
+        {/* Vehicle List */}
         <div className="md:col-span-3">
           <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
@@ -113,56 +128,51 @@ function PageLoading() {
 function PageContent({ onPremiumModalOpen }: { onPremiumModalOpen: () => void }) {
   const searchParams = useSearchParams();
   const setFilters = useElectricVehicleStore((state) => state.setFilters);
-  const vehicleType = searchParams.get('tip'); // Anasayfadan gelen tip parametresini al
+  const vehicleType = searchParams.get('type'); // Get type parameter from homepage
 
-  // Sayfa ilk yüklendiğinde ve URL parametreleri değiştiğinde çalışır
+  // Runs when page first loads and when URL parameters change
   useEffect(() => {
     console.log('=== URL PARAMETER DEBUG ===');
     console.log('Original vehicleType from URL:', vehicleType);
     console.log('All search params:', Object.fromEntries(searchParams.entries()));
     
-    // Önce tüm filtreleri temizle
+    // First clear all filters
     setFilters({});
 
-    // URL'de tip parametresi varsa, sadece o filtreyi uygula
+    // If there's a type parameter in URL, apply only that filter
     if (vehicleType) {
-      // Tipi normalize et
+      // Normalize the type
       const normalizedType = normalizeVehicleType(vehicleType);
       console.log('Normalized vehicleType:', normalizedType);
 
-      // Sadece araç tipi filtresini ayarla
+      // Set only the vehicle type filter
       setFilters({ vehicleType: normalizedType });
     }
-  }, [vehicleType, searchParams, setFilters]); // vehicleType veya searchParams değiştiğinde yeniden çalışır
+  }, [vehicleType, searchParams, setFilters]); // Re-runs when vehicleType or searchParams changes
 
-  // Başlık için kullanılacak formatlama
+  // Formatting for page title
   const getPageTitle = (type: string | null): string => {
-    if (!type) return 'Elektrikli Araçlar';
-
+    if (!type) return 'Electric Vehicles';
     const normalizedType = normalizeVehicleType(type);
-
-    // Özel başlık formatları
-    if (normalizedType === 'Motosiklet') return 'Elektrikli Motosikletler';
-    if (normalizedType === 'Scooter') return 'Elektrikli Scooterlar';
-
-    // Diğer araç tipleri için standart format
-    return `Elektrikli ${normalizedType} Araçlar`;
+    // Mapping ile başlık
+    const mapped = vehicleTypeTitleMap[normalizedType] || normalizedType;
+    return `Electric ${mapped}`;
   };
 
-  // Sayfa açıklaması için kullanılacak formatlama
+  // Formatting for page description
   const getPageDescription = (type: string | null): string => {
-    if (!type) return 'Elektrikli araç modellerini inceleyin, karşılaştırın ve size en uygun olanı bulun.';
+    if (!type) return 'Explore electric vehicle models, compare them and find the one that suits you best.';
 
     const normalizedType = normalizeVehicleType(type);
 
-    // Özel açıklama formatları
-    if (normalizedType === 'Motosiklet')
-      return 'Elektrikli motosiklet modellerini inceleyin, karşılaştırın ve size en uygun olanı bulun.';
+    // Special description formats
+    if (normalizedType === 'Motorcycle')
+      return 'Explore electric motorcycle models, compare them and find the one that suits you best.';
     if (normalizedType === 'Scooter')
-      return 'Elektrikli scooter modellerini inceleyin, karşılaştırın ve size en uygun olanı bulun.';
+      return 'Explore electric scooter models, compare them and find the one that suits you best.';
 
-    // Diğer araç tipleri için standart format
-    return 'Elektrikli araç modellerini inceleyin, karşılaştırın ve size en uygun olanı bulun.';
+    // Standard format for other vehicle types
+    return 'Explore electric vehicle models, compare them and find the one that suits you best.';
   };
 
   // Sayfa başlığı
@@ -184,13 +194,13 @@ function PageContent({ onPremiumModalOpen }: { onPremiumModalOpen: () => void })
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {/* Filtreler */}
+        {/* Filters */}
         <div className="lg:w-full flex-shrink-0">
           <div className="sticky top-4">
             <VehicleFilters />
           </div>
         </div>
-        {/* Araç Listesi */}
+        {/* Vehicle List */}
         <div className="md:col-span-3">
           <Suspense
             fallback={
@@ -218,31 +228,31 @@ function PageContent({ onPremiumModalOpen }: { onPremiumModalOpen: () => void })
   );
 }
 
-// VehicleListWithFilters bileşeni
+// VehicleListWithFilters component
 function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => void }) {
   const { vehicles, isLoading, error, isComingSoonActive } = useFilteredVehicles();
   const setFilters = useElectricVehicleStore((state) => state.setFilters);
   const { user } = useUserStore();
   const isPremium = user?.isPremium || false;
 
-  // Pagination için state'ler
+  // States for pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9; // Her sayfada gösterilecek araç sayısı
+  const itemsPerPage = 9; // Number of vehicles to show per page
 
-  // Sayfalama için hesaplamalar
+  // Calculations for pagination
   const totalPages = Math.ceil((vehicles?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentVehicles = vehicles?.slice(startIndex, endIndex);
 
-  // Sayfa değiştirme fonksiyonu
+  // Page change function
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // Sayfa değiştiğinde en üste scroll
+    // Scroll to top when page changes
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Premium Üye Ol butonuna tıklandığında ana Premium modalı açacak fonksiyon
+  // Function to open main Premium modal when Premium Subscribe button is clicked
   const handlePremiumClick = () => {
     setFilters({ comingSoon: false });
     openPremiumModal();
@@ -252,7 +262,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
     setFilters({ comingSoon: false });
   };
 
-  // Erken dönüş (early return) yaparak daha iyi performans sağlıyoruz
+  // Early return for better performance
   if (isLoading) {
     return (
       <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -279,7 +289,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>Araçlar yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</span>
+          <span>An error occurred while loading vehicles. Please try again later.</span>
         </div>
       </div>
     );
@@ -293,7 +303,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
           </svg>
         </div>
-        <p className="text-gray-500">Araç bulunamadı.</p>
+        <p className="text-gray-500">No vehicles found.</p>
       </div>
     );
   }
@@ -306,11 +316,6 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
             <VehicleCard
               vehicle={vehicle}
             />
-            {(idx + 1) % 3 === 0 && (
-              <div className="col-span-full flex justify-center">
-                <AdFeedIn />
-              </div>
-            )}
           </div>
         ))}
       </div>
@@ -322,7 +327,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className="px-3 py-2 rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-180"
-            aria-label="Önceki sayfa"
+            aria-label="Previous page"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -331,7 +336,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
 
           {[...Array(totalPages)].map((_, index) => {
             const pageNumber = index + 1;
-            // Aktif sayfa ve yanındaki sayfaları göster
+            // Show active page and adjacent pages
             if (
               pageNumber === 1 ||
               pageNumber === totalPages ||
@@ -346,7 +351,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
                       ? 'bg-[#660566] text-white border-[#660566]'
                       : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                   } transition-all duration-180`}
-                  aria-label={`Sayfa ${pageNumber}`}
+                  aria-label={`Page ${pageNumber}`}
                 >
                   {pageNumber}
                 </button>
@@ -364,7 +369,7 @@ function VehicleListWithFilters({ openPremiumModal }: { openPremiumModal: () => 
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="px-3 py-2 rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-180"
-            aria-label="Sonraki sayfa"
+            aria-label="Next page"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

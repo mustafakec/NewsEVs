@@ -9,8 +9,8 @@ import { useElectricVehicleStore } from '@/viewmodels/useElectricVehicles';
 import FavoriteButton from '@/components/FavoriteButton';
 import { ElectricVehicle } from '@/models/ElectricVehicle';
 import { cloudinaryUtils } from '@/lib/cloudinary';
-import AdHorizontal from './AdHorizontal';
-import AdFeedIn from './AdFeedIn';
+import { customPrices } from '@/constants/customPrices';
+import { customNames } from '@/constants/customPrices';
 
 // Props için arayüz
 interface VehicleClientContentProps {
@@ -18,107 +18,142 @@ interface VehicleClientContentProps {
   initialVehicle?: ElectricVehicle;
 }
 
-// Formatlar
-export const formatCurrency = (price: number, currency: string = "₺") => {
-  // TRY yerine TL göster
-  const displayCurrency = currency === "TRY" ? "TL" : currency;
-  return new Intl.NumberFormat('tr-TR').format(price) + " " + displayCurrency;
+// Formats
+// Sabit kur: 1 USD = 32 TL (güncel kur için API entegrasyonu eklenebilir)
+const EXCHANGE_RATE = 32; // 1 USD = 32 TL
+export const formatCurrency = (price: number, currency: string = "$") => {
+  let displayPrice = price;
+  let displayCurrency = "$";
+  if (currency === "TRY" || currency === "TL" || currency === "₺") {
+    displayPrice = Math.round((price / EXCHANGE_RATE) * 100) / 100;
+    displayCurrency = "$";
+  } else if (currency === "$" || currency === "USD") {
+    displayCurrency = "$";
+  }
+  return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(displayPrice) + " " + displayCurrency;
 };
 
-// Araç tipini standartlaştır
+// Türkçe -> İngilizce çeviri map'i
+const translationMap: Record<string, string> = {
+  'Var': 'Available',
+  'Yok': 'Not Available',
+  'Opsiyonel': 'Optional',
+  'Seviye': 'Level',
+  'Elektrikli': 'Electric',
+  'Araç': 'Vehicle',
+  'Çıkış Tarihi': 'Release Date',
+  'Otonom Sürüş': 'Autonomous Driving',
+  'Isı Pompası': 'Heat Pump',
+  'Bagaj Hacmi': 'Cargo Volume',
+  'Ağırlık': 'Weight',
+  'Uzunluk': 'Length',
+  'Genişlik': 'Width',
+  'Yükseklik': 'Height',
+  'Motor Gücü': 'Motor Power',
+  'Tork': 'Torque',
+  'Azami Hız': 'Top Speed',
+  'Sürüş Sistemi': 'Drive System',
+  'Türkiye\'de Satışta': 'Available in Turkey',
+  'saat': 'hours',
+  'litre': 'liters',
+  'km/s': 'km/h',
+  '0-100 km/s': '0-100 km/h',
+  '0-100 kmh': '0-100 km/h',
+  // ... gerekirse eklenebilir ...
+};
+
+const translate = (value: string) => {
+  if (!value) return value;
+  // Eğer "Seviye X" gibi bir şeyse
+  if (value.startsWith('Seviye ')) {
+    return value.replace('Seviye', 'Level');
+  }
+  // Map'te varsa çevir
+  return translationMap[value] || value;
+};
+
+// Standardize vehicle type
 const normalizeVehicleType = (type: string): string => {
-  // Önce gelen değeri büyük-küçük harf duyarsız hale getir
+  // First make the incoming value case insensitive
   const lowerType = type.toLowerCase().trim();
 
-  // Basit bir eşleşme tablosu oluştur
+  // Create a simple mapping table
   const typeMapping: Record<string, string> = {
     'suv': 'SUV',
     'crossover': 'SUV',
     'cuv': 'SUV',
-    'coupe': 'Spor',
-    'sportback': 'Spor',
-    'sports': 'Spor',
-    'spor': 'Spor',
-    'cabrio': 'Spor',
-    'roadster': 'Spor',
+    'coupe': 'Sports',
+    'sportback': 'Sports',
+    'sports': 'Sports',
+    'spor': 'Sports',
+    'cabrio': 'Sports',
+    'roadster': 'Sports',
     'sedan': 'Sedan',
     'hatchback': 'Hatchback',
-    'van': 'Ticari',
-    'ticari': 'Ticari',
+    'van': 'Commercial',
+    'ticari': 'Commercial',
     'minivan': 'MPV',
     'mpv': 'MPV',
     'station wagon': 'Station Wagon',
     'stationwagon': 'Station Wagon',
     'pickup': 'Pickup',
-    'minibüs': 'Otobüs',
-    'minibus': 'Otobüs',
-    'bus': 'Otobüs',
-    'otobüs': 'Otobüs',
-    'otobus': 'Otobüs',
-    'truck': 'Kamyonet',
-    'kamyonet': 'Kamyonet',
-    'motosiklet': 'Motosiklet',
-    'motorcycle': 'Motosiklet',
-    'moto': 'Motosiklet',
+    'minibüs': 'Bus',
+    'minibus': 'Bus',
+    'bus': 'Bus',
+    'otobüs': 'Bus',
+    'otobus': 'Bus',
+    'truck': 'Truck',
+    'kamyonet': 'Truck',
+    'motosiklet': 'Motorcycle',
+    'motorcycle': 'Motorcycle',
+    'moto': 'Motorcycle',
     'scooter': 'Scooter',
     'elektrikli scooter': 'Scooter',
     'e-scooter': 'Scooter'
   };
 
-  // Eşleşme varsa, eşleşen tipi döndür
+  // If there's a match, return the matching type
   if (typeMapping[lowerType]) {
     return typeMapping[lowerType];
   }
 
-  // Eşleşme bulunamazsa, ilk harf büyük gerisi küçük tipinde format
+  // If no match is found, format with first letter uppercase and rest lowercase
   return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
 };
 
-// Türkçe'de doğru eki getirmek için yardımcı fonksiyon
+// Helper function to get the correct suffix in English
 const getTypeSuffix = (type: string): string => {
   const lastLetter = type.slice(-1).toLowerCase();
 
-  // Ünlü uyumu ve son harfe göre ek belirleme
-  // Türkçe dilbilgisi kurallarına göre son sese bağlı olarak -lar/-ler veya -ları/-leri eki gelir
-  const vowels = 'aeıioöuü';
+  // Determine suffix based on vowel harmony and last letter
+  // According to English grammar rules, the suffix depends on the last sound
+  const vowels = 'aeiou';
   if (vowels.includes(lastLetter)) {
-    // Eğer kelime ünlü ile bitiyorsa 'lar' veya 'ler' eki gelir
-    return type.toLowerCase().endsWith('suv') ? "ları" : "leri";
+    // If the word ends with a vowel, add 's' suffix
+    return type.toLowerCase().endsWith('suv') ? "s" : "s";
   } else {
-    // Eğer kelime ünsüz ile bitiyorsa son hecedeki ünlüye göre ek belirlenir
-    // Basitleştirilmiş kural: son harf ünsüz ise genellikle 'ları' veya 'leri' eki gelir
-    const vowelsInWord = Array.from(type.toLowerCase()).filter(char => vowels.includes(char));
-    if (vowelsInWord.length > 0) {
-      const lastVowel = vowelsInWord[vowelsInWord.length - 1];
-      // Kalın ünlüler: a, ı, o, u - İnce ünlüler: e, i, ö, ü
-      if (['a', 'ı', 'o', 'u'].includes(lastVowel)) {
-        return "ları";
-      } else {
-        return "leri";
-      }
-    }
-    // Eğer kelimede hiç ünlü yoksa (pek mümkün değil)
-    return "ları";
+    // If the word ends with a consonant, add 's' suffix
+    return "s";
   }
 };
 
-// Araç tipine göre doğru eki ekleyen fonksiyon
+// Function to add the correct suffix based on vehicle type
 const getTypeWithSuffix = (type: string, suffix: string = ""): string => {
   const normalizedType = normalizeVehicleType(type);
 
   switch (suffix) {
-    case "accusative": // -ı -i -u -ü (belirtme durumu)
+    case "accusative": // -ı -i -u -ü (accusative case)
       return normalizedType + getTypeSuffix(normalizedType);
-    case "simple_plural": // -lar -ler (çoğul)
-      return normalizedType + (getTypeSuffix(normalizedType).startsWith("lar") ? "lar" : "ler");
+    case "simple_plural": // -lar -ler (plural)
+      return normalizedType + "s";
     default:
       return normalizedType;
   }
 };
 
-// Araç tiplerinin doğru formatlanmasını sağlayan fonksiyon
+// Function to ensure correct formatting of vehicle types
 const formatVehicleType = (type: string): string => {
-  // Özel formatlamalar
+  // Special formatting
   if (type.toLowerCase() === 'suv') return 'SUV';
   if (type.toLowerCase() === 'mpv') return 'MPV';
 
@@ -153,7 +188,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
   const [vehicleData, setVehicleData] = useState<ElectricVehicle>(initialVehicle || vehicle!);
   const [price, setPrice] = useState<{ base: number; currency: string } | null>(null);
 
-  // Fiyat bilgisini çek
+  // Fetch price information
   useEffect(() => {
     const fetchPrice = async () => {
       try {
@@ -163,7 +198,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
           setPrice(priceData);
         }
       } catch (error) {
-        console.error('Fiyat bilgisi çekilirken hata:', error);
+        console.error('Error fetching price information:', error);
       }
     };
 
@@ -172,7 +207,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
     }
   }, [vehicleData.id]);
 
-  // Paylaşım menüsü dışına tıklandığında menüyü kapat
+  // Shareım menüsü dışına tıklandığında menüyü kapat
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
@@ -186,13 +221,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
     };
   }, []);
 
-  // Debug bilgileri
-  console.log('=== VEHICLE CLIENT CONTENT DEBUG ===');
-  console.log('Vehicle Data:', vehicleData);
-  console.log('Available:', vehicleData.turkeyStatuses?.available);
-  console.log('Available Type:', typeof vehicleData.turkeyStatuses?.available);
-  console.log('Raw Turkey Status:', vehicleData.turkeyStatuses);
-  console.log('===========================');
+
 
   // Eğer hiçbir araç verisi yoksa hata göster
   if (!vehicleData) {
@@ -206,13 +235,13 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
     );
   }
 
-  // Önceki görsel
+  // Previous image
   const handlePrevImage = () => {
     if (!vehicleData.images || vehicleData.images.length <= 1) return;
     setCurrentImageIndex((prev) => (prev === 0 ? vehicleData.images?.length ?? 0 - 1 : prev - 1));
   };
 
-  // Sonraki görsel
+  // Next image
   const handleNextImage = () => {
     if (!vehicleData.images || vehicleData.images.length <= 1) return;
     setCurrentImageIndex((prev) => (prev === (vehicleData.images?.length ?? 0) - 1 ? 0 : prev + 1));
@@ -236,7 +265,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
       // Küçük harflere çevirerek URL'e ekle
       const urlType = normalizedType.toLowerCase();
 
-      router.push(`/elektrikli-araclar?tip=${urlType}`);
+      router.push(`/electric-vehicles?tip=${urlType}`);
     }, 100);
   };
 
@@ -283,10 +312,10 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
     e.preventDefault();
     setFilters({});
     setTemporaryFilters({});
-    router.push('/elektrikli-araclar');
+    router.push('/electric-vehicles');
   };
 
-  // Paylaşım işlevleri
+  // Shareım işlevleri
   const handleToggleShareOptions = () => {
     setShowShareOptions(!showShareOptions);
   };
@@ -356,19 +385,19 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
         return;
     }
 
-    // Paylaşım URL'sini yeni pencerede aç
+    // Shareım URL'sini yeni pencerede aç
     if (shareUrl) {
       window.open(shareUrl, '_blank', 'width=600,height=400');
     }
   };
 
-  // İncele butonunda Rewarded Video Reklam gösterilmeyecek
+  // View butonunda Rewarded Video Reklam gösterilmeyecek
   const handleInceleClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
     e.preventDefault();
     router.push(url);
   };
 
-  // Görsel URL'ini optimize et
+  // Image URL'ini optimize et
   const getOptimizedImageUrl = (imageUrl: string | undefined) => {
     if (!imageUrl) return '/images/car-placeholder.jpg';
     
@@ -397,8 +426,8 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
           {/* Breadcrumb */}
           <div className="mb-6">
             <div className="flex items-center text-sm text-gray-500">
-              <Link href="/elektrikli-araclar" className="hover:text-[#660566]">
-                Elektrikli Araçlar
+              <Link href="/electric-vehicles" className="hover:text-[#660566]">
+                Electric Vehicles
               </Link>
               <svg className="w-4 h-4 mx-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -409,10 +438,10 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
             </div>
           </div>
 
-          {/* Araç Üst Bilgileri */}
+          {/* Vehicle Top Information */}
           <div className="border-b border-gray-200 pb-8 mb-10">
             <div className="flex flex-wrap items-center justify-between mb-4">
-              <h1 className="text-3xl font-bold text-gray-900">{vehicleData.brand} {vehicleData.model}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{vehicleData.brand} {customNames[vehicleData.id] || vehicleData.model}</h1>
 
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex gap-2 mt-3 sm:mt-0">
@@ -422,20 +451,16 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                   <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">
                     {vehicleData.year}
                   </span>
-                  {vehicleData.turkeyStatuses && vehicleData.turkeyStatuses.available === true && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
-                      🇹🇷 Türkiye'de Satışta
-                    </span>
-                  )}    
+    
                 </div>
                 <FavoriteButton vehicle={vehicleData} />
               </div>
             </div>
           </div>
 
-          {/* Araç Görseli ve Öne Çıkan Bilgiler */}
+          {/* Vehicle Image and Featured Information */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-16">
-            {/* Görsel */}
+            {/* Image */}
             <div className="lg:col-span-3">
               <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
                 {vehicleData.images && vehicleData.images.length > 0 ? (
@@ -449,17 +474,17 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                    <span className="text-gray-400">Görsel bulunamadı</span>
+                    <span className="text-gray-400">Image not found</span>
                   </div>
                 )}
 
-                {/* Görsel Geçiş Butonları */}
+                {/* Image Navigation Buttons */}
                 {vehicleData.images && vehicleData.images.length > 1 && (
                   <>
                     <button
                       onClick={handlePrevImage}
                       className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-                      aria-label="Önceki görsel"
+                      aria-label="Previous image"
                     >
                       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -468,7 +493,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                     <button
                       onClick={handleNextImage}
                       className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-                      aria-label="Sonraki görsel"
+                      aria-label="Next image"
                     >
                       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -478,7 +503,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                 )}
               </div>
 
-              {/* Görsel İndikatörler */}
+              {/* Image Indicators */}
               {vehicleData.images && vehicleData.images.length > 1 && (
                 <div className="flex justify-center mt-4 gap-2">
                   {vehicleData.images.map((_: string, index: number) => (
@@ -487,76 +512,80 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                       onClick={() => setCurrentImageIndex(index)}
                       className={`w-3 h-3 rounded-full ${index === currentImageIndex ? 'bg-[#660566]' : 'bg-gray-300'
                         }`}
-                      aria-label={`Görsel ${index + 1}`}
+                      aria-label={`Image ${index + 1}`}
                     />
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Öne Çıkan Bilgiler */}
+            {/* Featured Information */}
             <div className="lg:col-span-2">
-              {/* Fiyat */}
+              {/* Price */}
               <div className="mb-4">
-                <span className="block text-gray-500 text-sm">Fiyat</span>
+                <span className="block text-gray-500 text-sm">Price</span>
                 <span className="block text-2xl font-bold text-[#660566]">
-                  {price?.base ? formatCurrency(price.base, price.currency) : 'Belirtilmemiş'}
+                  {typeof customPrices[vehicleData.id] === 'number'
+                    ? `$${customPrices[vehicleData.id].toLocaleString('en-US')}`
+                    : price?.base
+                      ? formatCurrency(price.base, price.currency)
+                      : 'Not Specified'}
                 </span>
               </div>
 
-              {/* Öne Çıkan Özellikler */}
+              {/* Featured Features */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                  <span className="block text-gray-500 text-sm">Menzil</span>
+                  <span className="block text-gray-500 text-sm">Range</span>
                   <span className="block font-bold">{vehicleData.range} km</span>
                 </div>
                 <div>
-                  <span className="block text-gray-500 text-sm">Tüketim</span>
-                  <span className="block font-bold">{vehicleData.efficiency?.consumption || 'Belirtilmemiş'} kWh/100 km</span>
+                  <span className="block text-gray-500 text-sm">Consumption</span>
+                  <span className="block font-bold">{vehicleData.efficiency?.consumption || 'Not Specified'} kWh/100 km</span>
                 </div>
                 <div>
-                  <span className="block text-gray-500 text-sm">Batarya</span>
+                  <span className="block text-gray-500 text-sm">Battery</span>
                   <span className="block font-bold">{vehicleData.batteryCapacity} kWh</span>
                 </div>
                 <div>
                   <span className="block text-gray-500 text-sm">Motor</span>
-                  <span className="block font-bold">{vehicleData.performance?.power || 'Belirtilmemiş'} {vehicleData.performance?.power ? 'HP' : ''}</span>
+                  <span className="block font-bold">{vehicleData.performance?.power || 'Not Specified'} {vehicleData.performance?.power ? 'HP' : ''}</span>
                 </div>
                 <div>
-                  <span className="block text-gray-500 text-sm">Şarj</span>
-                  <span className="block font-bold">%20-%80: {vehicleData.chargingTime?.fastCharging?.time10to80 || 'Belirtilmemiş'} {vehicleData.chargingTime?.fastCharging?.time10to80 ? 'dakika' : ''}</span>
+                  <span className="block text-gray-500 text-sm">Charging</span>
+                  <span className="block font-bold">%20-%80: {vehicleData.chargingTime?.fastCharging?.time10to80 || 'Not Specified'} {vehicleData.chargingTime?.fastCharging?.time10to80 ? 'minutes' : ''}</span>
                 </div>
               </div>
 
-              {/* Butonlar */}
+              {/* Buttons */}
               <div className="flex flex-col gap-3 mt-6">
                 <button
                   onClick={handleAddToCompare}
                   className="w-full bg-[#660566] hover:bg-[#4d044d] text-white text-center py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                 >
-                  Karşılaştırmaya Ekle
+                  Add to Comparison
                 </button>
                 <a
-                  href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
+                  href={`/electric-vehicles?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
                   className="w-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 px-4 sm:px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 text-base sm:text-lg"
                 >
-                  Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} İncele
+                  Other Electric {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} View
                 </a>
 
-                {/* Paylaşım Butonu */}
+                {/* Share Button */}
                 <div className="relative" ref={shareMenuRef}>
                   <button
                     onClick={handleToggleShareOptions}
                     className="w-full bg-white border border-[#660566] hover:bg-[#660566]/5 text-[#660566] text-center py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 flex justify-center items-center gap-2"
-                    aria-label="Araç detaylarını paylaş"
+                    aria-label="Share vehicle details"
                   >
                     <FaShareAlt className="text-[#660566]" />
-                    <span>Paylaş</span>
+                    <span>Share</span>
                   </button>
 
                   {showShareOptions && (
                     <div className="absolute left-0 right-0 mt-2 p-3 bg-white rounded-xl shadow-lg border border-gray-200 z-20 w-full whitespace-nowrap animate-fade-in">
-                      <div className="text-sm text-gray-500 mb-2 font-medium">Bu aracı paylaş</div>
+                      <div className="text-sm text-gray-500 mb-2 font-medium">Share this vehicle</div>
                       <div className="flex flex-col gap-3">
                         <button
                           onClick={() => handleShare('twitter')}
@@ -565,35 +594,35 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                           <span className="text-black w-5 h-5 flex items-center justify-center">
                             <XLogo />
                           </span>
-                          <span>X'de Paylaş</span>
+                          <span>Share on X</span>
                         </button>
                         <button
                           onClick={() => handleShare('facebook')}
                           className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg w-full transition-colors text-left hover:scale-[1.01] active:scale-[0.99]"
                         >
                           <FaFacebook className="text-[#4267B2]" />
-                          <span>Facebook'ta Paylaş</span>
+                          <span>Share on Facebook</span>
                         </button>
                         <button
                           onClick={() => handleShare('whatsapp')}
                           className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg w-full transition-colors text-left hover:scale-[1.01] active:scale-[0.99]"
                         >
                           <FaWhatsapp className="text-[#25D366]" />
-                          <span>WhatsApp'ta Paylaş</span>
+                          <span>Share on WhatsApp</span>
                         </button>
                         <button
                           onClick={() => handleShare('linkedin')}
                           className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg w-full transition-colors text-left hover:scale-[1.01] active:scale-[0.99]"
                         >
                           <FaLinkedin className="text-[#0077B5]" />
-                          <span>LinkedIn'de Paylaş</span>
+                          <span>Share on LinkedIn</span>
                         </button>
                         <button
                           onClick={() => handleShare('instagram')}
                           className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg w-full transition-colors text-left hover:scale-[1.01] active:scale-[0.99]"
                         >
                           <FaInstagram className="text-[#E1306C]" />
-                          <span>Instagram Story'de Paylaş</span>
+                          <span>Share on Instagram Story</span>
                         </button>
                         <div className="border-t border-gray-200 my-2"></div>
                         <button
@@ -601,7 +630,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                           className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg w-full transition-colors text-left hover:scale-[1.01] active:scale-[0.99]"
                         >
                           <FaCopy className={copySuccess ? "text-green-500" : "text-gray-500"} />
-                          <span>{copySuccess ? "Kopyalandı!" : "Bağlantıyı Kopyala"}</span>
+                          <span>{copySuccess ? "Copied!" : "Copy Link"}</span>
                         </button>
                       </div>
                     </div>
@@ -611,161 +640,151 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
             </div>
           </div>
 
-          {/* Detaylı Bilgiler */}
+          {/* Detailed Information */}
           <div className="space-y-8 mb-8">
-            {/* İlk iki tablo: Güç ve Hız + Batarya ve Şarj */}
+            {/* First two tables: Power and Speed + Battery and Charging */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Performans Bilgileri */}
+              {/* Performance Information */}
               <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
                 <div className="bg-gradient-to-r from-purple-50 to-white p-4 border-b border-gray-100">
-                  <h2 className="text-xl font-bold text-gray-900">Güç ve Hız</h2>
+                  <h2 className="text-xl font-bold text-gray-900">Power and Speed</h2>
                 </div>
                 <div className="divide-y divide-gray-100">
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">Motor Gücü</span>
-                    <span className="font-medium">{vehicleData.performance?.power || 'Belirtilmemiş'} {vehicleData.performance?.power ? 'HP' : ''}</span>
+                    <span className="text-gray-600">Motor Power</span>
+                    <span className="font-medium">{vehicleData.performance?.power || 'Not Specified'} {vehicleData.performance?.power ? 'HP' : ''}</span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">Tork</span>
-                    <span className="font-medium">{vehicleData.performance?.torque || 'Belirtilmemiş'} {vehicleData.performance?.torque ? 'Nm' : ''}</span>
+                    <span className="text-gray-600">Torque</span>
+                    <span className="font-medium">{vehicleData.performance?.torque || 'Not Specified'} {vehicleData.performance?.torque ? 'Nm' : ''}</span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">Azami Hız</span>
-                    <span className="font-medium">{vehicleData.performance?.topSpeed || 'Belirtilmemiş'} {vehicleData.performance?.topSpeed ? 'km/s' : ''}</span>
+                    <span className="text-gray-600">Top Speed</span>
+                    <span className="font-medium">{vehicleData.performance?.topSpeed || 'Not Specified'} {vehicleData.performance?.topSpeed ? 'km/h' : ''}</span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">0-100 km/s</span>
-                    <span className="font-medium">{vehicleData.performance?.acceleration || 'Belirtilmemiş'} {vehicleData.performance?.acceleration ? 's' : ''}</span>
+                    <span className="text-gray-600">0-100 km/h</span>
+                    <span className="font-medium">{vehicleData.performance?.acceleration || 'Not Specified'} {vehicleData.performance?.acceleration ? 's' : ''}</span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">Sürüş Sistemi</span>
+                    <span className="text-gray-600">Drive System</span>
                     <span className="font-medium">{vehicleData.performance?.driveType || '-'}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Batarya ve Şarj */}
+              {/* Battery and Charging */}
               <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
                 <div className="bg-gradient-to-r from-purple-50 to-white p-4 border-b border-gray-100">
-                  <h2 className="text-xl font-bold text-gray-900">Batarya ve Şarj</h2>
+                  <h2 className="text-xl font-bold text-gray-900">Battery and Charging</h2>
                 </div>
                 <div className="divide-y divide-gray-100">
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">Batarya</span>
-                    <span className="font-medium">{vehicleData.batteryCapacity || 'Belirtilmemiş'} {vehicleData.batteryCapacity ? 'kWh' : ''}</span>
+                    <span className="text-gray-600">Battery</span>
+                    <span className="font-medium">{vehicleData.batteryCapacity || 'Not Specified'} {vehicleData.batteryCapacity ? 'kWh' : ''}</span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">Menzil</span>
-                    <span className="font-medium">{vehicleData.range || 'Belirtilmemiş'} {vehicleData.range ? 'km' : ''}</span>
+                    <span className="text-gray-600">Range</span>
+                    <span className="font-medium">{vehicleData.range || 'Not Specified'} {vehicleData.range ? 'km' : ''}</span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">DC Şarj Hızı</span>
-                    <span className="font-medium">{vehicleData.chargingTime?.fastCharging?.power || 'Belirtilmemiş'} {vehicleData.chargingTime?.fastCharging?.power ? 'kW' : ''}</span>
+                    <span className="text-gray-600">DC Charging Speed</span>
+                    <span className="font-medium">{vehicleData.chargingTime?.fastCharging?.power || 'Not Specified'} {vehicleData.chargingTime?.fastCharging?.power ? 'kW' : ''}</span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">AC Şarj Hızı</span>
-                    <span className="font-medium">{vehicleData.chargingTime?.ac || 'Belirtilmemiş'} {vehicleData.chargingTime?.ac ? 'kW' : ''}</span>
+                    <span className="text-gray-600">AC Charging Speed</span>
+                    <span className="font-medium">{vehicleData.chargingTime?.ac || 'Not Specified'} {vehicleData.chargingTime?.ac ? 'kW' : ''}</span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">DC Şarj Süresi</span>
-                    <span className="font-medium">{vehicleData.chargingTime?.fastCharging?.time10to80 || 'Belirtilmemiş'} {vehicleData.chargingTime?.fastCharging?.time10to80 ? 'dakika' : ''}</span>
+                    <span className="text-gray-600">DC Charging Time</span>
+                    <span className="font-medium">{vehicleData.chargingTime?.fastCharging?.time10to80 || 'Not Specified'} {vehicleData.chargingTime?.fastCharging?.time10to80 ? 'minutes' : ''}</span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">AC Şarj Süresi</span>
-                    <span className="font-medium">{vehicleData.chargingTime?.acTime || 'Belirtilmemiş'} {vehicleData.chargingTime?.acTime ? 'saat' : ''}</span>
+                    <span className="text-gray-600">AC Charging Time</span>
+                    <span className="font-medium">{vehicleData.chargingTime?.acTime || 'Not Specified'} {vehicleData.chargingTime?.acTime ? 'hours' : ''}</span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">Ortalama Tüketim</span>
-                    <span className="font-medium">{vehicleData.efficiency?.consumption || 'Belirtilmemiş'} kWh / 100 km</span>
+                    <span className="text-gray-600">Average Consumption</span>
+                    <span className="font-medium">{vehicleData.efficiency?.consumption || 'Not Specified'} kWh / 100 km</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* İlk reklam alanı - Güç ve Hız ile Batarya ve Şarj tabloları arası */}
-            <div className="mb-8">
-              <AdHorizontal />
-            </div>
-
-            {/* Araç Ölçüleri tablosu */}
+            {/* Vehicle Dimensions table */}
             <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
               <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
                 <div className="bg-gradient-to-r from-purple-50 to-white p-4 border-b border-gray-100">
-                  <h2 className="text-xl font-bold text-gray-900">Araç Ölçüleri</h2>
+                  <h2 className="text-xl font-bold text-gray-900">Vehicle Dimensions</h2>
                 </div>
                 <div className="divide-y divide-gray-100">
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">Ağırlık</span>
+                    <span className="text-gray-600">Weight</span>
                     <span className="font-medium">
-                      {vehicleData.dimensions?.weight ? `${vehicleData.dimensions.weight.toLocaleString('tr-TR')} kg` : 'Belirtilmemiş'}
+                      {vehicleData.dimensions?.weight ? `${vehicleData.dimensions.weight.toLocaleString('en-US')} kg` : 'Not Specified'}
                     </span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">Uzunluk</span>
+                    <span className="text-gray-600">Length</span>
                     <span className="font-medium">
-                      {vehicleData.dimensions?.length ? `${vehicleData.dimensions.length.toLocaleString('tr-TR')} mm` : 'Belirtilmemiş'}
+                      {vehicleData.dimensions?.length ? `${vehicleData.dimensions.length.toLocaleString('en-US')} mm` : 'Not Specified'}
                     </span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">Genişlik</span>
+                    <span className="text-gray-600">Width</span>
                     <span className="font-medium">
-                      {vehicleData.dimensions?.width ? `${vehicleData.dimensions.width.toLocaleString('tr-TR')} mm` : 'Belirtilmemiş'}
+                      {vehicleData.dimensions?.width ? `${vehicleData.dimensions.width.toLocaleString('en-US')} mm` : 'Not Specified'}
                     </span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">Yükseklik</span>
+                    <span className="text-gray-600">Height</span>
                     <span className="font-medium">
-                      {vehicleData.dimensions?.height ? `${vehicleData.dimensions.height.toLocaleString('tr-TR')} mm` : 'Belirtilmemiş'}
+                      {vehicleData.dimensions?.height ? `${vehicleData.dimensions.height.toLocaleString('en-US')} mm` : 'Not Specified'}
                     </span>
                   </div>
                   <div className="px-4 py-3 flex justify-between">
-                    <span className="text-gray-600">Bagaj Hacmi</span>
+                    <span className="text-gray-600">Cargo Volume</span>
                     <span className="font-medium">
-                      {vehicleData.dimensions?.cargoCapacity ? `${vehicleData.dimensions.cargoCapacity.toLocaleString('tr-TR')} litre` : 'Belirtilmemiş'}
+                      {vehicleData.dimensions?.cargoCapacity ? `${vehicleData.dimensions.cargoCapacity.toLocaleString('en-US')} liters` : 'Not Specified'}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* İkinci reklam alanı - Araç Ölçüleri ile Diğer Özellikler arası */}
-            <div className="mb-8">
-              <AdFeedIn />
-            </div>
           </div>
 
-          {/* Özellikler */}
+          {/* Features */}
           <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 mb-8">
             <div className="bg-gradient-to-r from-purple-50 to-white p-4 border-b border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900">Diğer Özellikler</h2>
+              <h2 className="text-xl font-bold text-gray-900">Other Features</h2>
             </div>
             <div className="p-6">
               <div className="space-y-4">
                 <div className="border-t border-gray-100">
                   <div className="flex py-3 border-b border-gray-100">
-                    <div className="w-1/2 text-gray-700">Araç Tipi</div>
+                    <div className="w-1/2 text-gray-700">Vehicle Type</div>
                     <div className="w-1/2 text-right font-medium">{getTypeWithSuffix(vehicleData.type)}</div>
                   </div>
                   <div className="flex py-3 border-b border-gray-100">
-                    <div className="w-1/2 text-gray-700">Çıkış Tarihi</div>
+                    <div className="w-1/2 text-gray-700">Release Date</div>
                     <div className="w-1/2 text-right font-medium">{vehicleData.year}</div>
                   </div>
                   <div className="flex py-3 border-b border-gray-100">
-                    <div className="w-1/2 text-gray-700">Otonom Sürüş</div>
+                    <div className="w-1/2 text-gray-700">Autonomous Driving</div>
                     <div className="w-1/2 text-right font-medium">
-                      {vehicleData.comfort?.autonomousLevel ? 'Seviye ' + vehicleData.comfort.autonomousLevel : '-'}
+                      {translate(vehicleData.comfort?.autonomousLevel ? 'Level ' + vehicleData.comfort.autonomousLevel : '-')}
                     </div>
                   </div>
                   <div className="flex py-3 border-b border-gray-100">
-                    <div className="w-1/2 text-gray-700">Isı Pompası</div>
+                    <div className="w-1/2 text-gray-700">Heat Pump</div>
                     <div className="w-1/2 text-right font-medium">
-                      {vehicleData.heatPump === 'yes' ? 'Var' : vehicleData.heatPump === 'optional' ? 'Opsiyonel' : 'Yok'}
+                      {translate(vehicleData.heatPump === 'yes' ? 'Var' : vehicleData.heatPump === 'optional' ? 'Opsiyonel' : 'Yok')}
                     </div>
                   </div>
                   <div className="flex py-3 border-b border-gray-100">
                     <div className="w-1/2 text-gray-700">V2L</div>
                     <div className="w-1/2 text-right font-medium">
-                      {vehicleData.v2l === 'yes' ? 'Var' : vehicleData.v2l === 'optional' ? 'Opsiyonel' : 'Yok'}
+                      {translate(vehicleData.v2l === 'yes' ? 'Var' : vehicleData.v2l === 'optional' ? 'Opsiyonel' : 'Yok')}
                     </div>
                   </div>
                 </div>
@@ -790,31 +809,26 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
             </div>
           </div>
 
-          {/* Üçüncü reklam alanı - Diğer Özellikler ile Alt CTA arası */}
-          <div className="mb-8">
-            <AdHorizontal />
-          </div>
-
-          {/* Alt CTA */}
+          {/* Bottom CTA */}
           <div className="bg-gradient-to-r from-purple-100 to-purple-50 rounded-xl p-8 mb-16">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "simple_plural")}</h2>
-                <p className="text-gray-600">Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} inceleyebilir ve karşılaştırabilirsiniz.</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Other Electric {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "simple_plural")}</h2>
+                <p className="text-gray-600">You can view and compare electric {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")}.</p>
               </div>
               <div className="flex gap-4">
                 <a
-                  href={`/elektrikli-araclar?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
+                  href={`/electric-vehicles?tip=${formatVehicleType(normalizeVehicleType(vehicleData.type)).toLowerCase()}`}
                   className="w-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 px-4 sm:px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 text-base sm:text-lg"
                 >
-                  Diğer Elektrikli {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")} İncele
+                  View Other Electric {getTypeWithSuffix(normalizeVehicleType(vehicleData.type), "accusative")}
                 </a>
                 <a
-                  href="/elektrikli-araclar"
+                  href="/electric-vehicles"
                   onClick={handleAllVehiclesClick}
                   className="bg-[#660566] hover:bg-[#4d044d] text-white py-3 px-6 rounded-xl transition-colors duration-200 font-medium focus:outline-none"
                 >
-                  Tüm Elektrikli Araçlar
+                  All Electric Vehicles
                 </a>
               </div>
             </div>

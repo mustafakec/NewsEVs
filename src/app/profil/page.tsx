@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/authService';
 import { supabase } from '@/lib/supabase';
+import VehicleCard from '@/views/VehicleCard';
 
 // Karşılaştırma için tip tanımlamaları
 interface SavedVehicle {
@@ -86,9 +87,12 @@ function ProfileContent() {
   }, [isLoggedIn]); // isLoggedIn değiştiğinde tekrar çalıştır
 
   const formatPrice = (price: { base: number; currency: string }) => {
+    // TL para birimi kodunu TRY'ye dönüştür
+    const currencyCode = price.currency === 'TL' ? 'TRY' : price.currency;
+    
     return new Intl.NumberFormat('tr-TR', {
       style: 'currency',
-      currency: price.currency,
+      currency: currencyCode,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(price.base);
@@ -163,13 +167,13 @@ function ProfileContent() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Henüz Favori Araç Eklenmemiş</h3>
-          <p className="text-gray-500 mb-6">Favori araçlarınızı burada görüntüleyebilirsiniz.</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No Favorite Vehicles Added Yet</h3>
+          <p className="text-gray-500 mb-6">You can view your favorite vehicles here.</p>
           <Link
             href="/elektrikli-araclar"
             className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#660566] hover:bg-[#4d044d]"
           >
-            Araçları İncele
+            Browse Vehicles
           </Link>
         </div>
       );
@@ -178,76 +182,7 @@ function ProfileContent() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {favorites.map((vehicle) => (
-          <motion.div
-            key={vehicle.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200"
-          >
-            <div className="relative h-48">
-              {vehicle.images && vehicle.images[0] && (
-                <Image
-                  src={vehicle.images[0]}
-                  alt={`${vehicle.brand} ${vehicle.model}`}
-                  fill
-                  className="object-cover"
-                />
-              )}
-              <button
-                onClick={() => removeFavorite(vehicle.id)}
-                className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-red-50 transition-colors"
-              >
-                <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
-            <div className="p-4">
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {vehicle.brand} {vehicle.model}
-                </h3>
-                <div className="flex flex-wrap gap-2 justify-end">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                    {vehicle.type}
-                  </span>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {vehicle.year}
-                  </span>
-                  {vehicle.turkeyStatus?.available && (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      🇹🇷 Türkiye'de Satışta
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                <div>
-                  <span className="text-gray-500">Menzil</span>
-                  <p className="font-medium">{vehicle.range} km</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Batarya</span>
-                  <p className="font-medium">{vehicle.batteryCapacity} kWh</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Motor</span>
-                  <p className="font-medium">{vehicle?.performance?.power} HP</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Fiyat</span>
-                  <p className="font-medium">{formatPrice(vehicle?.price!)}</p>
-                </div>
-              </div>
-              <Link
-                href={`/elektrikli-araclar/${vehicle.brand.toLowerCase()}-${vehicle.model.toLowerCase().replace(/\s+/g, '-')}`}
-                className="block w-full text-center py-2 px-4 bg-[#660566] text-white rounded-lg hover:bg-[#4d044d] transition-colors"
-              >
-                Detayları Görüntüle
-              </Link>
-            </div>
-          </motion.div>
+          <VehicleCard key={vehicle.id} vehicle={vehicle} />
         ))}
       </div>
     );
@@ -278,14 +213,14 @@ function ProfileContent() {
       case 'favoriler':
         return (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Favori Araçlarım</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">My Favorite Vehicles</h2>
             {renderFavorites()}
           </div>
         );
       case 'karsilastirmalar':
         return (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Karşılaştırmalarım</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">My Comparisons</h2>
 
             {savedComparisons.length > 0 ? (
               <div className="space-y-6">
@@ -309,13 +244,13 @@ function ProfileContent() {
                           }}
                           className="px-3 py-1.5 text-sm bg-[#660566] text-white rounded-lg hover:bg-[#4d044d] transition-colors"
                         >
-                          Görüntüle
+                          View
                         </Link>
                         <button
                           onClick={() => handleDeleteComparison(comparison.id)}
                           className="px-3 py-1.5 text-sm bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
                         >
-                          Sil
+                          Delete
                         </button>
                       </div>
                     </div>
@@ -348,13 +283,13 @@ function ProfileContent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Kaydedilmiş Karşılaştırma Bulunamadı</h3>
-                <p className="text-gray-500 mb-6">Henüz hiç karşılaştırma kaydetmediniz.</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Saved Comparisons Found</h3>
+                <p className="text-gray-500 mb-6">You haven't saved any comparisons yet.</p>
                 <Link
                   href="/karsilastir"
                   className="px-4 py-2 bg-[#660566] text-white rounded-lg hover:bg-[#4d044d] transition-colors inline-block"
                 >
-                  Araçları Karşılaştır
+                  Compare Vehicles
                 </Link>
               </div>
             )}
@@ -363,25 +298,25 @@ function ProfileContent() {
       case 'guvenlik':
         return (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Güvenlik Ayarları</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Security Settings</h2>
             <div className="max-w-2xl">
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Şifre Değiştir</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Change Password</h3>
                 <form className="space-y-4" onSubmit={async (e) => {
                   e.preventDefault();
                   setError(null)
                   setSuccess(null)
                   const formData = new FormData(e.currentTarget);
-                  const currentPassword = formData.get('currentPassword');
-                  const newPassword = formData.get('newPassword');
-                  const confirmPassword = formData.get('confirmPassword');
+                  const currentPassword = formData.get('currentPassword') as string;
+                  const newPassword = formData.get('newPassword') as string;
+                  const confirmPassword = formData.get('confirmPassword') as string;
 
                   const { error } = await supabase.auth.signInWithPassword({
                     email: user?.email!,
-                    password: currentPassword?.toString()!
+                    password: currentPassword
                   })
 
-                  const strength = checkPasswordStrength(newPassword as string);
+                  const strength = checkPasswordStrength(newPassword);
 
                   if (strength.score < 3) {
                     setError('Lütfen daha güçlü bir şifre belirleyin!');
@@ -393,7 +328,7 @@ function ProfileContent() {
                     return;
                   } else {
                     const { data, error: resetPasswordError } = await supabase.auth.updateUser({
-                      password: newPassword!
+                      password: newPassword
                     })
 
                     if (data?.user?.id) {
@@ -411,7 +346,7 @@ function ProfileContent() {
                 }}>
                   <div>
                     <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                      Mevcut Şifre
+                      Current Password
                     </label>
                     <input
                       type="password"
@@ -423,7 +358,7 @@ function ProfileContent() {
                   </div>
                   <div>
                     <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                      Yeni Şifre
+                      New Password
                     </label>
                     <input
                       type="password"
@@ -470,7 +405,7 @@ function ProfileContent() {
                   </div>
                   <div>
                     <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                      Yeni Şifre (Tekrar)
+                      New Password (Confirm)
                     </label>
                     <input
                       type="password"
@@ -496,7 +431,7 @@ function ProfileContent() {
                       type="submit"
                       className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#660566] to-[#330233] rounded-lg hover:opacity-90 transition-colors"
                     >
-                      Şifreyi Değiştir
+                      Change Password
                     </button>
                   </div>
                 </form>
@@ -522,7 +457,7 @@ function ProfileContent() {
       default:
         return (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Profilim</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">My Profile</h2>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Ana Profil Kartı */}
               <div className="lg:col-span-2">
@@ -538,27 +473,27 @@ function ProfileContent() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">Üyelik Durumu</h4>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">Membership Status</h4>
                       <div className="flex items-center gap-2">
                         {user?.isPremium ? (
                           <>
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-[#660566] to-[#330233] text-white">
                               Premium
                             </span>
-                            <p className="text-sm text-gray-600">Premium üyeliğiniz aktif</p>
+                            <p className="text-sm text-gray-600">Your premium membership is active</p>
                           </>
                         ) : (
                           <>
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                              Standart
+                              Standard
                             </span>
-                            <p className="text-sm text-gray-600">Standart üyelik</p>
+                            <p className="text-sm text-gray-600">Standard membership</p>
                           </>
                         )}
                       </div>
                     </div>
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">Telefon</h4>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">Phone</h4>
                       <p className="text-gray-900">{user?.phone || '-'}</p>
                     </div>
                   </div>
@@ -568,15 +503,15 @@ function ProfileContent() {
                 {user?.isPremium && (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                      <div className="text-sm font-medium text-gray-500 mb-1">Favori Araçlar</div>
+                      <div className="text-sm font-medium text-gray-500 mb-1">Favorite Vehicles</div>
                       <div className="text-2xl font-semibold text-gray-900">{favorites.length}</div>
                     </div>
                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                      <div className="text-sm font-medium text-gray-500 mb-1">Karşılaştırmalar</div>
+                      <div className="text-sm font-medium text-gray-500 mb-1">Comparisons</div>
                       <div className="text-2xl font-semibold text-gray-900">0</div>
                     </div>
                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                      <div className="text-sm font-medium text-gray-500 mb-1">Premium Gün</div>
+                      <div className="text-sm font-medium text-gray-500 mb-1">Premium Days</div>
                       <div className="text-2xl font-semibold text-gray-900">30</div>
                     </div>
                   </div>
@@ -588,21 +523,21 @@ function ProfileContent() {
                 {user?.isPremium ? (
                   <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="bg-gradient-to-r from-[#660566] to-[#330233] px-6 py-4">
-                      <h3 className="text-lg font-semibold text-white mb-1">Premium Üyelik</h3>
-                      <p className="text-sm text-gray-200">Aktif üyelik planınız</p>
+                      <h3 className="text-lg font-semibold text-white mb-1">Premium Membership</h3>
+                      <p className="text-sm text-gray-200">Your active membership plan</p>
                     </div>
                     <div className="p-6">
                       <div className="space-y-4">
                         <div>
                           <h4 className="text-sm font-medium text-gray-500 mb-1">Plan</h4>
-                          <p className="text-gray-900 font-medium">Yıllık Premium</p>
+                          <p className="text-gray-900 font-medium">Annual Premium</p>
                         </div>
                         <div>
-                          <h4 className="text-sm font-medium text-gray-500 mb-1">Yenileme Tarihi</h4>
-                          <p className="text-gray-900">15 Mayıs 2024</p>
+                          <h4 className="text-sm font-medium text-gray-500 mb-1">Renewal Date</h4>
+                          <p className="text-gray-900">May 15, 2024</p>
                         </div>
                         <div>
-                          <h4 className="text-sm font-medium text-gray-500 mb-1">Ödeme Yöntemi</h4>
+                          <h4 className="text-sm font-medium text-gray-500 mb-1">Payment Method</h4>
                           <div className="flex items-center gap-2">
                             <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none">
                               <rect x="2" y="5" width="20" height="14" rx="2" className="stroke-current" strokeWidth="2" />
@@ -615,10 +550,10 @@ function ProfileContent() {
 
                       <div className="mt-6 space-y-4">
                         <button className="w-full px-4 py-2 text-sm font-medium text-[#660566] bg-white border border-[#660566] rounded-lg hover:bg-[#660566] hover:text-white transition-colors">
-                          Ödeme Yöntemini Değiştir
+                          Change Payment Method
                         </button>
                         <button className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                          Fatura Geçmişi
+                          Billing History
                         </button>
                       </div>
                     </div>
@@ -650,30 +585,30 @@ function ProfileContent() {
                 <div className="lg:col-span-3">
                   <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-100">
-                      <h3 className="text-lg font-semibold text-gray-900">Ödeme Geçmişi</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">Payment History</h3>
                     </div>
                     <div className="divide-y divide-gray-100">
                       <div className="px-6 py-4 flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-gray-900">Yıllık Premium Üyelik</p>
-                          <p className="text-sm text-gray-500">15 Mayıs 2023</p>
+                          <p className="font-medium text-gray-900">Annual Premium Membership</p>
+                          <p className="text-sm text-gray-500">May 15, 2023</p>
                         </div>
                         <div className="text-right">
                           <p className="font-medium text-gray-900">₺1.199,00</p>
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Başarılı
+                            Successful
                           </span>
                         </div>
                       </div>
                       <div className="px-6 py-4 flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-gray-900">Aylık Premium Üyelik</p>
-                          <p className="text-sm text-gray-500">15 Nisan 2023</p>
+                          <p className="font-medium text-gray-900">Monthly Premium Membership</p>
+                          <p className="text-sm text-gray-500">April 15, 2023</p>
                         </div>
                         <div className="text-right">
                           <p className="font-medium text-gray-900">₺129,00</p>
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Başarılı
+                            Successful
                           </span>
                         </div>
                       </div>
@@ -693,13 +628,13 @@ function ProfileContent() {
       <div className="min-h-screen bg-gray-50 py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Giriş Yapmanız Gerekiyor</h1>
-            <p className="text-gray-600 mb-8">Bu sayfayı görüntülemek için lütfen giriş yapın.</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">You Need to Log In</h1>
+            <p className="text-gray-600 mb-8">Please log in to view this page.</p>
             <Link
               href="/"
               className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#660566] hover:bg-[#4d044d]"
             >
-              Ana Sayfaya Dön
+              Back to Home
             </Link>
           </div>
         </div>
@@ -720,7 +655,7 @@ function ProfileContent() {
                 : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
-              Profilim
+              My Profile
             </Link>
             <Link
               href="/profil?tab=favoriler"
@@ -729,7 +664,7 @@ function ProfileContent() {
                 : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
-              Favorilerim
+              My Favorites
             </Link>
             <Link
               href="/profil?tab=karsilastirmalar"
@@ -738,7 +673,7 @@ function ProfileContent() {
                 : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
-              Karşılaştırmalarım
+              My Comparisons
             </Link>
             <Link
               href="/profil?tab=guvenlik"
@@ -747,7 +682,7 @@ function ProfileContent() {
                 : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
-              Güvenlik
+              Security
             </Link>
           </div>
 

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import GoogleReaderRevenue from '@/components/GoogleReaderRevenue';
+// import GoogleReaderRevenue from '@/components/GoogleReaderRevenue';
 
 interface BlogPost {
   title: string;
@@ -547,52 +547,13 @@ export async function generateStaticParams() {
   }));
 }
 
-const BlogContent = ({ content }: { content: string }) => {
-  return (
-    <div className="prose prose-lg prose-purple max-w-none">
-      {content.split('\n').map((paragraph: string, index: number) => {
-        const trimmedParagraph = paragraph.trim();
-        
-        if (!trimmedParagraph) return null;
-        
-        if (trimmedParagraph.startsWith('##')) {
-          return (
-            <h2 key={index} className="text-2xl font-semibold mt-8 mb-4">
-              {trimmedParagraph.replace('##', '').trim()}
-            </h2>
-          );
-        }
-        
-        if (trimmedParagraph.match(/^\d+\./)) {
-          const items = trimmedParagraph.split('\n').filter(Boolean);
-          return (
-            <ol key={index} className="list-decimal pl-6 mb-6">
-              {items.map((item: string, i: number) => {
-                const formattedItem = item
-                  .replace(/^\d+\.\s*/, '')
-                  .replace(/\*\*([^*]+)\*\*/g, (_, text) => `<strong>${text}</strong>`);
-                
-                return (
-                  <li 
-                    key={i} 
-                    className="mb-2"
-                    dangerouslySetInnerHTML={{ __html: formattedItem }}
-                  />
-                );
-              })}
-            </ol>
-          );
-        }
-        
-        return (
-          <p key={index} className="mb-4">
-            {trimmedParagraph}
-          </p>
-        );
-      })}
-    </div>
-  );
-};
+const BlogContent = ({ content }: { content: string }) => (
+  <div className="prose prose-lg prose-purple max-w-none">
+    {content.split('\n').map((paragraph, index) => (
+      <p key={index}>{paragraph}</p>
+    ))}
+  </div>
+);
 
 export default function BlogPost({ params }: { params: { slug: string } }) {
   const post = blogPosts[params.slug];
@@ -603,7 +564,7 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
 
   return (
     <>
-      <GoogleReaderRevenue />
+      {/* <GoogleReaderRevenue /> */}
       <div className="min-h-screen bg-white">
         <div className="container mx-auto px-4 py-8">
           <article className="max-w-3xl mx-auto">

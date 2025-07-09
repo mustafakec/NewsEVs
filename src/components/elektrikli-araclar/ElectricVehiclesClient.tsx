@@ -49,36 +49,23 @@ export default function ElectricVehiclesClient() {
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <Suspense fallback={<PageLoading />}>
-            <PageContent
-              onPremiumModalOpen={() => setIsPremiumModalOpen(true)}
-            />
-          </Suspense>
-
-          {/* Main Premium Modal */}
-          <PremiumModal
-            isOpen={isPremiumModalOpen}
-            onClose={() => setIsPremiumModalOpen(false)}
-            aria-label="Premium membership"
-          />
-
-          <div className="mt-12 border-t border-gray-100 pt-6">
-            <p className="text-xs text-gray-400 max-w-4xl mx-auto text-center flex flex-col items-center">
-              <span className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                All brands and logos on this page are for informational purposes only.
-              </span>
-              <span className="mt-1">Prices and information may vary.</span>
-            </p>
+    <>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="max-w-7xl mx-auto">
+            <Suspense fallback={<PageLoading />}>
+              <PageContent onPremiumModalOpen={() => setIsPremiumModalOpen(true)} />
+            </Suspense>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Premium Modal */}
+      <PremiumModal
+        isOpen={isPremiumModalOpen}
+        onClose={() => setIsPremiumModalOpen(false)}
+      />
+    </>
   );
 }
 

@@ -4,6 +4,7 @@ import { fetchVehicles } from '@/hooks/useVehicles';
 import VehicleClientContent from '@/components/VehicleClientContent';
 import { ElectricVehicle } from '@/models/ElectricVehicle';
 import { toSlug } from '@/utils/vehicleUtils';
+import { customNames } from '@/constants/customPrices';
 
 // Statik parametre oluşturma (SSG için)
 export async function generateStaticParams() {
@@ -39,10 +40,13 @@ export async function generateMetadata(
     };
   }
 
+  // Custom name varsa onu kullan, yoksa model adını kullan
+  const displayName = customNames[vehicle.id] || vehicle.model;
+
   // Dinamik meta verilerini oluştur
   return {
-    title: `${vehicle.brand} ${vehicle.model} Fiyatı, Özellikleri ve Karşılaştırma | elektrikliyiz`,
-    description: `${vehicle.brand} ${vehicle.model} hakkında teknik özellikler, performans verileri, fiyat bilgisi ve daha fazlasını keşfedin.`,
+    title: `${vehicle.brand} ${displayName} Fiyatı, Özellikleri ve Karşılaştırma | elektrikliyiz`,
+    description: `${vehicle.brand} ${displayName} hakkında teknik özellikler, performans verileri, fiyat bilgisi ve daha fazlasını keşfedin.`,
     metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
     openGraph: {
       images: vehicle.images && vehicle.images.length > 0

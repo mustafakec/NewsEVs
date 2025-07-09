@@ -219,11 +219,15 @@ export const customPrices: Record<string, number> = {
 };
 
 export const customNames: Record<string, string> = {
+  "ev0016": "Cybertruck (Single Motor)",
+  "ev0017": "Cybertruck (Dual Motor)", 
+  "ev0018": "Cybertruck (Tri Motor)",
   "ev0031": "Corsa Electric",
   "ev0032": "Astra Electric",
-  "ev0016": "Cybertruck (Single Motor)",
-  "ev0017": "Cybertruck (Dual Motor)",
-  "ev0018": "Cybertruck (Tri Motor)",
+  "ev0033": "Grandland Electric",
+  "ev0034": "Frontera Electric", 
+  "ev0035": "Mokka Electric",
+  "ev0036": "Kona Electric",
   "ev0215": "T10F AWD (Single Motor)",
-  "ev0216": "T10F RWD (Dual Motor)"
+  "ev0216": "T10F RWD (Dual Motor)",
 }; 

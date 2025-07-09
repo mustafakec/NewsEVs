@@ -433,7 +433,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
               <span className="text-gray-900 font-medium">
-                {vehicleData.brand} {vehicleData.model}
+                {vehicleData.brand} {customNames[vehicleData.id] || vehicleData.model}
               </span>
             </div>
           </div>
@@ -470,7 +470,7 @@ export default function VehicleClientContent({ vehicle, initialVehicle }: Vehicl
                     fill
                     className="object-cover"
                     priority
-                    unoptimized={isCloudinaryUrl(vehicleData.images[currentImageIndex])}
+                    unoptimized={true}
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-gray-100">

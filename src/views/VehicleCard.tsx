@@ -9,8 +9,7 @@ import { toSlug } from '@/utils/vehicleUtils';
 import { cloudinaryUtils } from '@/lib/cloudinary';
 import { useVehicleCardImage } from '@/hooks/useCloudinaryImage';
 import { formatCurrency } from '@/components/VehicleClientContent';
-import { customPrices } from '@/constants/customPrices';
-import { customNames } from '@/constants/customPrices';
+import { customPrices, customNames } from '@/constants/customPrices';
 
 interface VehicleCardProps {
   vehicle: ElectricVehicle;
@@ -125,7 +124,7 @@ const VehicleCard = memo(({ vehicle, onClick }: VehicleCardProps) => {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             priority={false}
             loading="lazy"
-            unoptimized={isCloudinaryUrl}
+            unoptimized={true}
           />
           
  

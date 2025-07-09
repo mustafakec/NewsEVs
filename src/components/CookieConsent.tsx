@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { event } from '@/utils/analytics';
 
 export default function CookieConsent() {
   const [showConsent, setShowConsent] = useState(false);
@@ -16,11 +17,25 @@ export default function CookieConsent() {
   const handleAccept = () => {
     localStorage.setItem('cookieConsent', 'accepted');
     setShowConsent(false);
+    
+    // Google Analytics olayını gönder
+    event({
+      action: 'cookie_consent',
+      category: 'engagement',
+      label: 'accepted',
+    });
   };
 
   const handleReject = () => {
     localStorage.setItem('cookieConsent', 'rejected');
     setShowConsent(false);
+    
+    // Google Analytics olayını gönder
+    event({
+      action: 'cookie_consent',
+      category: 'engagement',
+      label: 'rejected',
+    });
   };
 
   // Function to reset cookie preference for testing

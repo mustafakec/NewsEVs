@@ -105,6 +105,7 @@ export default function HomePage() {
                       fill
                       sizes="(max-width: 768px) 80px, 96px"
                       className="object-contain"
+                      unoptimized={true}
                     />
                   </div>
                   <span className="text-gray-800 font-medium">{type.name}</span>

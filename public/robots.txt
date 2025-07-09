@@ -12,4 +12,5 @@ Disallow: /auth/forgot-password
 Disallow: /auth/verify-email
 Disallow: /profil
 
-Sitemap: https://elektrikliyiz.com/sitemap.xml
+# Sitemap
+Sitemap: https://newsevs.com/sitemap.xml 

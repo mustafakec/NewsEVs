@@ -4,6 +4,7 @@ import { fetchVehicles } from '@/hooks/useVehicles';
 import VehicleClientContent from '@/components/VehicleClientContent';
 import { ElectricVehicle } from '@/models/ElectricVehicle';
 import { toSlug } from '@/utils/vehicleUtils';
+import { customNames } from '@/constants/customPrices';
 
 // Static params for SSG
 export async function generateStaticParams() {
@@ -27,9 +28,13 @@ export async function generateMetadata(
       description: 'The electric vehicle you are looking for could not be found.'
     };
   }
+  
+  // Custom name varsa onu kullan, yoksa model adını kullan
+  const displayName = customNames[vehicle.id] || vehicle.model;
+  
   return {
-    title: `${vehicle.brand} ${vehicle.model} Price, Features and Comparison | NewsEVs`,
-    description: `Explore technical specs, performance data, price info and more about ${vehicle.brand} ${vehicle.model}.`,
+    title: `${vehicle.brand} ${displayName} Price, Features and Comparison | NewsEVs`,
+    description: `Explore technical specs, performance data, price info and more about ${vehicle.brand} ${displayName}.`,
     metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
     openGraph: {
       images: vehicle.images && vehicle.images.length > 0

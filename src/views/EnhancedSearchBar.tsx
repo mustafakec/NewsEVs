@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useVehicles } from '@/hooks/useVehicles';
 import type { ElectricVehicle } from '@/models/ElectricVehicle';
 import { toSlug } from '@/utils/vehicleUtils';
+import { customNames } from '@/constants/customPrices';
 
 const EnhancedSearchBar = () => {
   const router = useRouter();
@@ -320,7 +321,7 @@ const EnhancedSearchBar = () => {
                         </svg>
                       </div>
                       <div>
-                        <div className="text-gray-900 font-medium">{vehicle.brand} {vehicle.model}</div>
+                        <div className="text-gray-900 font-medium">{vehicle.brand} {customNames[vehicle.id] || vehicle.model}</div>
                         <div className="text-xs text-gray-500 flex items-center gap-1">
                           <span>{vehicle.type}</span>
                           <span className="mx-1">•</span>

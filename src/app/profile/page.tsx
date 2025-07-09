@@ -195,6 +195,7 @@ function ProfileContent() {
                   alt={`${vehicle.brand} ${vehicle.model}`}
                   fill
                   className="object-cover"
+                  unoptimized={true}
                 />
               )}
               <button

@@ -21,6 +21,7 @@ export default function NewsCard({
           alt={title}
           fill
           className="object-cover rounded-lg"
+          unoptimized={true}
         />
       </div>
       <div className="flex-1 min-w-0">

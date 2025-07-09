@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -41,7 +41,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-gray-50">
         <GoogleAnalytics />
-        <PageTracking />
+        <Suspense fallback={null}>
+          <PageTracking />
+        </Suspense>
         <Providers>
           <ToastContainer position="top-right" autoClose={4000} closeOnClick pauseOnHover />
           <Header />
